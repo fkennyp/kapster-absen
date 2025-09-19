@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Kapster Absen{% endblock %}</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+
+<body>
+    <nav class="nav">
+        <div class="nav-left"><a href="/">Kapster Absen</a></div>
+        <div class="nav-right">
+            {% if current_user.is_authenticated %}
+            <span>Hi, {{ current_user.name }} ({{ current_user.role }})</span>
+            {% if current_user.role == 'admin' %}
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/users">Users</a>
+            <a href="/reports/">Reports</a>
+            {% else %}
+            <a href="/attendance">Attendance</a>
+            {% endif %}
+            <a href="/logout">Logout</a>
+            {% endif %}
+        </div>
+    </nav>
+
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash">
+            {% for cat,msg in messages %}
+            <div class="flash-item {{ cat }}">{{ msg }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+
+</html>

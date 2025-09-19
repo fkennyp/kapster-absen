@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h1>Admin Dashboard ({{ today }})</h1>
+<div class="grid">
+    <div class="card">
+        <h3>Total Active Users</h3>
+        <p>{{ total_users }}</p>
+    </div>
+    <div class="card">
+        <h3>Checked In Today</h3>
+        <p>{{ activity_today }}</p>
+    </div>
+    <div class="card">
+        <h3>Not Checked In</h3>
+        <p>{{ missing_today }}</p>
+    </div>
+</div>
+
+
+<h2>Latest Attendance</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Name</th>
+            <th>In</th>
+            <th>Out</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in latest %}
+        <tr>
+            <td>{{ r.date }}</td>
+            <td>{{ r.user.name }}</td>
+            <td>{{ r.check_in }}</td>
+            <td>{{ r.check_out }}</td>
+            <td>{{ r.notes }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

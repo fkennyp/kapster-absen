@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Attendance{% endblock %}
+{% block content %}
+<h1>Attendance for {{ today }}</h1>
+<div class="card">
+    <p>Status:
+        {% if rec and rec.check_in and not rec.check_out %}
+        Checked in at {{ rec.check_in }} — not yet checked out.
+        {% elif rec and rec.check_in and rec.check_out %}
+        Completed. In: {{ rec.check_in }}, Out: {{ rec.check_out }}
+        {% else %}
+        Not yet checked in.
+        {% endif %}
+    </p>
+    <form method="post" action="/attendance/check-in">
+        <label>Notes (optional)<input type="text" name="notes" placeholder="e.g., Shift pagi"></label>
+        <button type="submit" {% if rec and rec.check_in %}disabled{% endif %}>Check In</button>
+    </form>
+    <form method="post" action="/attendance/check-out">
+        <label>Notes (optional)<input type="text" name="notes" placeholder="e.g., Pulang lebih awal"></label>
+        <button type="submit" {% if not rec or not rec.check_in or rec.check_out %}disabled{% endif %}>Check
+            Out</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if user else 'New' }} User{% endblock %}
+{% block content %}
+<h1>{{ 'Edit' if user else 'New' }} User</h1>
+<form method="post" class="form">
+    <label>Name<input type="text" name="name" value="{{ user.name if user else '' }}" required></label>
+    <label>Username<input type="text" name="username" value="{{ user.username if user else '' }}" required></label>
+    <label>Password{% if user %} (leave blank to keep){% endif %}<input type="password" name="password" {% if not user
+            %}required{% endif %}></label>
+    <label>Role
+        <select name="role">
+            <option value="kapster" {% if user and user.role=='kapster' %}selected{% endif %}>Kapster</option>
+            <option value="admin" {% if user and user.role=='admin' %}selected{% endif %}>Admin</option>
+        </select>
+    </label>
+    {% if user %}
+    <label><input type="checkbox" name="is_active_user" {% if user.is_active_user %}checked{% endif %}> Active</label>
+    {% endif %}
+    <button type="submit">Save</button>
+</form>
+{% endblock %}
