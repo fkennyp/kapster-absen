@@ -19,9 +19,13 @@ def login():
         if user and user.check_password(password):
             login_user(user)
             flash('Welcome back!', 'success')
-            return redirect(url_for('dashboard'))
+            if user.role == 'admin':
+                return redirect(url_for('admin.admin_dashboard'))
+            else:
+                return redirect(url_for('attendance.my_attendance'))
         flash('Invalid credentials or inactive user.', 'danger')
     return render_template('login.html')
+
 
 @bp.route('/logout')
 @login_required
