@@ -64,9 +64,40 @@ def user_edit(user_id):
 @login_required
 def admin_dashboard():
     today = tznow().date()
-    # Summary: total users, active today, missing today
-    total_users = User.query.filter_by(is_active_user=True).count()
-    activity_today = Attendance.query.filter(Attendance.date == today, Attendance.check_in.isnot(None)).count()
-    missing_today = total_users - activity_today
-    latest = Attendance.query.order_by(Attendance.id.desc()).limit(10).all()
-    return render_template('dashboard.html', total_users=total_users, activity_today=activity_today, missing_today=missing_today, latest=latest, today=today)
+
+    # Hanya kapster aktif
+    total_users = User.query.filter_by(is_active_user=True, role='kapster').count()
+
+    # Checked-in hari ini oleh kapster aktif
+    activity_today = (
+        db.session.query(Attendance.id)
+        .join(User, Attendance.user_id == User.id)
+        .filter(
+            Attendance.date == today,
+            Attendance.check_in.isnot(None),
+            User.role == 'kapster',
+            User.is_active_user.is_(True),
+        )
+        .count()
+    )
+
+    missing_today = max(total_users - activity_today, 0)
+
+    # Tampilkan log attendance kapster saja
+    latest = (
+        Attendance.query
+        .join(User, Attendance.user_id == User.id)
+        .filter(User.role == 'kapster')
+        .order_by(Attendance.id.desc())
+        .limit(10)
+        .all()
+    )
+
+    return render_template(
+        'dashboard.html',
+        total_users=total_users,
+        activity_today=activity_today,
+        missing_today=missing_today,
+        latest=latest,
+        today=today
+    )
