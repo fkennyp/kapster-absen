@@ -97,7 +97,7 @@ button[disabled] {
   padding: 4px 10px;
   border-radius: 8px;
   border: 1px solid #ddd;
-  background: #f7f7f7;
+  background: #000000;
   cursor: pointer;
 }
 .qty-btn:active { transform: translateY(1px); }
@@ -122,3 +122,103 @@ h1, h2 { margin-bottom: 16px; }
 .filter-form select,
 .filter-form button,
 .filter-form a.btn { min-width: 160px; }
+
+.auth-header {
+  background: #111827;
+  color: #fff;
+  padding: 16px 20px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.auth-header .logo-icon {
+  font-size: 24px;
+}
+
+.auth-header .logo-text {
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.login-box {
+  background: #fff;
+  padding: 24px 28px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+}
+
+.login-box h2 {
+  margin-bottom: 20px;
+}
+
+.login-box label {
+  display: block;
+  text-align: left;     /* biar label tetep rata kiri */
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #333;
+}
+
+.login-box input {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+/* --- Mobile-friendly defaults --- */
+@media (max-width: 480px) {
+  html, body {
+    font-size: 16px;               /* jangan terlalu kecil */
+  }
+  .auth-header {
+    padding: 14px 16px;
+    font-size: 18px;
+  }
+  .auth-content {
+    padding: 16px;                 /* beri ruang sisi */
+    min-height: calc(100vh - 56px);
+  }
+  .login-box {
+    width: 100%;
+    max-width: 420px;              /* cukup lebar di HP */
+    padding: 16px 18px;
+  }
+}
+
+/* Sentuh nyaman: tinggi kontrol minimal 44px */
+.login-box input,
+.login-box button,
+.login-box select {
+  min-height: 44px;
+  line-height: 1.2;
+  font-size: 1rem;
+}
+
+.login-box input {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+}
+
+.login-box .btn,
+.login-box button[type="submit"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.auth-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 60px); /* 60px kira2 tinggi header */
+}
