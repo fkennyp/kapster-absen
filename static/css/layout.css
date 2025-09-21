@@ -1,6 +1,6 @@
 /* ===== layout.css ===== */
 
-/* (legacy) Navbar lama - boleh dibiarkan atau dihapus kalau sudah tidak dipakai */
+/* Legacy navbar (boleh dihapus kalau tidak dipakai) */
 .nav {
   display: flex;
   justify-content: space-between;
@@ -9,22 +9,34 @@
   background: #111827;
   color: #fff;
 }
-.nav a { color: #fff; margin-left: 12px; text-decoration: none; }
-.nav a:hover { text-decoration: underline; }
+.nav a {
+  color: #fff;
+  margin-left: 12px;
+  text-decoration: none;
+}
+.nav a:hover {
+  text-decoration: underline;
+}
 
-/* ===== Grid util umum (tetap) ===== */
+/* Grid util */
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   margin-bottom: 16px;
 }
-@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
 
-/* Spasi main (tetap) */
-main { padding: 16px 0 40px; }
+/* Main spacing */
+main {
+  padding: 16px 0 40px;
+}
 
-/* ====== Sidebar Layout (desktop) ====== */
+/* Sidebar layout (desktop) */
 .app {
   display: grid;
   grid-template-columns: 240px 1fr;
@@ -44,10 +56,10 @@ main { padding: 16px 0 40px; }
 }
 .content {
   background: #f8fafc;
-  min-width: 0; /* biar child bisa shrink */
+  min-width: 0;
 }
 
-/* ====== Sidebar Elements (INI YANG HILANG) ====== */
+/* Sidebar elements */
 .sb-brand {
   font-weight: 700;
   font-size: 18px;
@@ -56,16 +68,19 @@ main { padding: 16px 0 40px; }
   align-items: center;
   gap: 8px;
 }
-
 .sb-user {
-  background: rgba(255, 255, 255, .06);
-  border: 1px solid rgba(255, 255, 255, .08);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   padding: 10px 12px;
 }
-.sb-user-name { font-weight: 600; }
-.sb-user-role { font-size: 12px; opacity: .8; }
-
+.sb-user-name {
+  font-weight: 600;
+}
+.sb-user-role {
+  font-size: 12px;
+  opacity: 0.8;
+}
 .sb-nav {
   display: grid;
   gap: 6px;
@@ -76,14 +91,15 @@ main { padding: 16px 0 40px; }
   padding: 10px 12px;
   border-radius: 8px;
   color: #e5e7eb;
-  text-decoration: none;        /* hilangin underline */
+  text-decoration: none;
 }
 .sb-link:hover {
-  background: rgba(255, 255, 255, .08);
+  background: rgba(255, 255, 255, 0.08);
   color: #fff;
 }
-
-.sb-footer { margin-top: auto; }
+.sb-footer {
+  margin-top: auto;
+}
 .sb-logout {
   display: block;
   padding: 10px 12px;
@@ -93,24 +109,34 @@ main { padding: 16px 0 40px; }
   text-decoration: none;
   text-align: center;
 }
-.sb-logout:hover { filter: brightness(.95); }
-
-/* ====== Mobile: sidebar off-canvas ====== */
-@media (max-width: 900px) {
-  .app { grid-template-columns: 1fr; }
-  .sidebar {
-    position: fixed;
-    inset: 0 40% 0 0;           /* lebar ~60% layar */
-    transform: translateX(-100%);
-    transition: transform .25s ease;
-    z-index: 50;
-  }
-  body.sb-open .sidebar { transform: translateX(0); }
-  body.sb-open { overflow: hidden; } /* kunci scroll di belakang */
+.sb-logout:hover {
+  filter: brightness(0.95);
 }
 
-/* ====== FAB hamburger (floating) ====== */
-.sb-fab { display: none; }
+/* Sidebar off-canvas (mobile) */
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: fixed;
+    inset: 0 40% 0 0;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 50;
+  }
+  body.sb-open .sidebar {
+    transform: translateX(0);
+  }
+  body.sb-open {
+    overflow: hidden;
+  }
+}
+
+/* Floating hamburger (FAB) */
+.sb-fab {
+  display: none;
+}
 @media (max-width: 900px) {
   .sb-fab {
     display: inline-flex;
@@ -120,28 +146,32 @@ main { padding: 16px 0 40px; }
     z-index: 60;
     padding: 10px 12px;
     border-radius: 10px;
-    border: 1px solid rgba(0,0,0,.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     background: #111827;
     color: #fff;
     font-size: 18px;
     line-height: 1;
-    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
-  body.sb-open .sb-fab { left: calc(60% + 12px); } /* ikut lebar sidebar */
+  body.sb-open .sb-fab {
+    left: calc(60% + 12px);
+  }
 }
 
-/* ====== Overlay gelap ====== */
-.sb-overlay { display: none; }
+/* Overlay */
+.sb-overlay {
+  display: none;
+}
 @media (max-width: 900px) {
   .sb-overlay {
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.4);
+    background: rgba(0, 0, 0, 0.4);
     opacity: 0;
     pointer-events: none;
-    transition: opacity .25s ease;
-    z-index: 40;                /* sidebar:50, fab:60 */
+    transition: opacity 0.25s ease;
+    z-index: 40;
   }
   body.sb-open .sb-overlay {
     opacity: 1;

@@ -17,7 +17,7 @@ label {
   font-weight: 600;
 }
 
-/* Inputs & Buttons (seragam untuk <button> dan <a class="btn">) */
+/* Inputs & Buttons */
 input,
 select,
 button,
@@ -39,7 +39,7 @@ a.btn {
   border: none;
   font-weight: 500;
   text-decoration: none;
-  margin: 8px 0;              /* jarak vertikal tombol */
+  margin: 8px 0;
 }
 button:hover,
 a.btn:hover {
@@ -68,7 +68,7 @@ button[disabled] {
 }
 .table th,
 .table td {
-  padding: 14px 16px;          /* lebih lega */
+  padding: 14px 16px;
   border-bottom: 1px solid #e5e7eb;
   text-align: left;
 }
@@ -76,10 +76,14 @@ button[disabled] {
   color: #6b7280;
   font-weight: 700;
 }
-.table tr:hover td { background: #f9fafb; }
+.table tr:hover td {
+  background: #f9fafb;
+}
 
 /* Flash / alerts */
-.flash { margin-bottom: 12px; }
+.flash {
+  margin-bottom: 12px;
+}
 .flash-item {
   padding: 10px 12px;
   border-radius: 8px;
@@ -91,38 +95,60 @@ button[disabled] {
 .flash-item.info    { background: #dbeafe; }
 
 /* Qty controls */
-.qty-wrap { display: inline-flex; align-items: center; gap: 8px; }
-.qty-input { width: 70px; text-align: center; }
+.qty-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.qty-input {
+  width: 70px;
+  text-align: center;
+}
 .qty-btn {
   padding: 4px 10px;
   border-radius: 8px;
   border: 1px solid #ddd;
-  background: #000000;
+  background: #000;
   cursor: pointer;
 }
-.qty-btn:active { transform: translateY(1px); }
+.qty-btn:active {
+  transform: translateY(1px);
+}
 
-/* Spacing global biar tidak dempet */
+/* Global spacing */
 .card,
 .table,
-.form { margin: 20px 0 24px; }
-h1, h2 { margin-bottom: 16px; }
+.form {
+  margin: 20px 0 24px;
+}
+h1, h2 {
+  margin-bottom: 16px;
+}
 
 /* Filter form (Reports) */
 .filter-form {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px;                  /* jarak antar kotak */
+  gap: 16px;
   margin-bottom: 20px;
 }
-.filter-form div { display: flex; flex-direction: column; }
-.filter-form label { font-weight: 500; margin-bottom: 4px; }
+.filter-form div {
+  display: flex;
+  flex-direction: column;
+}
+.filter-form label {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
 .filter-form input,
 .filter-form select,
 .filter-form button,
-.filter-form a.btn { min-width: 160px; }
+.filter-form a.btn {
+  min-width: 160px;
+}
 
+/* Auth header */
 .auth-header {
   background: #111827;
   color: #fff;
@@ -135,17 +161,16 @@ h1, h2 { margin-bottom: 16px; }
   justify-content: center;
   gap: 10px;
 }
-
 .auth-header .logo-icon {
   font-size: 24px;
 }
-
 .auth-header .logo-text {
   font-family: 'Segoe UI', sans-serif;
   font-weight: 600;
   font-size: 20px;
 }
 
+/* Login box */
 .login-box {
   background: #fff;
   padding: 24px 28px;
@@ -155,45 +180,42 @@ h1, h2 { margin-bottom: 16px; }
   max-width: 350px;
   text-align: center;
 }
-
 .login-box h2 {
   margin-bottom: 20px;
 }
-
 .login-box label {
   display: block;
-  text-align: left;     /* biar label tetep rata kiri */
+  text-align: left;
   margin-bottom: 6px;
   font-size: 14px;
   color: #333;
 }
-
 .login-box input {
   width: 100%;
   margin-bottom: 14px;
 }
 
-/* --- Mobile-friendly defaults --- */
+/* Mobile-friendly defaults */
 @media (max-width: 480px) {
   html, body {
-    font-size: 16px;               /* jangan terlalu kecil */
+    font-size: 16px;
   }
   .auth-header {
     padding: 14px 16px;
     font-size: 18px;
   }
   .auth-content {
-    padding: 16px;                 /* beri ruang sisi */
+    padding: 16px;
     min-height: calc(100vh - 56px);
   }
   .login-box {
     width: 100%;
-    max-width: 420px;              /* cukup lebar di HP */
+    max-width: 420px;
     padding: 16px 18px;
   }
 }
 
-/* Sentuh nyaman: tinggi kontrol minimal 44px */
+/* Touch-friendly */
 .login-box input,
 .login-box button,
 .login-box select {
@@ -201,13 +223,9 @@ h1, h2 { margin-bottom: 16px; }
   line-height: 1.2;
   font-size: 1rem;
 }
-
 .login-box input {
-  width: 100%;
-  margin-bottom: 14px;
   padding: 10px 12px;
 }
-
 .login-box .btn,
 .login-box button[type="submit"] {
   width: 100%;
@@ -216,9 +234,10 @@ h1, h2 { margin-bottom: 16px; }
   font-weight: 600;
 }
 
+/* Auth content wrapper */
 .auth-content {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 60px); /* 60px kira2 tinggi header */
+  min-height: calc(100vh - 60px);
 }
