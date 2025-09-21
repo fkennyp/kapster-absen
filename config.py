@@ -12,3 +12,4 @@ class Config:
     ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
     ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
     ADMIN_NAME = os.getenv("ADMIN_NAME", "Owner")
+    BARBER_NAME = os.getenv("BARBER_NAME", "Putera Barbershop")

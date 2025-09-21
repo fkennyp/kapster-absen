@@ -6,6 +6,7 @@ from auth import bp as auth_bp, login_manager
 from attendance import bp as attendance_bp
 from admin import bp as admin_bp
 from reports import bp as reports_bp
+from sales import bp as sales_bp
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 
@@ -60,3 +61,4 @@ def create_app():
 
 
 app = create_app()
+app.register_blueprint(sales_bp)

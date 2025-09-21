@@ -126,3 +126,26 @@ button[disabled] {
 .flash-item.info {
     background: #dbeafe;
 }
+
+.qty-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qty-input {
+    width: 70px;
+    text-align: center;
+}
+
+.qty-btn {
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #f7f7f7;
+    cursor: pointer;
+}
+
+.qty-btn:active {
+    transform: translateY(1px);
+}

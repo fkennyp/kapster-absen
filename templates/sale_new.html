@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block title %}Transaksi Baru{% endblock %}
+{% block content %}
+<h1>Transaksi Baru</h1>
+<form method="post" class="form" id="saleForm" target="_blank">
+    <label>Nama Pelanggan</label>
+    <input type="text" name="customer_name" id="customer_name" required>
+    <span id="nameError" style="color:red;display:none;">Nama harus diisi</span>
+
+    <div class="card">
+        <h3>Pilih Layanan</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Layanan</th>
+                    <th>Harga</th>
+                    <th>Qty</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in services %}
+                <tr>
+                    <td>{{ s.name }}</td>
+                    <td>{{ "{:,}".format(s.price) }}</td>
+                    <td>
+                        <input type="hidden" name="service_id" value="{{ s.id }}">
+                        <div class="qty-wrap" data-price="{{ s.price }}">
+                            <button type="button" class="qty-btn" onclick="decQty(this)">−</button>
+                            <input class="qty-input" type="number" min="0" name="qty" value="0" readonly>
+                            <button type="button" class="qty-btn" onclick="incQty(this)">+</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <label>Tipe Pembayaran
+            <select name="payment_type" id="payType" onchange="toggleCash()">
+                <option value="cash">Cash</option>
+                <option value="qris">QRIS</option>
+            </select>
+        </label>
+        <div id="cashWrap" style="display:none;">
+            <label>Jumlah Dibayarkan</label>
+            <input type="number" name="cash_given" id="cashGiven" min="0" oninput="recalc()">
+            <span id="cashError" style="color:red;display:none;">Jumlah yang dibayarkan masih kurang dari total</span>
+        </div>
+
+        <div><strong>Total: Rp <span id="total">0</span></strong></div>
+        <div id="changeWrap" style="display:none;">Kembalian: Rp <span id="change">0</span></div>
+    </div>
+
+    <button type="submit" id="submitBtn" disabled>💾 Simpan & Unduh Nota</button>
+</form>
+
+<script type="text/javascript">
+    function getQtyWraps() { 
+        return Array.from(document.querySelectorAll('.qty-wrap')); 
+    }
+
+    function incQty(btn) {
+        const wrap = btn.closest('.qty-wrap');
+        const input = wrap.querySelector('.qty-input');
+        input.value = (parseInt(input.value || '0') + 1);
+        recalc();
+    }
+
+    function decQty(btn) {
+        const wrap = btn.closest('.qty-wrap');
+        const input = wrap.querySelector('.qty-input');
+        input.value = Math.max(0, (parseInt(input.value || '0') - 1));
+        recalc();
+    }
+
+    function totalCalc() {
+        let total = 0;
+        getQtyWraps().forEach(wrap => {
+            const price = parseInt(wrap.dataset.price || '0');
+            const q = parseInt(wrap.querySelector('.qty-input').value || '0');
+            if (q > 0) total += price * q;
+        });
+        return total;
+    }
+
+    function recalc() {
+        const total = totalCalc();
+        document.getElementById('total').innerText = total.toLocaleString('id-ID');
+
+        const payType = document.getElementById('payType').value;
+        const btn = document.getElementById('submitBtn');
+        const nameVal = document.getElementById('customer_name').value.trim();
+
+        let valid = true;
+
+        // validasi nama
+        if (!nameVal) {
+            document.getElementById('nameError').style.display = 'inline';
+            valid = false;
+        } else {
+            document.getElementById('nameError').style.display = 'none';
+        }
+
+        // validasi cash
+        if (payType === 'cash') {
+            const cg = document.getElementById('cashGiven');
+            const cash = parseInt(cg.value || '0');
+            const change = (cash > 0) ? (cash - total) : 0;
+            document.getElementById('change').innerText = change.toLocaleString('id-ID');
+
+            if (cash < total) {
+                document.getElementById('cashError').style.display = 'inline';
+                valid = false;
+            } else {
+                document.getElementById('cashError').style.display = 'none';
+            }
+        } else {
+            document.getElementById('cashError').style.display = 'none';
+        }
+
+        // minimal harus ada 1 layanan dipilih
+        if (total === 0) {
+            valid = false;
+        }
+
+        // enable/disable tombol submit
+        btn.disabled = !valid;
+    }
+
+    function toggleCash() {
+        const payType = document.getElementById('payType').value;
+        document.getElementById('cashWrap').style.display = (payType === 'cash') ? 'block' : 'none';
+        document.getElementById('changeWrap').style.display = (payType === 'cash') ? 'block' : 'none';
+        recalc();
+    }
+    
+    toggleCash();
+</script>
+{% endblock %}

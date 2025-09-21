@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
+from sqlalchemy.orm import relationship
 
 db = SQLAlchemy()
 
@@ -48,3 +49,45 @@ class Attendance(db.Model):
         if not rec:
             rec = Attendance(user_id=user_id, date=tznow().date())
         return rec
+    
+class Service(db.Model):
+    __tablename__ = 'services'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    price = db.Column(db.Integer, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
+
+
+class Transaction(db.Model):
+    __tablename__ = 'transactions'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    barber_name = db.Column(db.String(120))
+    customer_name = db.Column(db.String(120))
+    payment_type = db.Column(db.String(20), nullable=False)
+    total = db.Column(db.Integer, nullable=False)
+    cash_given = db.Column(db.Integer)
+    change_amount = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, nullable=False)
+
+    # >>> NEW
+    invoice_seq = db.Column(db.Integer)          # urutan per-hari (1,2,3..)
+    invoice_code = db.Column(db.String(50))      # tampilan: INV-DD/MM/YYYY-###
+    
+    user = relationship('User')
+    items = relationship('TransactionItem', backref='transaction', cascade='all, delete-orphan')
+
+
+class TransactionItem(db.Model):
+    __tablename__ = 'transaction_items'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    transaction_id = db.Column(db.Integer, db.ForeignKey('transactions.id'), nullable=False)
+    service_id = db.Column(db.Integer, db.ForeignKey('services.id'), nullable=False)
+    qty = db.Column(db.Integer, nullable=False, default=1)
+    price_each = db.Column(db.Integer, nullable=False)
+    line_total = db.Column(db.Integer, nullable=False)
+
+    service = relationship('Service')
