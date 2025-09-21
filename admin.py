@@ -1,14 +1,13 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
 from sqlalchemy import func
-from models import db, User, Attendance, tznow
+from models import db, User, Attendance, tznow, Transaction
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 
 def require_admin():
     if not current_user.is_authenticated or current_user.role != 'admin':
-        from flask import abort
         abort(403)
 
 
@@ -100,4 +99,35 @@ def admin_dashboard():
         missing_today=missing_today,
         latest=latest,
         today=today
+    )
+
+@bp.route('/transactions')
+@login_required
+def transactions_list():
+    require_admin()
+
+    # filter ringan (opsional)
+    q_user = request.args.get('user_id', type=int)
+    page = request.args.get('page', 1, type=int)
+    per_page = 20
+
+    query = Transaction.query.join(User, User.id == Transaction.user_id)
+
+    if q_user:
+        query = query.filter(Transaction.user_id == q_user)
+
+    # urut terbaru dulu
+    query = query.order_by(Transaction.created_at.desc())
+
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    txs = pagination.items
+
+    users = User.query.order_by(User.name.asc()).all()
+
+    return render_template(
+        'admin/transactions_list.html',
+        txs=txs,
+        users=users,
+        user_id=q_user,
+        pagination=pagination
     )
