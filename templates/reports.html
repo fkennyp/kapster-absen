@@ -2,23 +2,33 @@
 {% block title %}Reports{% endblock %}
 {% block content %}
 <h1>Reports</h1>
-<form method="get" class="form row">
-    <label>Start<input type="date" name="start" value="{{ start or '' }}"></label>
-    <label>End<input type="date" name="end" value="{{ end or '' }}"></label>
-    <label>User
-        <select name="user_id">
+
+<form method="get" class="filter-form">
+    <div>
+        <label for="start">Start</label>
+        <input type="date" id="start" name="start" value="{{ start or '' }}">
+    </div>
+    <div>
+        <label for="end">End</label>
+        <input type="date" id="end" name="end" value="{{ end or '' }}">
+    </div>
+    <div>
+        <label for="user_id">User</label>
+        <select id="user_id" name="user_id">
             <option value="">All</option>
             {% for u in users %}
             <option value="{{ u.id }}" {% if user_id==u.id %}selected{% endif %}>{{ u.name }}</option>
             {% endfor %}
         </select>
-    </label>
-    <button type="submit">Filter</button>
-    <a class="btn"
-        href="/reports/export.csv?start={{ start or '' }}&end={{ end or '' }}&user_id={{ user_id or '' }}">Export
-        CSV</a>
+    </div>
+    <div>
+        <button type="submit" class="btn">Filter</button>
+        <a class="btn"
+           href="/reports/export.csv?start={{ start or '' }}&end={{ end or '' }}&user_id={{ user_id or '' }}">
+           Export CSV
+        </a>
+    </div>
 </form>
-
 
 <table class="table">
     <thead>

@@ -1,0 +1,124 @@
+/* ===== components.css ===== */
+
+/* Form */
+.form {
+  display: grid;
+  gap: 12px;
+  max-width: 560px;
+}
+.form.row {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+
+/* Inputs & Buttons (seragam untuk <button> dan <a class="btn">) */
+input,
+select,
+button,
+a.btn {
+  font: inherit;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+button,
+a.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  background-color: #111827;
+  color: #fff;
+  border: none;
+  font-weight: 500;
+  text-decoration: none;
+  margin: 8px 0;              /* jarak vertikal tombol */
+}
+button:hover,
+a.btn:hover {
+  background-color: #1f2937;
+}
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Card */
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.table th,
+.table td {
+  padding: 14px 16px;          /* lebih lega */
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+.table th {
+  color: #6b7280;
+  font-weight: 700;
+}
+.table tr:hover td { background: #f9fafb; }
+
+/* Flash / alerts */
+.flash { margin-bottom: 12px; }
+.flash-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.flash-item.success { background: #dcfce7; }
+.flash-item.warning { background: #fef3c7; }
+.flash-item.danger  { background: #fee2e2; }
+.flash-item.info    { background: #dbeafe; }
+
+/* Qty controls */
+.qty-wrap { display: inline-flex; align-items: center; gap: 8px; }
+.qty-input { width: 70px; text-align: center; }
+.qty-btn {
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #f7f7f7;
+  cursor: pointer;
+}
+.qty-btn:active { transform: translateY(1px); }
+
+/* Spacing global biar tidak dempet */
+.card,
+.table,
+.form { margin: 20px 0 24px; }
+h1, h2 { margin-bottom: 16px; }
+
+/* Filter form (Reports) */
+.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;                  /* jarak antar kotak */
+  margin-bottom: 20px;
+}
+.filter-form div { display: flex; flex-direction: column; }
+.filter-form label { font-weight: 500; margin-bottom: 4px; }
+.filter-form input,
+.filter-form select,
+.filter-form button,
+.filter-form a.btn { min-width: 160px; }
