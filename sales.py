@@ -4,16 +4,58 @@ from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
-from models import db, Service, Transaction, TransactionItem, tznow
+from models import db, Service, Transaction, TransactionItem, tznow, Attendance
 from config import Config
-from datetime import timedelta
+from datetime import timedelta, date
+from functools import wraps 
 
 bp = Blueprint('sales', __name__, url_prefix='/sales')
 
+def require_on_shift(view):
+    @wraps(view)
+    @login_required
+    def wrapper(*args, **kwargs):
+        # admin bebas akses
+        if current_user.role != "kapster":
+            return view(*args, **kwargs)
+
+        today = date.today()
+        att = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
+
+        if not att or not getattr(att, "check_in", None):
+            flash("Kamu belum check-in. Silakan check-in dulu ya.", "warning")
+            return redirect(url_for("attendance.check_in"))
+
+        if getattr(att, "check_out", None):
+            flash("Kamu sudah check-out, transaksi sudah ditutup.", "warning")
+            return redirect(url_for("attendance.check_in"))
+
+        return view(*args, **kwargs)
+    return wrapper
+
+
 
 @bp.route('/new', methods=['GET', 'POST'])
-@login_required
+@require_on_shift
 def new_sale():
+    # --- VALIDASI ABSEN UNTUK KAPSTER ---
+    if current_user.role == "kapster":
+        today = date.today()
+        att = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
+
+        # belum pernah check-in hari ini
+        if not att or not att.check_in:
+            flash("Kamu belum check-in, transaksi belum bisa dibuat.", "danger")
+            # arahkan ke endpoint yang ADA: 'attendance.check_in'
+            return redirect(url_for("attendance.check_in"))
+
+        # sudah check-out → blok
+        if att.check_out:
+            flash("Kamu sudah check-out, transaksi tidak bisa dibuat lagi.", "danger")
+            # boleh tetap arahkan ke halaman absen (check-in page) biar user paham konteks
+            return redirect(url_for("attendance.check_in"))
+    # --- /VALIDASI ---
+    
     services = Service.query.filter_by(is_active=True).order_by(Service.name.asc()).all()
 
     if request.method == 'POST':
@@ -231,3 +273,4 @@ def receipt_pdf(tx_id):
         download_name=f"nota_{tx.id}.pdf",
         max_age=0,  # hint no-cache
     )
+    

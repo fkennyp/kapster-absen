@@ -7,8 +7,9 @@ from attendance import bp as attendance_bp
 from admin import bp as admin_bp
 from reports import bp as reports_bp
 from sales import bp as sales_bp
+from datetime import date
+from models import Attendance
 from werkzeug.middleware.proxy_fix import ProxyFix
-
 
 def create_app():
     app = Flask(__name__)
@@ -57,6 +58,14 @@ def create_app():
             db.session.commit()
             print("Admin created:", username)
 
+    @app.context_processor
+    def inject_attendance_status():
+        if current_user.is_authenticated and current_user.role == "kapster":
+            today = date.today()
+            att = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
+            if att and att.check_in and not att.check_out:
+                return {"is_working_now": True}
+        return {"is_working_now": False}
     return app
 
 

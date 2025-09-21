@@ -24,8 +24,11 @@
             <a href="/sales/new">Transaksi</a>
             {% else %}
             <a href="/attendance">Attendance</a>
-            <a href="/sales/new">Transaksi</a>
+            {% if is_working_now %}
+                <a href="/sales/new">Transaksi</a>
             {% endif %}
+            {% endif %}
+
             <a href="/logout">Logout</a>
             {% endif %}
         </div>
