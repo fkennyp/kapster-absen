@@ -37,7 +37,7 @@
           <a class="sb-link" href="/admin/users">Users</a>
           <a class="sb-link" href="/reports/">Reports</a>
           <a class="sb-link" href="/admin/transactions">List Transaksi</a>
-          <a class="sb-link" href="/sales/new">Buat Nota</a>
+          <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Buat Nota</a>
         {% elif current_user.is_authenticated and current_user.role == 'kapster' %}
           <a class="sb-link" href="/attendance">Attendance</a>
           {% if is_working_now %}
