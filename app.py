@@ -72,6 +72,24 @@ def create_app():
             if att and att.check_in and not att.check_out:
                 return {"is_working_now": True}
         return {"is_working_now": False}
+    
+    # 🔒 Global guard untuk kapster
+    @app.before_request
+    def force_checkin():
+        if current_user.is_authenticated and current_user.role == "kapster":
+            today = datetime.now(TZ).date()
+            att = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
+            working_now = att and att.check_in and not att.check_out
+
+            allowed_endpoints = (
+                "attendance.check_in",
+                "attendance.my_attendance",
+                "auth.logout",
+                "static",
+            )
+
+            if not working_now and request.endpoint not in allowed_endpoints:
+                return redirect(url_for("attendance.check_in"))
     return app
 
 
