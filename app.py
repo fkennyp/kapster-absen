@@ -9,9 +9,10 @@ from attendance import bp as attendance_bp
 from admin import bp as admin_bp
 from reports import bp as reports_bp
 from sales import bp as sales_bp
-from datetime import date
+from datetime import date, datetime
 from models import Attendance
 from werkzeug.middleware.proxy_fix import ProxyFix
+from zoneinfo import ZoneInfo
 
 def create_app():
     app = Flask(__name__)
