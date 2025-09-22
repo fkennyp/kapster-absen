@@ -63,7 +63,8 @@ def create_app():
     @app.context_processor
     def inject_attendance_status():
         if current_user.is_authenticated and current_user.role == "kapster":
-            today = date.today()
+            #today = date.today() #run local
+            today= datetime.now(TZ).date() #run server
             att = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
             if att and att.check_in and not att.check_out:
                 return {"is_working_now": True}
