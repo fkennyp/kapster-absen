@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS transactions (
   user_id INT NOT NULL,                 -- kapster yang membuat transaksi
   barber_name VARCHAR(120) NULL,        -- nama barbershop (optional)
   customer_name VARCHAR(120) NULL,      -- nama pelanggan (wajib by app validation)
+  customer_email VARCHAR(120) NULL,     -- email pelanggan (optional)
   payment_type VARCHAR(20) NOT NULL,    -- cash/qris/ewallet/transfer
   total INT NOT NULL,
   cash_given INT NULL,

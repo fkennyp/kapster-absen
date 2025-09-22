@@ -1,5 +1,7 @@
+import os
 from flask import Flask, render_template, redirect, url_for
 from flask_login import login_required, current_user
+from flask_mail import Mail, Message
 from models import db, User, Attendance, tznow
 from config import Config
 from auth import bp as auth_bp, login_manager
@@ -71,3 +73,11 @@ def create_app():
 
 app = create_app()
 app.register_blueprint(sales_bp)
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USER')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASS')
+
+mail = Mail(app)

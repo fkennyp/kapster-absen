@@ -7,6 +7,20 @@
     <input type="text" name="customer_name" id="customer_name" required>
     <span id="nameError" style="color:red;display:none;">Nama harus diisi</span>
 
+    <label for="customer_email">Email Customer (opsional)</label>
+    <input
+    id="customer_email"
+    name="customer_email"
+    type="email"
+    inputmode="email"
+    autocomplete="email"
+    placeholder="nama@email.com"
+    class="form-control"
+    pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+    />
+    <small id="emailHelp" class="text-danger hidden">Format email tidak valid.</small>
+
+
     <div class="card">
         <h3>Pilih Layanan</h3>
         <table class="table">
@@ -92,6 +106,7 @@
         const payType = document.getElementById('payType').value;
         const btn = document.getElementById('submitBtn');
         const nameVal = document.getElementById('customer_name').value.trim();
+        const emailVal = document.getElementById('customer_email').value.trim();
 
         let valid = true;
 
@@ -101,6 +116,20 @@
             valid = false;
         } else {
             document.getElementById('nameError').style.display = 'none';
+        }
+
+        // validasi email (opsional tapi kalau diisi harus valid)
+        const emailHelp = document.getElementById('emailHelp');
+        if (emailVal) {
+            const regex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+            if (!regex.test(emailVal)) {
+                emailHelp.classList.remove('hidden');
+                valid = false;
+            } else {
+                emailHelp.classList.add('hidden');
+            }
+        } else {
+            emailHelp.classList.add('hidden');
         }
 
         // validasi cash
@@ -135,7 +164,8 @@
         document.getElementById('changeWrap').style.display = (payType === 'cash') ? 'block' : 'none';
         recalc();
     }
-    
+
+    document.getElementById('customer_email').addEventListener('input', recalc);
     toggleCash();
 </script>
 {% endblock %}

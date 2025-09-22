@@ -66,6 +66,7 @@ class Transaction(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     barber_name = db.Column(db.String(120))
     customer_name = db.Column(db.String(120))
+    customer_email = db.Column(db.String(120), nullable=True)
     payment_type = db.Column(db.String(20), nullable=False)
     total = db.Column(db.Integer, nullable=False)
     cash_given = db.Column(db.Integer)

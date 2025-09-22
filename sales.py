@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file, make_response, abort
+import re
+from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file, make_response, abort, current_app
 from flask_login import login_required, current_user
+from flask_mail import Message, Mail
 from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
@@ -10,6 +12,7 @@ from datetime import timedelta, date
 from functools import wraps 
 
 bp = Blueprint('sales', __name__, url_prefix='/sales')
+EMAIL_RE = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 
 def require_on_shift(view):
     @wraps(view)
@@ -65,11 +68,17 @@ def new_sale():
         pay_type = (request.form.get('payment_type') or 'cash').lower()
         cash_given_raw = request.form.get('cash_given')  # boleh kosong untuk non-cash
         customer_name = (request.form.get('customer_name') or '').strip()
+        customer_email = request.form.get('customer_email') or None
         barber_name = Config.BARBER_NAME
 
         # --- validasi 1: nama wajib ---
         if not customer_name:
             flash('Nama pelanggan harus diisi.', 'danger')
+            return render_template('sale_new.html', services=services), 400
+
+        # --- validasi email kalau diisi ---
+        if customer_email and not EMAIL_RE.fullmatch(customer_email):
+            flash("Format email customer tidak valid.", "danger")
             return render_template('sale_new.html', services=services), 400
 
         # --- bangun item & hitung total ---
@@ -128,6 +137,7 @@ def new_sale():
             user_id=current_user.id,
             barber_name=barber_name,
             customer_name=customer_name,
+            customer_email=customer_email,
             payment_type=pay_type,
             total=total,
             cash_given=cash_val,
@@ -266,6 +276,28 @@ def receipt_pdf(tx_id):
     p.save()
     buf.seek(0)
 
+    pdf_data = buf.getvalue()
+
+    # --- kirim email ke customer kalau ada email ---
+    if tx.customer_email:   # pastikan kolom customer_email ada di Transaction
+        msg = Message(
+            subject=f"Invoice {tx.invoice_code} - Putera Barbershop",
+            sender=current_app.config['MAIL_USERNAME'],
+            recipients=[tx.customer_email]
+        )
+        msg.body = (
+            f"Halo {tx.customer_name},\n\n"
+            f"Terima kasih sudah berkunjung ke Putera Barbershop.\n"
+            f"Berikut kami lampirkan invoice {tx.invoice_code}."
+        )
+        msg.attach(f"{tx.invoice_code}.pdf", "application/pdf", pdf_data)
+        # ⬇️ ambil instance Mail yang sudah di-init di app.py
+        mail = current_app.extensions.get("mail")
+        if mail is not None:
+            mail.send(msg)
+        else:
+            current_app.logger.warning("Mail extension not initialized; skipping send.")
+        
     return send_file(
         buf,
         mimetype="application/pdf",
