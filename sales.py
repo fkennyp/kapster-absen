@@ -1,4 +1,4 @@
-import re
+import re, os
 from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file, make_response, abort, current_app
 from flask_login import login_required, current_user
 from flask_mail import Message, Mail
@@ -8,10 +8,12 @@ from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
 from models import db, Service, Transaction, TransactionItem, tznow, Attendance
 from config import Config
-from datetime import timedelta, date
+from datetime import timedelta, datetime
 from functools import wraps 
+from zoneinfo import ZoneInfo
 
 bp = Blueprint('sales', __name__, url_prefix='/sales')
+TZ = ZoneInfo(os.getenv("TIMEZONE", "Asia/Jakarta"))
 EMAIL_RE = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 
 def require_on_shift(view):
@@ -22,7 +24,7 @@ def require_on_shift(view):
         if current_user.role != "kapster":
             return view(*args, **kwargs)
 
-        today = date.today()
+        today_local = datetime.now(TZ).date()
         att = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
 
         if not att or not getattr(att, "check_in", None):
@@ -43,7 +45,7 @@ def require_on_shift(view):
 def new_sale():
     # --- VALIDASI ABSEN UNTUK KAPSTER ---
     if current_user.role == "kapster":
-        today = date.today()
+        today_local = datetime.now(TZ).date()
         att = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
 
         # belum pernah check-in hari ini
