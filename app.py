@@ -14,6 +14,8 @@ from models import Attendance
 from werkzeug.middleware.proxy_fix import ProxyFix
 from zoneinfo import ZoneInfo
 
+TZ = ZoneInfo(os.getenv("TIMEZONE", "Asia/Jakarta"))
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
