@@ -1,10 +1,10 @@
 -- Database & user (hapus kalau sudah dibuat terpisah)
--- CREATE DATABASE IF NOT EXISTS absen_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- CREATE DATABASE IF NOT EXISTS kapster_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 -- CREATE USER IF NOT EXISTS 'absen_user'@'localhost' IDENTIFIED BY 'absen_pass';
--- GRANT ALL PRIVILEGES ON absen_db.* TO 'absen_user'@'localhost';
+-- GRANT ALL PRIVILEGES ON kapster_db.* TO 'absen_user'@'localhost';
 -- FLUSH PRIVILEGES;
 
-USE absen_db;
+USE kapster_db;
 
 -- USERS
 CREATE TABLE IF NOT EXISTS users (
