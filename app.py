@@ -62,14 +62,19 @@ def create_app():
 
     @app.context_processor
     def inject_attendance_status():
-        if current_user.is_authenticated and current_user.role == "kapster":
-            today = date.today()
-            att = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
-            if att and att.check_in and not att.check_out:
-                return {"is_working_now": True}
-        return {"is_working_now": False}
+        flag = False
+        try:
+            if current_user.is_authenticated and current_user.role == "kapster":
+                today = date.today()
+                att = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
+                # dianggap sedang bekerja kalau sudah check_in & belum check_out
+                if att and getattr(att, "check_in", None) and not getattr(att, "check_out", None):
+                    flag = True
+        except Exception as e:
+            # kalau query error, jangan sampai template crash
+            current_app.logger.warning(f"inject_attendance_status error: {e}")
+        return {"is_working_now": flag}
     return app
-
 
 app = create_app()
 app.register_blueprint(sales_bp)
