@@ -25,7 +25,7 @@ def require_on_shift(view):
             return view(*args, **kwargs)
 
         today_local = datetime.now(TZ).date()
-        att = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
+        att = Attendance.query.filter_by(user_id=current_user.id, date=today_local).first()
 
         if not att or not getattr(att, "check_in", None):
             flash("Kamu belum check-in. Silakan check-in dulu ya.", "warning")
@@ -46,7 +46,7 @@ def new_sale():
     # --- VALIDASI ABSEN UNTUK KAPSTER ---
     if current_user.role == "kapster":
         today_local = datetime.now(TZ).date()
-        att = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
+        att = Attendance.query.filter_by(user_id=current_user.id, date=today_local).first()
 
         # belum pernah check-in hari ini
         if not att or not att.check_in:
