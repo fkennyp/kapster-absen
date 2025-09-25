@@ -1,95 +1,17 @@
 /* ===== components.css ===== */
+/* Main components file that imports all modular CSS files */
 
-/* ===== BASE STYLES ===== */
-.form {
-  display: grid;
-  gap: 12px;
-  max-width: 560px;
-}
+@import url('base.css');
+@import url('forms.css');
+@import url('buttons.css');
+@import url('cards-tables.css');
+@import url('auth.css');
+@import url('sale-form.css');
+@import url('responsive.css');
 
-.form.row {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  align-items: end;
-}
+/* ===== COMPONENTS THAT REMAIN IN MAIN FILE ===== */
 
-label {
-  display: grid;
-  gap: 6px;
-  font-weight: 600;
-}
-
-/* ===== INPUTS & BUTTONS ===== */
-input,
-select,
-button,
-a.btn {
-  font: inherit;
-  padding: 10px 12px;
-  background: #fff;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-}
-
-button,
-a.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 20px;
-  background-color: #111827;
-  color: #fff;
-  border: none;
-  font-weight: 500;
-  text-decoration: none;
-  margin: 8px 0;
-}
-
-button:hover,
-a.btn:hover {
-  background-color: #1f2937;
-}
-
-button[disabled] {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ===== COMPONENTS ===== */
-/* Card */
-.card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 12px;
-}
-
-/* Table */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.table th,
-.table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
-}
-
-.table th {
-  color: #6b7280;
-  font-weight: 700;
-}
-
-.table tr:hover td {
-  background: #f9fafb;
-}
-
-/* Flash Messages */
+/* Flash Messages (general) */
 .flash {
   margin-bottom: 12px;
 }
@@ -100,336 +22,41 @@ button[disabled] {
   margin-bottom: 8px;
 }
 
-.flash-item.success { background: #dcfce7; }
-.flash-item.warning { background: #fef3c7; }
-.flash-item.danger  { background: #fee2e2; }
-.flash-item.info    { background: #dbeafe; }
-
-/* Quantity Controls */
-.qty-wrap {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.qty-input {
-  width: 70px;
-  text-align: center;
-}
-
-.qty-btn {
-  padding: 4px 10px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background: #000;
-  cursor: pointer;
-}
-
-.qty-btn:active {
-  transform: translateY(1px);
-}
-
-/* Filter Form */
-.filter-form {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.filter-form div {
-  display: flex;
-  flex-direction: column;
-}
-
-.filter-form label {
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-
-.filter-form input,
-.filter-form select,
-.filter-form button,
-.filter-form a.btn {
-  min-width: 160px;
-}
-
-/* ===== LAYOUT & SPACING ===== */
-.card,
-.table,
-.form {
-  margin: 20px 0 24px;
-}
-
-h1, h2 {
-  margin-bottom: 16px;
-}
-
-/* ===== AUTHENTICATION STYLES ===== */
-/* Auth Header */
-.auth-header {
-  background: #111827;
-  color: #fff;
-  padding: 16px 20px;
-  text-align: center;
-  font-weight: 600;
-  font-size: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.auth-header .logo-icon {
-  font-size: 24px;
-}
-
-.auth-header .logo-text {
-  font-family: 'Segoe UI', sans-serif;
-  font-weight: 600;
-  font-size: 20px;
-}
-
-/* Auth Content */
-.auth-content {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: calc(100vh - 60px);
-  padding: 40px 20px;
-}
-
-.auth-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-/* Auth Flash Messages */
-.auth-flash {
-  width: 100%;
-  max-width: 350px;
-  margin-bottom: 20px;
-}
-
-.auth-flash .flash-item {
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  font-weight: 500;
-  text-align: center;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.auth-flash .flash-item.success {
+.flash-item.success {
   background: #dcfce7;
-  color: #166534;
-  border: 1px solid #bbf7d0;
 }
 
-.auth-flash .flash-item.warning {
+.flash-item.warning {
   background: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fde68a;
 }
 
-.auth-flash .flash-item.danger {
+.flash-item.danger {
   background: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
 }
 
-.auth-flash .flash-item.info {
+.flash-item.info {
   background: #dbeafe;
-  color: #1e40af;
-  border: 1px solid #bfdbfe;
 }
 
-/* Login Box */
-.login-box {
-  background: #fff;
-  padding: 24px 28px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  width: 100%;
-  max-width: 350px;
-  text-align: center;
-  margin: 0;
-}
-
-.login-box h2 {
-  margin-bottom: 20px;
-}
-
-.login-box label {
-  display: block;
-  text-align: left;
-  margin-bottom: 6px;
-  font-size: 14px;
-  color: #333;
-}
-
-.login-box input {
-  width: 100%;
-  margin-bottom: 14px;
-}
-
-/* ===== SALE FORM STYLES ===== */
-.sale-form-container {
+/* Pagination */
+.pagination {
   display: flex;
   justify-content: center;
-  width: 100%;
-}
-
-.sale-form {
-  max-width: 600px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-/* Form Elements */
-.sale-form .form {
-  gap: 16px;
-}
-
-.sale-form label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-
-.sale-form input[type="text"],
-.sale-form input[type="email"],
-.sale-form input[type="tel"],
-.sale-form input[type="number"],
-.sale-form select {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-/* Table in Sale Form */
-.sale-form .table {
+  align-items: center;
+  gap: 15px;
   margin: 20px 0;
+  padding: 15px;
+  border-top: 1px solid #e5e7eb;
 }
 
-.sale-form .table th,
-.sale-form .table td {
-  padding: 12px;
-  text-align: center;
-}
-
-.sale-form .table th:first-child,
-.sale-form .table td:first-child {
-  text-align: left;
-  width: 40%;
-}
-
-.sale-form .table th:nth-child(2),
-.sale-form .table td:nth-child(2) {
-  width: 25%;
-}
-
-.sale-form .table th:nth-child(3),
-.sale-form .table td:nth-child(3) {
-  width: 35%;
-}
-
-/* Card Styling */
-.sale-form .card {
-  padding: 20px;
-  margin: 20px 0;
-}
-
-/* Button Styling */
-.sale-form button[type="submit"] {
-  width: 100%;
-  max-width: 300px;
-  margin: 20px auto;
-  display: block;
-  padding: 12px 24px;
-  font-size: 16px;
-}
-
-/* Quantity Controls */
-.sale-form .qty-wrap {
-  justify-content: center;
-}
-
-/* ===== TOUCH-FRIENDLY STYLES ===== */
-.login-box input,
-.login-box button,
-.login-box select {
-  min-height: 44px;
-  line-height: 1.2;
-  font-size: 1rem;
-}
-
-.login-box input {
-  padding: 10px 12px;
-}
-
-.login-box .btn,
-.login-box button[type="submit"] {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 8px;
+.pagination-info {
   font-weight: 600;
+  color: #374151;
+  font-size: 14px;
 }
 
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 768px) {
-  .sale-form {
-    max-width: 100%;
-    padding: 0 10px;
-  }
-
-  .sale-form .table {
-    font-size: 14px;
-  }
-
-  .sale-form .table th,
-  .sale-form .table td {
-    padding: 8px 4px;
-  }
-
-  .sale-form .qty-input {
-    width: 50px;
-  }
-}
-
-@media (max-width: 480px) {
-  html, body {
-    font-size: 16px;
-  }
-
-  .auth-header {
-    padding: 14px 16px;
-    font-size: 18px;
-  }
-
-  .auth-content {
-    padding: 20px 16px;
-    align-items: flex-start;
-    min-height: calc(100vh - 56px);
-  }
-
-  .auth-container {
-    max-width: 100%;
-  }
-
-  .auth-flash {
-    max-width: 100%;
-  }
-
-  .login-box {
-    width: 100%;
-    max-width: 100%;
-    padding: 16px 18px;
-  }
+.pagination .btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  text-decoration: none;
 }

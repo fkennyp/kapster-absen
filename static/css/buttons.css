@@ -1,0 +1,52 @@
+/* ===== BUTTON STYLES ===== */
+
+/* Base Button Styles */
+button, a.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  background-color: #111827;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  margin: 8px 0;
+  cursor: pointer;
+}
+
+button:hover, a.btn:hover {
+  background-color: #1f2937;
+}
+
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Button States */
+button:disabled {
+  background-color: #9ca3af !important;
+  cursor: not-allowed !important;
+}
+
+button:disabled:hover {
+  background-color: #9ca3af !important;
+}
+
+/* Button Variants */
+.btn-secondary {
+  background-color: #6b7280 !important;
+}
+
+.btn-secondary:hover {
+  background-color: #4b5563 !important;
+}
+
+.btn-small {
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  text-decoration: none;
+}

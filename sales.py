@@ -350,14 +350,18 @@ def customer_visits():
     if not phone:
         return {'visits': 0}
     
-    # Cari customer berdasarkan nomor HP
-    customer = Customer.query.filter_by(phone=phone).first()
-    
-    if not customer:
+    try:
+        # Cari customer berdasarkan nomor HP
+        customer = Customer.query.filter_by(phone=phone).first()
+        
+        if not customer:
+            return {'visits': 0}
+        
+        # Hitung jumlah transaksi sebelumnya
+        prev_count = db.session.query(db.func.count(Transaction.id))\
+            .filter(Transaction.customer_id == customer.id).scalar() or 0
+        
+        return {'visits': prev_count}
+    except Exception as e:
+        print(f"Error in customer_visits: {e}")
         return {'visits': 0}
-    
-    # Hitung jumlah transaksi sebelumnya
-    prev_count = db.session.query(db.func.count(Transaction.id))\
-        .filter(Transaction.customer_id == customer.id).scalar() or 0
-    
-    return {'visits': prev_count}

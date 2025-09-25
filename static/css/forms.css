@@ -1,0 +1,97 @@
+/* ===== FORM STYLES ===== */
+
+/* Inputs & Selects */
+input, select {
+  font: inherit;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #111827;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+}
+
+/* Filter Forms */
+.filter-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  align-items: end;
+  margin-bottom: 20px;
+}
+
+.filter-form div {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-form label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.filter-form input,
+.filter-form select {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.filter-form .btn {
+  padding: 10px 15px;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Validation States */
+input:invalid {
+  border-color: #dc2626;
+}
+
+input:valid {
+  border-color: #10b981;
+}
+
+/* Error Messages */
+.error-message {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+  display: none;
+  font-weight: 500;
+}
+
+.visit-info {
+  font-size: 12px;
+  margin-top: 4px;
+  color: #6b7280;
+  font-style: italic;
+}

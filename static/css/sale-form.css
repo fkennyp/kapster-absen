@@ -1,0 +1,130 @@
+/* ===== SALE FORM SPECIFIC STYLES ===== */
+
+.sale-form-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.sale-form {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Form Elements */
+.sale-form .form {
+  gap: 16px;
+}
+
+.sale-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.sale-form input[type="text"],
+.sale-form input[type="email"],
+.sale-form input[type="tel"],
+.sale-form input[type="number"],
+.sale-form select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Table in Sale Form */
+.sale-form .table {
+  margin: 20px 0;
+}
+
+.sale-form .table th,
+.sale-form .table td {
+  padding: 12px;
+  text-align: center;
+}
+
+.sale-form .table th:first-child,
+.sale-form .table td:first-child {
+  text-align: left;
+  width: 40%;
+}
+
+.sale-form .table th:nth-child(2),
+.sale-form .table td:nth-child(2) {
+  width: 25%;
+}
+
+.sale-form .table th:nth-child(3),
+.sale-form .table td:nth-child(3) {
+  width: 35%;
+}
+
+/* Card Styling */
+.sale-form .card {
+  padding: 20px;
+  margin: 20px 0;
+}
+
+/* Button Styling */
+.sale-form button[type="submit"] {
+  width: 100%;
+  max-width: 300px;
+  margin: 20px auto;
+  display: block;
+  padding: 12px 24px;
+  font-size: 16px;
+}
+
+/* Quantity Controls */
+.qty-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty-input {
+  width: 70px;
+  text-align: center;
+}
+
+.qty-btn {
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #000;
+  cursor: pointer;
+}
+
+.qty-btn:active {
+  transform: translateY(1px);
+}
+
+.sale-form .qty-wrap {
+  justify-content: center;
+}
+
+/* Total Display */
+.total-display {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.total-amount {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+/* Cash Wrap */
+#cashWrap {
+  margin: 15px 0;
+}
+
+#changeWrap {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+}

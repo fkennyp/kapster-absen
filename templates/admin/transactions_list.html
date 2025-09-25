@@ -3,53 +3,95 @@
 {% block content %}
 <h1>List Transaksi</h1>
 
-<form method="get" class="filter-form">
-  <div>
-    <label for="user_id">Pembuat</label>
-    <select id="user_id" name="user_id">
-      <option value="">Semua</option>
-      {% for u in users %}
-        <option value="{{ u.id }}" {% if user_id==u.id %}selected{% endif %}>{{ u.name }}</option>
-      {% endfor %}
-    </select>
-  </div>
-  <div>
-    <button type="submit" class="btn">Filter</button>
-  </div>
-</form>
-
-<table class="table">
-  <thead>
-    <tr>
-      <th>Invoice</th>
-      <th>Tanggal</th>
-      <th>Pembuat</th>
-      <th class="text-right">Total</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for tx in txs %}
-    <tr>
-      <td>{{ tx.invoice_code or ("INV-" ~ tx.created_at.strftime("%d/%m/%Y") ~ "-" ~ (tx.invoice_seq or "XXX")) }}</td>
-      <td>{{ tx.created_at.strftime("%d-%m-%Y %H:%M:%S") }}</td>
-      <td>{{ tx.user.name }}</td>
-      <td class="text-right">Rp {{ "{:,}".format(tx.total) }}</td>
-      <td><a class="btn" href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank">Nota</a></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-{% if pagination.pages > 1 %}
-<div class="flex items-center gap-2">
-  {% if pagination.has_prev %}
-    <a class="btn" href="{{ url_for('admin.transactions_list', page=pagination.prev_num, user_id=user_id) }}">&laquo; Prev</a>
-  {% endif %}
-  <span>Page {{ pagination.page }} / {{ pagination.pages }}</span>
-  {% if pagination.has_next %}
-    <a class="btn" href="{{ url_for('admin.transactions_list', page=pagination.next_num, user_id=user_id) }}">Next &raquo;</a>
-  {% endif %}
+<!-- Filter Form -->
+<div class="card">
+    <h3>Filter Transaksi</h3>
+    <form method="get" class="filter-form">
+        <div>
+            <label for="start_date">Tanggal Mulai</label>
+            <input type="date" id="start_date" name="start_date" value="{{ request.args.get('start_date', '') }}">
+        </div>
+        <div>
+            <label for="end_date">Tanggal Akhir</label>
+            <input type="date" id="end_date" name="end_date" value="{{ request.args.get('end_date', '') }}">
+        </div>
+        <div>
+            <label for="user_id">Kapster</label>
+            <select id="user_id" name="user_id">
+                <option value="">Semua Kapster</option>
+                {% for u in users %}
+                <option value="{{ u.id }}" {% if request.args.get('user_id')|int == u.id %}selected{% endif %}>
+                    {{ u.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="btn">Filter</button>
+            <a href="{{ url_for('admin.transactions_list') }}" class="btn btn-secondary">Reset</a>
+        </div>
+    </form>
 </div>
-{% endif %}
+
+<!-- Transaction List -->
+<div class="card">
+    <h3>Data Transaksi ({{ pagination.total }})</h3>
+    
+    {% if txs %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Invoice</th>
+                    <th>Tanggal</th>
+                    <th>Pelanggan</th>
+                    <th>Kapster</th>
+                    <th class="text-right">Total</th>
+                    <th>Pembayaran</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in txs %}
+                <tr>
+                    <td>{{ tx.invoice_code or ("INV-" ~ tx.created_at.strftime("%d/%m/%Y") ~ "-" ~ (tx.invoice_seq or "XXX")) }}</td>
+                    <td>{{ tx.created_at.strftime("%d-%m-%Y %H:%M") }}</td>
+                    <td>{{ tx.customer_name }}</td>
+                    <td>{{ tx.user.name }}</td>
+                    <td class="text-right">Rp {{ "{:,}".format(tx.total) }}</td>
+                    <td>{{ tx.payment_type|upper }}</td>
+                    <td>
+                        <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank" class="btn btn-small">
+                            📄 Nota
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination.pages > 1 %}
+    <div class="pagination">
+        {% if pagination.has_prev %}
+            <a href="?page={{ pagination.prev_num }}{% if request.args.get('start_date') %}&start_date={{ request.args.get('start_date') }}{% endif %}{% if request.args.get('end_date') %}&end_date={{ request.args.get('end_date') }}{% endif %}{% if request.args.get('user_id') %}&user_id={{ request.args.get('user_id') }}{% endif %}" class="btn">
+                &laquo; Prev
+            </a>
+        {% endif %}
+        
+        <span class="pagination-info">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+        
+        {% if pagination.has_next %}
+            <a href="?page={{ pagination.next_num }}{% if request.args.get('start_date') %}&start_date={{ request.args.get('start_date') }}{% endif %}{% if request.args.get('end_date') %}&end_date={{ request.args.get('end_date') }}{% endif %}{% if request.args.get('user_id') %}&user_id={{ request.args.get('user_id') }}{% endif %}" class="btn">
+                Next &raquo;
+            </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <p class="no-data">Tidak ada transaksi ditemukan.</p>
+    {% endif %}
+</div>
 {% endblock %}

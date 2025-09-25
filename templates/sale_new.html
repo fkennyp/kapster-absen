@@ -4,23 +4,32 @@
 <div class="sale-form-container">
     <div class="sale-form">
         <h1>Transaksi Baru</h1>
-
+        
         <form method="post" class="form" id="saleForm" target="_blank">
             <!-- Customer Information -->
             <div class="card">
                 <h3>Informasi Pelanggan</h3>
+                
+                <div class="form-group">
+                    <label for="customer_name">Nama Pelanggan *</label>
+                    <input type="text" name="customer_name" id="customer_name" required 
+                           placeholder="Masukkan nama pelanggan">
+                    <span id="nameError" class="error-message">Nama harus diisi</span>
+                </div>
 
-                <label>Nama Pelanggan *</label>
-                <input type="text" name="customer_name" id="customer_name" required
-                    placeholder="Masukkan nama pelanggan">
-                <span id="nameError" style="color:red;display:none;">Nama harus diisi</span>
+                <div class="form-group">
+                    <label for="customer_email">Email Customer (opsional)</label>
+                    <input id="customer_email" name="customer_email" type="email" 
+                           placeholder="nama@email.com">
+                    <span id="emailError" class="error-message">Format email tidak valid</span>
+                </div>
 
-                <label for="customer_email">Email Customer (opsional)</label>
-                <input id="customer_email" name="customer_email" type="email" placeholder="nama@email.com">
-
-                <label for="customer_phone">No. HP (opsional)</label>
-                <input id="customer_phone" name="customer_phone" type="tel" placeholder="08xxxxxxxxxx">
-                <small id="visitInfo" class="text-muted">Jumlah kunjungan: -</small>
+                <div class="form-group">
+                    <label for="customer_phone">No. HP (opsional)</label>
+                    <input id="customer_phone" name="customer_phone" type="tel" 
+                           placeholder="08xxxxxxxxxx">
+                    <small id="visitInfo" class="visit-info">Jumlah kunjungan: -</small>
+                </div>
             </div>
 
             <!-- Services Selection -->
@@ -56,28 +65,30 @@
             <!-- Payment Information -->
             <div class="card">
                 <h3>Informasi Pembayaran</h3>
-
-                <label>Tipe Pembayaran
+                
+                <div class="form-group">
+                    <label for="payType">Tipe Pembayaran</label>
                     <select name="payment_type" id="payType" onchange="toggleCash()">
                         <option value="cash">Cash</option>
                         <option value="qris">QRIS</option>
                     </select>
-                </label>
-
-                <div id="cashWrap" style="display:none;">
-                    <label>Jumlah Dibayarkan</label>
-                    <input type="number" name="cash_given" id="cashGiven" min="0"
-                        placeholder="Masukkan jumlah pembayaran">
-                    <span id="cashError" style="color:red;display:none;">Jumlah yang dibayarkan masih kurang dari
-                        total</span>
+                </div>
+                
+                <div id="cashWrap">
+                    <div class="form-group">
+                        <label for="cashGiven">Jumlah Dibayarkan</label>
+                        <input type="number" name="cash_given" id="cashGiven" min="0" 
+                               placeholder="Masukkan jumlah pembayaran">
+                        <span id="cashError" class="error-message">Jumlah yang dibayarkan masih kurang dari total</span>
+                    </div>
                 </div>
 
-                <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                    <div style="font-size: 18px; font-weight: bold;">
-                        Total: Rp <span id="total">0</span>
+                <div class="total-display">
+                    <div class="total-amount">
+                        <strong>Total: Rp <span id="total">0</span></strong>
                     </div>
-                    <div id="changeWrap" style="display:none; margin-top: 10px;">
-                        Kembalian: Rp <span id="change">0</span>
+                    <div id="changeWrap">
+                        <strong>Kembalian: Rp <span id="change">0</span></strong>
                     </div>
                 </div>
             </div>
@@ -88,7 +99,17 @@
 </div>
 
 <script type="text/javascript">
-    // JavaScript code remains the same as before
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hide all error messages initially
+        document.getElementById('nameError').style.display = 'none';
+        document.getElementById('emailError').style.display = 'none';
+        document.getElementById('cashError').style.display = 'none';
+        
+        toggleCash();
+        recalc();
+    });
+
     function getQtyWraps() {
         return Array.from(document.querySelectorAll('.qty-wrap'));
     }
@@ -96,23 +117,28 @@
     function incQty(btn) {
         const wrap = btn.closest('.qty-wrap');
         const input = wrap.querySelector('.qty-input');
-        input.value = (parseInt(input.value || '0') + 1);
+        const currentValue = parseInt(input.value) || 0;
+        input.value = currentValue + 1;
         recalc();
     }
 
     function decQty(btn) {
         const wrap = btn.closest('.qty-wrap');
         const input = wrap.querySelector('.qty-input');
-        input.value = Math.max(0, (parseInt(input.value || '0') - 1));
+        const currentValue = parseInt(input.value) || 0;
+        input.value = Math.max(0, currentValue - 1);
         recalc();
     }
 
     function totalCalc() {
         let total = 0;
         getQtyWraps().forEach(wrap => {
-            const price = parseInt(wrap.dataset.price || '0');
-            const q = parseInt(wrap.querySelector('.qty-input').value || '0');
-            if (q > 0) total += price * q;
+            const price = parseInt(wrap.dataset.price) || 0;
+            const qtyInput = wrap.querySelector('.qty-input');
+            const qty = parseInt(qtyInput.value) || 0;
+            if (qty > 0) {
+                total += price * qty;
+            }
         });
         return total;
     }
@@ -120,10 +146,13 @@
     function getCustomerVisits() {
         const phone = document.getElementById('customer_phone').value.trim();
         const visitInfo = document.getElementById('visitInfo');
-
-        if (phone) {
+        
+        if (phone && phone.length >= 8) {
             fetch(`/sales/customer-visits?phone=${encodeURIComponent(phone)}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
                 .then(data => {
                     if (data.visits > 0) {
                         visitInfo.textContent = `Jumlah kunjungan: ${data.visits}`;
@@ -134,6 +163,7 @@
                     }
                 })
                 .catch(error => {
+                    console.error('Error fetching visits:', error);
                     visitInfo.textContent = 'Jumlah kunjungan: -';
                     visitInfo.style.color = '#6b7280';
                 });
@@ -143,85 +173,123 @@
         }
     }
 
+    function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
     function recalc() {
         const total = totalCalc();
-        document.getElementById('total').innerText = total.toLocaleString('id-ID');
+        document.getElementById('total').textContent = total.toLocaleString('id-ID');
 
         const payType = document.getElementById('payType').value;
-        const btn = document.getElementById('submitBtn');
+        const submitBtn = document.getElementById('submitBtn');
         const nameVal = document.getElementById('customer_name').value.trim();
         const emailVal = document.getElementById('customer_email').value.trim();
 
-        let valid = true;
+        let isValid = true;
 
-        // validasi nama
+        // Validasi nama pelanggan (wajib)
+        const nameError = document.getElementById('nameError');
         if (!nameVal) {
-            document.getElementById('nameError').style.display = 'inline';
-            valid = false;
+            nameError.style.display = 'block';
+            nameError.textContent = 'Nama pelanggan harus diisi';
+            isValid = false;
         } else {
-            document.getElementById('nameError').style.display = 'none';
+            nameError.style.display = 'none';
         }
 
-        // validasi email (opsional tapi kalau diisi harus valid)
-        const emailHelp = document.getElementById('emailHelp');
+        // Validasi email (opsional, tapi jika diisi harus valid)
+        const emailError = document.getElementById('emailError');
         if (emailVal) {
-            const regex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-            if (!regex.test(emailVal)) {
-                if (emailHelp) {
-                    emailHelp.classList.remove('hidden');
-                }
-                valid = false;
+            if (!validateEmail(emailVal)) {
+                emailError.style.display = 'block';
+                emailError.textContent = 'Format email tidak valid. Contoh: nama@email.com';
+                isValid = false;
             } else {
-                if (emailHelp) {
-                    emailHelp.classList.add('hidden');
-                }
+                emailError.style.display = 'none';
             }
         } else {
-            if (emailHelp) {
-                emailHelp.classList.add('hidden');
-            }
+            emailError.style.display = 'none';
         }
 
-        // validasi cash
+        // Validasi cash payment
+        const cashError = document.getElementById('cashError');
+        const changeWrap = document.getElementById('changeWrap');
+        
         if (payType === 'cash') {
-            const cg = document.getElementById('cashGiven');
-            const cash = parseInt(cg.value || '0');
-            const change = (cash > 0) ? (cash - total) : 0;
-            document.getElementById('change').innerText = change.toLocaleString('id-ID');
-
-            if (cash < total) {
-                document.getElementById('cashError').style.display = 'inline';
-                valid = false;
+            const cashGiven = parseInt(document.getElementById('cashGiven').value) || 0;
+            const change = cashGiven - total;
+            
+            document.getElementById('change').textContent = Math.max(0, change).toLocaleString('id-ID');
+            
+            if (cashGiven <= 0) {
+                cashError.style.display = 'block';
+                cashError.textContent = 'Jumlah pembayaran harus diisi';
+                isValid = false;
+            } else if (cashGiven < total) {
+                cashError.style.display = 'block';
+                cashError.textContent = `Jumlah yang dibayarkan kurang dari total (Rp ${total.toLocaleString('id-ID')})`;
+                isValid = false;
             } else {
-                document.getElementById('cashError').style.display = 'none';
+                cashError.style.display = 'none';
             }
+            changeWrap.style.display = 'block';
         } else {
-            document.getElementById('cashError').style.display = 'none';
+            cashError.style.display = 'none';
+            changeWrap.style.display = 'none';
         }
 
-        // minimal harus ada 1 layanan dipilih
+        // Validasi minimal 1 layanan dipilih
         if (total === 0) {
-            valid = false;
+            isValid = false;
         }
 
-        // enable/disable tombol submit
-        btn.disabled = !valid;
+        // Enable/disable submit button
+        submitBtn.disabled = !isValid;
+        
+        // Visual feedback untuk button
+        if (isValid) {
+            submitBtn.style.backgroundColor = '#111827';
+            submitBtn.style.cursor = 'pointer';
+        } else {
+            submitBtn.style.backgroundColor = '#9ca3af';
+            submitBtn.style.cursor = 'not-allowed';
+        }
     }
 
     function toggleCash() {
         const payType = document.getElementById('payType').value;
-        document.getElementById('cashWrap').style.display = (payType === 'cash') ? 'block' : 'none';
-        document.getElementById('changeWrap').style.display = (payType === 'cash') ? 'block' : 'none';
+        const cashWrap = document.getElementById('cashWrap');
+        const changeWrap = document.getElementById('changeWrap');
+        
+        if (payType === 'cash') {
+            cashWrap.style.display = 'block';
+            changeWrap.style.display = 'block';
+        } else {
+            cashWrap.style.display = 'none';
+            changeWrap.style.display = 'none';
+            // Reset cash field when not cash payment
+            document.getElementById('cashGiven').value = '';
+        }
         recalc();
     }
 
-    // Event listeners
+    // Real-time validation
+    document.getElementById('customer_name').addEventListener('input', recalc);
     document.getElementById('customer_email').addEventListener('input', recalc);
-    document.getElementById('customer_phone').addEventListener('input', function () {
+    document.getElementById('customer_phone').addEventListener('input', function() {
         getCustomerVisits();
-        recalc();
     });
-
-    toggleCash();
+    document.getElementById('cashGiven').addEventListener('input', recalc);
+    
+    // Validasi saat form submit (additional safety)
+    document.getElementById('saleForm').addEventListener('submit', function(e) {
+        recalc();
+        if (document.getElementById('submitBtn').disabled) {
+            e.preventDefault();
+            alert('Harap perbaiki error sebelum melanjutkan.');
+        }
+    });
 </script>
 {% endblock %}

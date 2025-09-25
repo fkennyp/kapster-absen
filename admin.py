@@ -106,28 +106,46 @@ def admin_dashboard():
 def transactions_list():
     require_admin()
 
-    # filter ringan (opsional)
+    # Get filter parameters
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
     q_user = request.args.get('user_id', type=int)
     page = request.args.get('page', 1, type=int)
     per_page = 20
 
+    # Build query
     query = Transaction.query.join(User, User.id == Transaction.user_id)
 
+    # Apply date filters
+    if start_date:
+        query = query.filter(Transaction.created_at >= start_date)
+    if end_date:
+        # Add 1 day to include the end date fully
+        from datetime import datetime, timedelta
+        try:
+            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+            query = query.filter(Transaction.created_at < end_date_obj)
+        except ValueError:
+            # Handle invalid date format
+            pass
+
+    # Apply user filter
     if q_user:
         query = query.filter(Transaction.user_id == q_user)
 
-    # urut terbaru dulu
+    # Order by latest first
     query = query.order_by(Transaction.created_at.desc())
 
+    # Pagination
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
     txs = pagination.items
 
-    users = User.query.order_by(User.name.asc()).all()
+    # Get active kapsters for filter dropdown
+    users = User.query.filter_by(role='kapster', is_active_user=True).order_by(User.name.asc()).all()
 
     return render_template(
-        'admin/transactions_list.html',
+        'admin/transactions_list.html',  # Sesuaikan path ke subfolder admin
         txs=txs,
         users=users,
-        user_id=q_user,
         pagination=pagination
     )
