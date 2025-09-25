@@ -2,19 +2,18 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}Kapster Absen{% endblock %}</title>
-    <!-- sesudah -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Kapster Absen{% endblock %}</title>
+  <!-- sesudah -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
 </head>
 
 <body>
   <!-- FAB hamburger (mobile) -->
-  <button class="sb-fab" type="button" aria-label="Menu"
-          onclick="document.body.classList.toggle('sb-open')">☰</button>
+  <button class="sb-fab" type="button" aria-label="Menu" onclick="document.body.classList.toggle('sb-open')">☰</button>
 
   <!-- Overlay gelap -->
   <div class="sb-overlay" onclick="document.body.classList.remove('sb-open')"></div>
@@ -33,37 +32,37 @@
 
       <nav class="sb-nav">
         {% if current_user.is_authenticated and current_user.role == 'admin' %}
-          <a class="sb-link" href="/admin/dashboard">Dashboard</a>
-          <a class="sb-link" href="/admin/users">Users</a>
-          <a class="sb-link" href="/reports/">Reports</a>
-          <a class="sb-link" href="/admin/transactions">List Transaksi</a>
-          <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Buat Nota</a>
+        <a class="sb-link" href="/admin/dashboard">Dashboard</a>
+        <a class="sb-link" href="/admin/users">Users</a>
+        <a class="sb-link" href="/reports/">Reports</a>
+        <a class="sb-link" href="/admin/transactions">List Transaksi</a>
+        <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Buat Nota</a>
         {% elif current_user.is_authenticated and current_user.role == 'kapster' %}
-          <a class="sb-link" href="/attendance">Attendance</a>
-          {% if is_working_now %}
-            <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Transaksi</a>
-          {% endif %}
+        <a class="sb-link" href="/attendance">Attendance</a>
+        {% if is_working_now %}
+        <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Transaksi</a>
+        {% endif %}
         {% endif %}
       </nav>
 
       <div class="sb-footer">
         {% if current_user.is_authenticated %}
-          <a class="sb-logout" href="/logout">Logout</a>
+        <a class="sb-logout" href="/logout">Logout</a>
         {% endif %}
       </div>
       <!-- HAPUS tombol sb-toggle lama di sini -->
     </aside>
 
-    <!-- KONTEN (pindahkan ke dalam .app & pakai .content) -->
+    <!-- Di dalam main.content -->
     <main class="content">
       <div class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-          <div class="flash">
-            {% for cat,msg in messages %}
-              <div class="flash-item {{ cat }}">{{ msg }}</div>
-            {% endfor %}
-          </div>
+        <div class="flash">
+          {% for cat,msg in messages %}
+          <div class="flash-item {{ cat }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
         {% endif %}
         {% endwith %}
 

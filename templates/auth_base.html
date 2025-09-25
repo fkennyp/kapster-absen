@@ -17,17 +17,31 @@
     </header>
 
     <main class="auth-content">
-        <div class="login-box">
-            <h2>Login</h2>
-            <form method="post">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username">
+        <!-- Container utama yang memusatkan semua konten -->
+        <div class="auth-container">
+            <!-- Flash messages - ditempatkan di dalam container yang sama -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="auth-flash">
+                {% for cat,msg in messages %}
+                <div class="flash-item {{ cat }}">{{ msg }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
 
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password">
+            <div class="login-box">
+                <h2>Login</h2>
+                <form method="post">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
 
-                <button type="submit" class="btn">Login</button>
-            </form>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+
+                    <button type="submit" class="btn">Login</button>
+                </form>
+            </div>
         </div>
     </main>
 

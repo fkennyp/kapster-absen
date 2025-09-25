@@ -15,8 +15,8 @@
     <label for="customer_phone">No. HP (opsional)</label>
     <input id="customer_phone" name="customer_phone" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx"
         pattern="^[0-9+\s-]{8,15}$" />
-    <small class="text-muted">Isi kalau mau track kunjungan otomatis.</small>
-
+    <!-- Tampilkan info kunjungan -->
+    <small id="visitInfo" class="text-muted">Jumlah kunjungan: -</small>
 
     <div class="card">
         <h3>Pilih Layanan</h3>
@@ -96,6 +96,33 @@
         return total;
     }
 
+    // Fungsi untuk mendapatkan info kunjungan customer
+    function getCustomerVisits() {
+        const phone = document.getElementById('customer_phone').value.trim();
+        const visitInfo = document.getElementById('visitInfo');
+        
+        if (phone) {
+            fetch(`/sales/customer-visits?phone=${encodeURIComponent(phone)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.visits > 0) {
+                        visitInfo.textContent = `Jumlah kunjungan: ${data.visits}`;
+                        visitInfo.style.color = 'green';
+                    } else {
+                        visitInfo.textContent = 'Pelanggan baru';
+                        visitInfo.style.color = 'blue';
+                    }
+                })
+                .catch(error => {
+                    visitInfo.textContent = 'Jumlah kunjungan: -';
+                    visitInfo.style.color = '#6b7280';
+                });
+        } else {
+            visitInfo.textContent = 'Jumlah kunjungan: -';
+            visitInfo.style.color = '#6b7280';
+        }
+    }
+
     function recalc() {
         const total = totalCalc();
         document.getElementById('total').innerText = total.toLocaleString('id-ID');
@@ -162,7 +189,13 @@
         recalc();
     }
 
+    // Event listeners
     document.getElementById('customer_email').addEventListener('input', recalc);
+    document.getElementById('customer_phone').addEventListener('input', function() {
+        getCustomerVisits();
+        recalc();
+    });
+    
     toggleCash();
 </script>
 {% endblock %}

@@ -341,3 +341,23 @@ def receipt_pdf(tx_id):
         max_age=0,  # hint no-cache
     )
     
+@bp.route('/customer-visits')
+@login_required
+def customer_visits():
+    """Endpoint untuk mendapatkan jumlah kunjungan customer berdasarkan nomor HP"""
+    phone = request.args.get('phone', '').strip()
+    
+    if not phone:
+        return {'visits': 0}
+    
+    # Cari customer berdasarkan nomor HP
+    customer = Customer.query.filter_by(phone=phone).first()
+    
+    if not customer:
+        return {'visits': 0}
+    
+    # Hitung jumlah transaksi sebelumnya
+    prev_count = db.session.query(db.func.count(Transaction.id))\
+        .filter(Transaction.customer_id == customer.id).scalar() or 0
+    
+    return {'visits': prev_count}
