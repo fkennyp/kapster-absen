@@ -1,6 +1,6 @@
 /* ===== components.css ===== */
 
-/* Form */
+/* ===== BASE STYLES ===== */
 .form {
   display: grid;
   gap: 12px;
@@ -19,7 +19,7 @@ label {
   font-weight: 600;
 }
 
-/* Inputs & Buttons */
+/* ===== INPUTS & BUTTONS ===== */
 input,
 select,
 button,
@@ -55,6 +55,7 @@ button[disabled] {
   cursor: not-allowed;
 }
 
+/* ===== COMPONENTS ===== */
 /* Card */
 .card {
   background: #fff;
@@ -88,7 +89,7 @@ button[disabled] {
   background: #f9fafb;
 }
 
-/* Flash / alerts */
+/* Flash Messages */
 .flash {
   margin-bottom: 12px;
 }
@@ -99,23 +100,12 @@ button[disabled] {
   margin-bottom: 8px;
 }
 
-.flash-item.success {
-  background: #dcfce7;
-}
+.flash-item.success { background: #dcfce7; }
+.flash-item.warning { background: #fef3c7; }
+.flash-item.danger  { background: #fee2e2; }
+.flash-item.info    { background: #dbeafe; }
 
-.flash-item.warning {
-  background: #fef3c7;
-}
-
-.flash-item.danger {
-  background: #fee2e2;
-}
-
-.flash-item.info {
-  background: #dbeafe;
-}
-
-/* Qty controls */
+/* Quantity Controls */
 .qty-wrap {
   display: inline-flex;
   align-items: center;
@@ -139,19 +129,7 @@ button[disabled] {
   transform: translateY(1px);
 }
 
-/* Global spacing */
-.card,
-.table,
-.form {
-  margin: 20px 0 24px;
-}
-
-h1,
-h2 {
-  margin-bottom: 16px;
-}
-
-/* Filter form (Reports) */
+/* Filter Form */
 .filter-form {
   display: flex;
   flex-wrap: wrap;
@@ -177,7 +155,19 @@ h2 {
   min-width: 160px;
 }
 
-/* Auth header */
+/* ===== LAYOUT & SPACING ===== */
+.card,
+.table,
+.form {
+  margin: 20px 0 24px;
+}
+
+h1, h2 {
+  margin-bottom: 16px;
+}
+
+/* ===== AUTHENTICATION STYLES ===== */
+/* Auth Header */
 .auth-header {
   background: #111827;
   color: #fff;
@@ -201,18 +191,15 @@ h2 {
   font-size: 20px;
 }
 
-/* Auth content wrapper - FIXED */
+/* Auth Content */
 .auth-content {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  /* Ubah dari center ke flex-start */
   min-height: calc(100vh - 60px);
   padding: 40px 20px;
-  /* Tambahkan padding */
 }
 
-/* Container untuk memusatkan flash dan login box */
 .auth-container {
   display: flex;
   flex-direction: column;
@@ -222,7 +209,7 @@ h2 {
   margin: 0 auto;
 }
 
-/* Flash messages styling untuk halaman auth - FIXED */
+/* Auth Flash Messages */
 .auth-flash {
   width: 100%;
   max-width: 350px;
@@ -263,7 +250,7 @@ h2 {
   border: 1px solid #bfdbfe;
 }
 
-/* Login box - FIXED positioning */
+/* Login Box */
 .login-box {
   background: #fff;
   padding: 24px 28px;
@@ -272,7 +259,6 @@ h2 {
   width: 100%;
   max-width: 350px;
   text-align: center;
-  /* Pastikan tidak ada margin yang menyebabkan pergeseran */
   margin: 0;
 }
 
@@ -293,62 +279,7 @@ h2 {
   margin-bottom: 14px;
 }
 
-/* Mobile-friendly defaults */
-@media (max-width: 480px) {
-
-  html,
-  body {
-    font-size: 16px;
-  }
-
-  .auth-header {
-    padding: 14px 16px;
-    font-size: 18px;
-  }
-
-  .auth-content {
-    padding: 20px 16px;
-    align-items: flex-start;
-    min-height: calc(100vh - 56px);
-  }
-
-  .auth-container {
-    max-width: 100%;
-  }
-
-  .auth-flash {
-    max-width: 100%;
-  }
-
-  .login-box {
-    width: 100%;
-    max-width: 100%;
-    padding: 16px 18px;
-  }
-}
-
-/* Touch-friendly */
-.login-box input,
-.login-box button,
-.login-box select {
-  min-height: 44px;
-  line-height: 1.2;
-  font-size: 1rem;
-}
-
-.login-box input {
-  padding: 10px 12px;
-}
-
-.login-box .btn,
-.login-box button[type="submit"] {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 8px;
-  font-weight: 600;
-}
-
-/* Sale New Form Styling */
+/* ===== SALE FORM STYLES ===== */
 .sale-form-container {
   display: flex;
   justify-content: center;
@@ -361,7 +292,7 @@ h2 {
   margin: 0 auto;
 }
 
-/* Form elements width adjustment */
+/* Form Elements */
 .sale-form .form {
   gap: 16px;
 }
@@ -382,7 +313,7 @@ h2 {
   box-sizing: border-box;
 }
 
-/* Table in sale form */
+/* Table in Sale Form */
 .sale-form .table {
   margin: 20px 0;
 }
@@ -409,13 +340,13 @@ h2 {
   width: 35%;
 }
 
-/* Card styling in sale form */
+/* Card Styling */
 .sale-form .card {
   padding: 20px;
   margin: 20px 0;
 }
 
-/* Button styling */
+/* Button Styling */
 .sale-form button[type="submit"] {
   width: 100%;
   max-width: 300px;
@@ -425,12 +356,33 @@ h2 {
   font-size: 16px;
 }
 
-/* Qty controls adjustment */
+/* Quantity Controls */
 .sale-form .qty-wrap {
   justify-content: center;
 }
 
-/* Responsive adjustments */
+/* ===== TOUCH-FRIENDLY STYLES ===== */
+.login-box input,
+.login-box button,
+.login-box select {
+  min-height: 44px;
+  line-height: 1.2;
+  font-size: 1rem;
+}
+
+.login-box input {
+  padding: 10px 12px;
+}
+
+.login-box .btn,
+.login-box button[type="submit"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
   .sale-form {
     max-width: 100%;
@@ -448,5 +400,36 @@ h2 {
 
   .sale-form .qty-input {
     width: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  html, body {
+    font-size: 16px;
+  }
+
+  .auth-header {
+    padding: 14px 16px;
+    font-size: 18px;
+  }
+
+  .auth-content {
+    padding: 20px 16px;
+    align-items: flex-start;
+    min-height: calc(100vh - 56px);
+  }
+
+  .auth-container {
+    max-width: 100%;
+  }
+
+  .auth-flash {
+    max-width: 100%;
+  }
+
+  .login-box {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px 18px;
   }
 }
