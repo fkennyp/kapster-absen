@@ -1,0 +1,70 @@
+/* ===== sidebar-mobile.css ===== */
+
+/* Sidebar off-canvas (mobile) */
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    inset: 0 40% 0 0;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 50;
+  }
+  
+  body.sb-open .sidebar {
+    transform: translateX(0);
+  }
+  
+  body.sb-open {
+    overflow: hidden;
+  }
+}
+
+/* Floating hamburger (FAB) */
+.sb-fab {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .sb-fab {
+    display: inline-flex;
+    position: fixed;
+    top: var(--spacing-xl);
+    left: var(--spacing-xl);
+    z-index: 60;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: var(--color-dark);
+    color: var(--color-white);
+    font-size: 18px;
+    line-height: 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  body.sb-open .sb-fab {
+    left: calc(60% + var(--spacing-xl));
+  }
+}
+
+/* Overlay */
+.sb-overlay {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .sb-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 40;
+  }
+  
+  body.sb-open .sb-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
