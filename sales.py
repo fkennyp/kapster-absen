@@ -6,7 +6,7 @@ from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
-from models import db, Service, Transaction, TransactionItem, tznow, Attendance
+from models import db, Service, Transaction, TransactionItem, tznow, Attendance, Customer
 from config import Config
 from datetime import timedelta, datetime
 from functools import wraps 
@@ -52,13 +52,13 @@ def new_sale():
         if not att or not att.check_in:
             flash("Kamu belum check-in, transaksi belum bisa dibuat.", "danger")
             # arahkan ke endpoint yang ADA: 'attendance.check_in'
-            return redirect(url_for("attendance.check_in"))
+            return redirect(url_for("attendance.my_attendance"))
 
         # sudah check-out → blok
         if att.check_out:
             flash("Kamu sudah check-out, transaksi tidak bisa dibuat lagi.", "danger")
             # boleh tetap arahkan ke halaman absen (check-in page) biar user paham konteks
-            return redirect(url_for("attendance.check_in"))
+            return redirect(url_for("attendance.my_attendance"))
     # --- /VALIDASI ---
     
     services = Service.query.filter_by(is_active=True).order_by(Service.name.asc()).all()
@@ -71,6 +71,7 @@ def new_sale():
         cash_given_raw = request.form.get('cash_given')  # boleh kosong untuk non-cash
         customer_name = (request.form.get('customer_name') or '').strip()
         customer_email = request.form.get('customer_email') or None
+        customer_phone = (request.form.get('customer_phone') or '').strip()
         barber_name = Config.BARBER_NAME
 
         # --- validasi 1: nama wajib ---
@@ -134,6 +135,32 @@ def new_sale():
         next_seq = (max_seq or 0) + 1
         invoice_code = f"INV-{now_local.strftime('%d/%m/%Y')}-{next_seq:03d}"
         
+        # --- resolve CUSTOMER ---
+        cust = None
+        if customer_phone:
+            cust = Customer.query.filter_by(phone=customer_phone).first()
+        elif customer_name:
+            # fallback by name jika phone kosong (boleh ada duplikat nama; kita ambil yang pertama)
+            cust = Customer.query.filter_by(name=customer_name).first()
+
+        if not cust:
+            # create baru
+            cust = Customer(
+                name=customer_name or "(Tanpa Nama)",
+                phone=customer_phone if customer_phone else None,
+                created_at=tznow(),
+                updated_at=tznow(),
+            )
+            db.session.add(cust)
+            db.session.flush()  # dapatkan cust.id
+
+        # hitung visit_number: jumlah transaksi sebelumnya + 1
+        prev_count = db.session.query(db.func.count(Transaction.id))\
+            .filter(Transaction.customer_id == cust.id).scalar() or 0
+        visit_number = prev_count + 1
+        cust.touch()  # update updated_at
+
+        
         # --- simpan transaksi ---
         tx = Transaction(
             user_id=current_user.id,
@@ -146,7 +173,9 @@ def new_sale():
             change_amount=change,
             created_at=tznow(),
             invoice_seq=next_seq,
-            invoice_code=invoice_code
+            invoice_code=invoice_code,
+            customer_id=cust.id,
+            visit_number=visit_number,
         )
         db.session.add(tx)
         db.session.flush()  # dapatkan tx.id
@@ -235,6 +264,10 @@ def receipt_pdf(tx_id):
     draw(f"Kapster : {tx.user.name}")
     if tx.customer_name:
         draw(f"Pelanggan : {tx.customer_name}")
+    # tampilkan jumlah kunjungan jika tersedia
+    if getattr(tx, "visit_number", None):
+        draw(f"Kunjungan ke : {tx.visit_number}")
+
     draw(f"Pembayaran : {tx.payment_type.upper()}")
     # garis
     p.line(x_l, y, x_r, y); y -= line_h

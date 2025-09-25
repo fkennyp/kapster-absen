@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
 from flask_login import login_required, current_user
 from flask_mail import Mail, Message
 from models import db, User, Attendance, tznow
@@ -82,10 +82,12 @@ def create_app():
             working_now = att and att.check_in and not att.check_out
 
             allowed_endpoints = (
-                "attendance.check_in",
-                "attendance.my_attendance",
-                "auth.logout",
-                "static",
+                "attendance.check_in",        # biarin tetap di whitelist untuk POST submit
+            "attendance.check_out",       # tambahkan juga kalau perlu
+            "attendance.my_attendance",   # halaman GET yang aman
+            "auth.login",                 # biar bisa lihat login
+            "auth.logout",
+            "static",
             )
 
             if not working_now and request.endpoint not in allowed_endpoints:

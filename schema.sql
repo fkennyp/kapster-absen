@@ -71,9 +71,33 @@ CREATE TABLE IF NOT EXISTS transaction_items (
   FOREIGN KEY (service_id) REFERENCES services(id)
 ) ENGINE=InnoDB;
 
+-- =========================
+-- CUSTOMERS
+-- =========================
+CREATE TABLE IF NOT EXISTS customers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  phone VARCHAR(30) NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  CONSTRAINT uq_customers_phone UNIQUE (phone)
+) ENGINE=InnoDB;
+
+-- Tambah kolom pada TRANSACTIONS untuk relasi & freeze angka kunjungan
+ALTER TABLE transactions
+  ADD COLUMN customer_id INT NULL,
+  ADD COLUMN visit_number INT NULL,
+  ADD CONSTRAINT fk_tx_customer FOREIGN KEY (customer_id) REFERENCES customers(id);
+
 -- SEED layanan (aman karena UNIQUE name)
 INSERT INTO services (name, price, is_active) VALUES
 ('Potong Rambut', 35000, TRUE),
 ('Shaving', 15000, TRUE),
 ('Bleaching', 120000, TRUE)
 ON DUPLICATE KEY UPDATE price=VALUES(price), is_active=VALUES(is_active);
+
+-- SEED admin user
+INSERT INTO users (name, username, password_hash, role, is_active_user)
+VALUES ('Administrator', 'admin',
+'pbkdf2:sha256:600000$6n6oFqfP$2f2e4b6b7c9eac4d0fcab3f2f9bc6d1c9d5c0b3c0be78f0a0b4b8f1f4d6e2c1a',
+'admin', TRUE);

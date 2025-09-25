@@ -58,6 +58,18 @@ class Service(db.Model):
     price = db.Column(db.Integer, nullable=False)
     is_active = db.Column(db.Boolean, default=True)
 
+class Customer(db.Model):
+    __tablename__ = 'customers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(30), unique=True)  # boleh NULL, tapi kalau isi harus unik
+    created_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime, nullable=False)
+
+    def touch(self):
+        self.updated_at = tznow()
+
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'
@@ -73,12 +85,15 @@ class Transaction(db.Model):
     change_amount = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, nullable=False)
 
-    # >>> NEW
     invoice_seq = db.Column(db.Integer)          # urutan per-hari (1,2,3..)
     invoice_code = db.Column(db.String(50))      # tampilan: INV-DD/MM/YYYY-###
     
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=True)
+    visit_number = db.Column(db.Integer)  # freeze "kunjungan ke-X" pada saat transaksi
+    
     user = relationship('User')
     items = relationship('TransactionItem', backref='transaction', cascade='all, delete-orphan')
+    customer = relationship('Customer', lazy='joined')
 
 
 class TransactionItem(db.Model):
