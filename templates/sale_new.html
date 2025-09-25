@@ -1,73 +1,94 @@
 {% extends 'base.html' %}
 {% block title %}Transaksi Baru{% endblock %}
 {% block content %}
-<h1>Transaksi Baru</h1>
-<form method="post" class="form" id="saleForm" target="_blank">
-    <label>Nama Pelanggan</label>
-    <input type="text" name="customer_name" id="customer_name" required>
-    <span id="nameError" style="color:red;display:none;">Nama harus diisi</span>
+<div class="sale-form-container">
+    <div class="sale-form">
+        <h1>Transaksi Baru</h1>
 
-    <label for="customer_email">Email Customer (opsional)</label>
-    <input id="customer_email" name="customer_email" type="email" inputmode="email" autocomplete="email"
-        placeholder="nama@email.com" class="form-control" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" />
-    <small id="emailHelp" class="text-danger hidden">Format email tidak valid.</small>
+        <form method="post" class="form" id="saleForm" target="_blank">
+            <!-- Customer Information -->
+            <div class="card">
+                <h3>Informasi Pelanggan</h3>
 
-    <label for="customer_phone">No. HP (opsional)</label>
-    <input id="customer_phone" name="customer_phone" type="tel" inputmode="tel" placeholder="08xxxxxxxxxx"
-        pattern="^[0-9+\s-]{8,15}$" />
-    <!-- Tampilkan info kunjungan -->
-    <small id="visitInfo" class="text-muted">Jumlah kunjungan: -</small>
+                <label>Nama Pelanggan *</label>
+                <input type="text" name="customer_name" id="customer_name" required
+                    placeholder="Masukkan nama pelanggan">
+                <span id="nameError" style="color:red;display:none;">Nama harus diisi</span>
 
-    <div class="card">
-        <h3>Pilih Layanan</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Layanan</th>
-                    <th>Harga</th>
-                    <th>Qty</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for s in services %}
-                <tr>
-                    <td>{{ s.name }}</td>
-                    <td>{{ "{:,}".format(s.price) }}</td>
-                    <td>
-                        <input type="hidden" name="service_id" value="{{ s.id }}">
-                        <div class="qty-wrap" data-price="{{ s.price }}">
-                            <button type="button" class="qty-btn" onclick="decQty(this)">−</button>
-                            <input class="qty-input" type="number" min="0" name="qty" value="0" readonly>
-                            <button type="button" class="qty-btn" onclick="incQty(this)">+</button>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                <label for="customer_email">Email Customer (opsional)</label>
+                <input id="customer_email" name="customer_email" type="email" placeholder="nama@email.com">
+
+                <label for="customer_phone">No. HP (opsional)</label>
+                <input id="customer_phone" name="customer_phone" type="tel" placeholder="08xxxxxxxxxx">
+                <small id="visitInfo" class="text-muted">Jumlah kunjungan: -</small>
+            </div>
+
+            <!-- Services Selection -->
+            <div class="card">
+                <h3>Pilih Layanan</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Layanan</th>
+                            <th>Harga</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in services %}
+                        <tr>
+                            <td>{{ s.name }}</td>
+                            <td>Rp {{ "{:,}".format(s.price) }}</td>
+                            <td>
+                                <input type="hidden" name="service_id" value="{{ s.id }}">
+                                <div class="qty-wrap" data-price="{{ s.price }}">
+                                    <button type="button" class="qty-btn" onclick="decQty(this)">−</button>
+                                    <input class="qty-input" type="number" min="0" name="qty" value="0" readonly>
+                                    <button type="button" class="qty-btn" onclick="incQty(this)">+</button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Payment Information -->
+            <div class="card">
+                <h3>Informasi Pembayaran</h3>
+
+                <label>Tipe Pembayaran
+                    <select name="payment_type" id="payType" onchange="toggleCash()">
+                        <option value="cash">Cash</option>
+                        <option value="qris">QRIS</option>
+                    </select>
+                </label>
+
+                <div id="cashWrap" style="display:none;">
+                    <label>Jumlah Dibayarkan</label>
+                    <input type="number" name="cash_given" id="cashGiven" min="0"
+                        placeholder="Masukkan jumlah pembayaran">
+                    <span id="cashError" style="color:red;display:none;">Jumlah yang dibayarkan masih kurang dari
+                        total</span>
+                </div>
+
+                <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-size: 18px; font-weight: bold;">
+                        Total: Rp <span id="total">0</span>
+                    </div>
+                    <div id="changeWrap" style="display:none; margin-top: 10px;">
+                        Kembalian: Rp <span id="change">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" disabled>💾 Simpan & Unduh Nota</button>
+        </form>
     </div>
-
-    <div class="card">
-        <label>Tipe Pembayaran
-            <select name="payment_type" id="payType" onchange="toggleCash()">
-                <option value="cash">Cash</option>
-                <option value="qris">QRIS</option>
-            </select>
-        </label>
-        <div id="cashWrap" style="display:none;">
-            <label>Jumlah Dibayarkan</label>
-            <input type="number" name="cash_given" id="cashGiven" min="0" oninput="recalc()">
-            <span id="cashError" style="color:red;display:none;">Jumlah yang dibayarkan masih kurang dari total</span>
-        </div>
-
-        <div><strong>Total: Rp <span id="total">0</span></strong></div>
-        <div id="changeWrap" style="display:none;">Kembalian: Rp <span id="change">0</span></div>
-    </div>
-
-    <button type="submit" id="submitBtn" disabled>💾 Simpan & Unduh Nota</button>
-</form>
+</div>
 
 <script type="text/javascript">
+    // JavaScript code remains the same as before
     function getQtyWraps() {
         return Array.from(document.querySelectorAll('.qty-wrap'));
     }
@@ -96,11 +117,10 @@
         return total;
     }
 
-    // Fungsi untuk mendapatkan info kunjungan customer
     function getCustomerVisits() {
         const phone = document.getElementById('customer_phone').value.trim();
         const visitInfo = document.getElementById('visitInfo');
-        
+
         if (phone) {
             fetch(`/sales/customer-visits?phone=${encodeURIComponent(phone)}`)
                 .then(response => response.json())
@@ -147,13 +167,19 @@
         if (emailVal) {
             const regex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
             if (!regex.test(emailVal)) {
-                emailHelp.classList.remove('hidden');
+                if (emailHelp) {
+                    emailHelp.classList.remove('hidden');
+                }
                 valid = false;
             } else {
-                emailHelp.classList.add('hidden');
+                if (emailHelp) {
+                    emailHelp.classList.add('hidden');
+                }
             }
         } else {
-            emailHelp.classList.add('hidden');
+            if (emailHelp) {
+                emailHelp.classList.add('hidden');
+            }
         }
 
         // validasi cash
@@ -191,11 +217,11 @@
 
     // Event listeners
     document.getElementById('customer_email').addEventListener('input', recalc);
-    document.getElementById('customer_phone').addEventListener('input', function() {
+    document.getElementById('customer_phone').addEventListener('input', function () {
         getCustomerVisits();
         recalc();
     });
-    
+
     toggleCash();
 </script>
 {% endblock %}

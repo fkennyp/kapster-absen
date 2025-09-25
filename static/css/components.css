@@ -6,11 +6,13 @@
   gap: 12px;
   max-width: 560px;
 }
+
 .form.row {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   align-items: end;
 }
+
 label {
   display: grid;
   gap: 6px;
@@ -28,6 +30,7 @@ a.btn {
   border: 1px solid #d1d5db;
   border-radius: 8px;
 }
+
 button,
 a.btn {
   display: inline-flex;
@@ -41,10 +44,12 @@ a.btn {
   text-decoration: none;
   margin: 8px 0;
 }
+
 button:hover,
 a.btn:hover {
   background-color: #1f2937;
 }
+
 button[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
@@ -66,16 +71,19 @@ button[disabled] {
   border-radius: 10px;
   overflow: hidden;
 }
+
 .table th,
 .table td {
   padding: 14px 16px;
   border-bottom: 1px solid #e5e7eb;
   text-align: left;
 }
+
 .table th {
   color: #6b7280;
   font-weight: 700;
 }
+
 .table tr:hover td {
   background: #f9fafb;
 }
@@ -84,15 +92,28 @@ button[disabled] {
 .flash {
   margin-bottom: 12px;
 }
+
 .flash-item {
   padding: 10px 12px;
   border-radius: 8px;
   margin-bottom: 8px;
 }
-.flash-item.success { background: #dcfce7; }
-.flash-item.warning { background: #fef3c7; }
-.flash-item.danger  { background: #fee2e2; }
-.flash-item.info    { background: #dbeafe; }
+
+.flash-item.success {
+  background: #dcfce7;
+}
+
+.flash-item.warning {
+  background: #fef3c7;
+}
+
+.flash-item.danger {
+  background: #fee2e2;
+}
+
+.flash-item.info {
+  background: #dbeafe;
+}
 
 /* Qty controls */
 .qty-wrap {
@@ -100,10 +121,12 @@ button[disabled] {
   align-items: center;
   gap: 8px;
 }
+
 .qty-input {
   width: 70px;
   text-align: center;
 }
+
 .qty-btn {
   padding: 4px 10px;
   border-radius: 8px;
@@ -111,6 +134,7 @@ button[disabled] {
   background: #000;
   cursor: pointer;
 }
+
 .qty-btn:active {
   transform: translateY(1px);
 }
@@ -121,7 +145,9 @@ button[disabled] {
 .form {
   margin: 20px 0 24px;
 }
-h1, h2 {
+
+h1,
+h2 {
   margin-bottom: 16px;
 }
 
@@ -133,14 +159,17 @@ h1, h2 {
   gap: 16px;
   margin-bottom: 20px;
 }
+
 .filter-form div {
   display: flex;
   flex-direction: column;
 }
+
 .filter-form label {
   font-weight: 500;
   margin-bottom: 4px;
 }
+
 .filter-form input,
 .filter-form select,
 .filter-form button,
@@ -161,9 +190,11 @@ h1, h2 {
   justify-content: center;
   gap: 10px;
 }
+
 .auth-header .logo-icon {
   font-size: 24px;
 }
+
 .auth-header .logo-text {
   font-family: 'Segoe UI', sans-serif;
   font-weight: 600;
@@ -174,9 +205,11 @@ h1, h2 {
 .auth-content {
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Ubah dari center ke flex-start */
+  align-items: flex-start;
+  /* Ubah dari center ke flex-start */
   min-height: calc(100vh - 60px);
-  padding: 40px 20px; /* Tambahkan padding */
+  padding: 40px 20px;
+  /* Tambahkan padding */
 }
 
 /* Container untuk memusatkan flash dan login box */
@@ -206,26 +239,26 @@ h1, h2 {
   box-sizing: border-box;
 }
 
-.auth-flash .flash-item.success { 
-  background: #dcfce7; 
+.auth-flash .flash-item.success {
+  background: #dcfce7;
   color: #166534;
   border: 1px solid #bbf7d0;
 }
 
-.auth-flash .flash-item.warning { 
-  background: #fef3c7; 
+.auth-flash .flash-item.warning {
+  background: #fef3c7;
   color: #92400e;
   border: 1px solid #fde68a;
 }
 
-.auth-flash .flash-item.danger  { 
-  background: #fee2e2; 
+.auth-flash .flash-item.danger {
+  background: #fee2e2;
   color: #991b1b;
   border: 1px solid #fecaca;
 }
 
-.auth-flash .flash-item.info    { 
-  background: #dbeafe; 
+.auth-flash .flash-item.info {
+  background: #dbeafe;
   color: #1e40af;
   border: 1px solid #bfdbfe;
 }
@@ -235,7 +268,7 @@ h1, h2 {
   background: #fff;
   padding: 24px 28px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 350px;
   text-align: center;
@@ -262,27 +295,31 @@ h1, h2 {
 
 /* Mobile-friendly defaults */
 @media (max-width: 480px) {
-  html, body {
+
+  html,
+  body {
     font-size: 16px;
   }
+
   .auth-header {
     padding: 14px 16px;
     font-size: 18px;
   }
+
   .auth-content {
     padding: 20px 16px;
     align-items: flex-start;
     min-height: calc(100vh - 56px);
   }
-  
+
   .auth-container {
     max-width: 100%;
   }
-  
+
   .auth-flash {
     max-width: 100%;
   }
-  
+
   .login-box {
     width: 100%;
     max-width: 100%;
@@ -309,4 +346,107 @@ h1, h2 {
   padding: 12px 14px;
   border-radius: 8px;
   font-weight: 600;
+}
+
+/* Sale New Form Styling */
+.sale-form-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.sale-form {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Form elements width adjustment */
+.sale-form .form {
+  gap: 16px;
+}
+
+.sale-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.sale-form input[type="text"],
+.sale-form input[type="email"],
+.sale-form input[type="tel"],
+.sale-form input[type="number"],
+.sale-form select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Table in sale form */
+.sale-form .table {
+  margin: 20px 0;
+}
+
+.sale-form .table th,
+.sale-form .table td {
+  padding: 12px;
+  text-align: center;
+}
+
+.sale-form .table th:first-child,
+.sale-form .table td:first-child {
+  text-align: left;
+  width: 40%;
+}
+
+.sale-form .table th:nth-child(2),
+.sale-form .table td:nth-child(2) {
+  width: 25%;
+}
+
+.sale-form .table th:nth-child(3),
+.sale-form .table td:nth-child(3) {
+  width: 35%;
+}
+
+/* Card styling in sale form */
+.sale-form .card {
+  padding: 20px;
+  margin: 20px 0;
+}
+
+/* Button styling */
+.sale-form button[type="submit"] {
+  width: 100%;
+  max-width: 300px;
+  margin: 20px auto;
+  display: block;
+  padding: 12px 24px;
+  font-size: 16px;
+}
+
+/* Qty controls adjustment */
+.sale-form .qty-wrap {
+  justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sale-form {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+
+  .sale-form .table {
+    font-size: 14px;
+  }
+
+  .sale-form .table th,
+  .sale-form .table td {
+    padding: 8px 4px;
+  }
+
+  .sale-form .qty-input {
+    width: 50px;
+  }
 }
