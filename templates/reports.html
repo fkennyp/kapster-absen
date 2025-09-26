@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}Reports{% endblock %}
+{% block title %}Check-in Reports{% endblock %}
 {% block content %}
-<h1>Reports</h1>
+<h1>Check-in Reports</h1>
 
 <!-- Card untuk Filter -->
 <div class="card">
-    <h3>Filter Reports</h3>
+    <h3>Filter Check-in Reports</h3>
     <form method="get" class="filter-form">
         <div>
             <label for="start">Start</label>
@@ -27,8 +27,8 @@
         <div>
             <button type="submit" class="btn">Filter</button>
             <a class="btn"
-               href="/reports/export.csv?start={{ start or '' }}&end={{ end or '' }}&user_id={{ user_id or '' }}">
-               Export CSV
+               href="/reports/export.xlsx?start={{ start or '' }}&end={{ end or '' }}&user_id={{ user_id or '' }}">
+               Export XLSX
             </a>
         </div>
     </form>
@@ -36,7 +36,7 @@
 
 <!-- Card untuk Table -->
 <div class="card">
-    <h3>Data Reports ({{ rows|length }})</h3>
+    <h3>Data Check-in Reports ({{ rows|length }})</h3>
     <table class="table">
         <thead>
             <tr>

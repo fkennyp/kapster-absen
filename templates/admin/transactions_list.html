@@ -31,6 +31,15 @@
             <a href="{{ url_for('admin.transactions_list') }}" class="btn btn-secondary">Reset</a>
         </div>
     </form>
+    
+    <!-- Total Transaksi -->
+    {% if request.args.get('start_date') or request.args.get('end_date') or request.args.get('user_id') %}
+    <div class="total-summary" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+        <h4>Summary Transaksi yang Difilter:</h4>
+        <p><strong>Jumlah Transaksi:</strong> {{ total_count }}</p>
+        <p><strong>Total Nilai Transaksi:</strong> Rp {{ "{:,}".format(total_amount) }}</p>
+    </div>
+    {% endif %}
 </div>
 
 <!-- Transaction List -->
