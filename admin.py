@@ -1,7 +1,13 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, Response
 from flask_login import login_required, current_user
 from sqlalchemy import func
-from models import db, User, Attendance, tznow, Transaction
+from models import db, User, Attendance, tznow, Transaction, TransactionItem, Service
+from io import BytesIO
+import pandas as pd
+from datetime import datetime
+
+import openpyxl
+from openpyxl.styles import Font, PatternFill
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -167,4 +173,99 @@ def transactions_list():
         pagination=pagination,
         total_amount=total_amount,
         total_count=total_count
+    )
+    
+@bp.route('/transactions/export.xlsx')
+@login_required
+def export_transactions_xlsx():
+    """Export data transaksi ke Excel"""
+    require_admin()
+
+    # Get filter parameters
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    q_user = request.args.get('user_id', type=int)
+
+    # Build query
+    query = Transaction.query.join(User, User.id == Transaction.user_id)
+
+    # Apply date filters
+    if start_date:
+        query = query.filter(Transaction.created_at >= start_date)
+    if end_date:
+        from datetime import datetime, timedelta
+        try:
+            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+            query = query.filter(Transaction.created_at < end_date_obj)
+        except ValueError:
+            pass
+
+    # Apply user filter
+    if q_user:
+        query = query.filter(Transaction.user_id == q_user)
+
+    # Order by latest first
+    transactions = query.order_by(Transaction.created_at.desc()).all()
+
+    # Prepare data for Excel
+    data = []
+    for tx in transactions:
+        # Get service details
+        services = []
+        for item in tx.items:
+            services.append(f"{item.service.name} ({item.qty}x Rp {item.price_each:,})")
+        
+        services_str = ", ".join(services)
+        
+        data.append({
+            'Invoice': tx.invoice_code or f"INV-{tx.created_at.strftime('%d/%m/%Y')}-{tx.invoice_seq or 'XXX'}",
+            'Tanggal': tx.created_at.strftime('%Y-%m-%d %H:%M'),
+            'Pelanggan': tx.customer_name,
+            'Kapster': tx.user.name,
+            'Layanan': services_str,
+            'Total': tx.total,
+            'Tipe Pembayaran': tx.payment_type.upper(),
+            'Dibayar': tx.cash_given if tx.payment_type == 'cash' else tx.total,
+            'Kembalian': tx.change_amount if tx.payment_type == 'cash' else 0,
+            'Email Pelanggan': tx.customer_email or '',
+            'Kunjungan Ke': tx.visit_number or 1
+        })
+    
+    # Create DataFrame
+    df = pd.DataFrame(data)
+    
+    # Create Excel file
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name='Data Transaksi', index=False)
+        
+        # Format column widths
+        worksheet = writer.sheets['Data Transaksi']
+        worksheet.column_dimensions['A'].width = 20  # Invoice
+        worksheet.column_dimensions['B'].width = 18  # Tanggal
+        worksheet.column_dimensions['C'].width = 20  # Pelanggan
+        worksheet.column_dimensions['D'].width = 15  # Kapster
+        worksheet.column_dimensions['E'].width = 40  # Layanan
+        worksheet.column_dimensions['F'].width = 15  # Total
+        worksheet.column_dimensions['G'].width = 12  # Tipe Pembayaran
+        worksheet.column_dimensions['H'].width = 15  # Dibayar
+        worksheet.column_dimensions['I'].width = 12  # Kembalian
+        worksheet.column_dimensions['J'].width = 25  # Email
+        worksheet.column_dimensions['K'].width = 12  # Kunjungan
+        
+        # Format header style
+        for cell in worksheet[1]:
+            cell.font = openpyxl.styles.Font(bold=True)
+            cell.fill = openpyxl.styles.PatternFill(start_color="DDDDDD", end_color="DDDDDD", fill_type="solid")
+    
+    output.seek(0)
+    
+    # Generate filename with timestamp
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f"transaksi_export_{timestamp}.xlsx"
+    
+    return Response(
+        output.getvalue(),
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        headers={'Content-Disposition': f'attachment; filename={filename}'}
     )

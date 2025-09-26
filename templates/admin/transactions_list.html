@@ -20,7 +20,7 @@
             <select id="user_id" name="user_id">
                 <option value="">Semua Kapster</option>
                 {% for u in users %}
-                <option value="{{ u.id }}" {% if request.args.get('user_id')|int == u.id %}selected{% endif %}>
+                <option value="{{ u.id }}" {% if request.args.get('user_id')|int==u.id %}selected{% endif %}>
                     {{ u.name }}
                 </option>
                 {% endfor %}
@@ -28,10 +28,15 @@
         </div>
         <div>
             <button type="submit" class="btn">Filter</button>
-            <a href="{{ url_for('admin.transactions_list') }}" class="btn btn-secondary">Reset</a>
+            <a href="{{ url_for('admin.transactions_list') }}" class="btn">Reset</a>
+
+            <a href="{{ url_for('admin.export_transactions_xlsx') }}?{{ request.query_string.decode() }}"
+                class="btn btn-success" title="Export ke Excel">
+                Export Excel
+            </a>
         </div>
     </form>
-    
+
     <!-- Total Transaksi -->
     {% if request.args.get('start_date') or request.args.get('end_date') or request.args.get('user_id') %}
     <div class="total-summary" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
@@ -45,7 +50,7 @@
 <!-- Transaction List -->
 <div class="card">
     <h3>Data Transaksi ({{ pagination.total }})</h3>
-    
+
     {% if txs %}
     <div class="table-responsive">
         <table class="table">
@@ -63,7 +68,8 @@
             <tbody>
                 {% for tx in txs %}
                 <tr>
-                    <td>{{ tx.invoice_code or ("INV-" ~ tx.created_at.strftime("%d/%m/%Y") ~ "-" ~ (tx.invoice_seq or "XXX")) }}</td>
+                    <td>{{ tx.invoice_code or ("INV-" ~ tx.created_at.strftime("%d/%m/%Y") ~ "-" ~ (tx.invoice_seq or
+                        "XXX")) }}</td>
                     <td>{{ tx.created_at.strftime("%d-%m-%Y %H:%M") }}</td>
                     <td>{{ tx.customer_name }}</td>
                     <td>{{ tx.user.name }}</td>
@@ -84,17 +90,19 @@
     {% if pagination.pages > 1 %}
     <div class="pagination">
         {% if pagination.has_prev %}
-            <a href="?page={{ pagination.prev_num }}{% if request.args.get('start_date') %}&start_date={{ request.args.get('start_date') }}{% endif %}{% if request.args.get('end_date') %}&end_date={{ request.args.get('end_date') }}{% endif %}{% if request.args.get('user_id') %}&user_id={{ request.args.get('user_id') }}{% endif %}" class="btn">
-                &laquo; Prev
-            </a>
+        <a href="?page={{ pagination.prev_num }}{% if request.args.get('start_date') %}&start_date={{ request.args.get('start_date') }}{% endif %}{% if request.args.get('end_date') %}&end_date={{ request.args.get('end_date') }}{% endif %}{% if request.args.get('user_id') %}&user_id={{ request.args.get('user_id') }}{% endif %}"
+            class="btn">
+            &laquo; Prev
+        </a>
         {% endif %}
-        
+
         <span class="pagination-info">Page {{ pagination.page }} of {{ pagination.pages }}</span>
-        
+
         {% if pagination.has_next %}
-            <a href="?page={{ pagination.next_num }}{% if request.args.get('start_date') %}&start_date={{ request.args.get('start_date') }}{% endif %}{% if request.args.get('end_date') %}&end_date={{ request.args.get('end_date') }}{% endif %}{% if request.args.get('user_id') %}&user_id={{ request.args.get('user_id') }}{% endif %}" class="btn">
-                Next &raquo;
-            </a>
+        <a href="?page={{ pagination.next_num }}{% if request.args.get('start_date') %}&start_date={{ request.args.get('start_date') }}{% endif %}{% if request.args.get('end_date') %}&end_date={{ request.args.get('end_date') }}{% endif %}{% if request.args.get('user_id') %}&user_id={{ request.args.get('user_id') }}{% endif %}"
+            class="btn">
+            Next &raquo;
+        </a>
         {% endif %}
     </div>
     {% endif %}

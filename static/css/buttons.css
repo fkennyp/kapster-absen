@@ -38,7 +38,7 @@ button:disabled:hover {
 
 /* Button Variants */
 .btn-secondary {
-  background-color: #6b7280 !important;
+  /* background-color: #6b7280 !important; */
 }
 
 .btn-secondary:hover {
