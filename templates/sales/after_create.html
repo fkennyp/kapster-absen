@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mengunduh Nota...</title>
+</head>
+<body>
+  <script>
+    const PDF_URL = {{ pdf_url|tojson }};
+    const REDIRECT_URL = {{ redirect_url|tojson }};
+
+    (async function () {
+      try {
+        const res = await fetch(PDF_URL, { credentials: 'same-origin' });
+        const blob = await res.blob();
+
+        let filename = 'nota.pdf';
+        const cd = res.headers.get('Content-Disposition') || '';
+        const m = cd.match(/filename\*=UTF-8''([^;]+)|filename="?([^"]+)"?/i);
+        if (m) filename = decodeURIComponent((m[1] || m[2] || '').trim());
+        if (!filename.toLowerCase().endsWith('.pdf')) filename += '.pdf';
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(url);
+        a.remove();
+      } catch (e) {
+        window.open(PDF_URL, '_blank');
+      } finally {
+        setTimeout(function () { window.location.href = REDIRECT_URL; }, 300);
+      }
+    })();
+  </script>
+
+  <noscript>
+    Jika tidak otomatis,
+    <a href="{{ pdf_url }}" target="_blank" download>klik untuk unduh PDF</a>,
+    lalu <a href="{{ redirect_url }}">kembali ke form</a>.
+  </noscript>
+</body>
+</html>

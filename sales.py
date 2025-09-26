@@ -191,8 +191,17 @@ def new_sale():
 
         db.session.commit()
 
-        # redirect ke URL .pdf (biar Chrome pasti unduh sebagai PDF)
-        return redirect(url_for('sales.receipt_pdf', tx_id=tx.id) + '?w=')
+        flash(f"Transaksi #{tx.id} berhasil dibuat.", "success")
+
+        pdf_url = url_for('sales.receipt_pdf', tx_id=tx.id)
+        redirect_url = url_for('sales.new_sale')  # halaman form
+
+        return render_template(
+            'sales/after_create.html',
+            pdf_url=url_for('sales.receipt_pdf', tx_id=tx.id),
+            redirect_url=url_for('sales.new_sale'),
+            tx_id=tx.id
+        )
 
     # GET render form
     services = Service.query.filter_by(is_active=True).order_by(Service.name.asc()).all()
@@ -202,43 +211,41 @@ def new_sale():
 @bp.route('/receipt/<int:tx_id>.pdf')
 @login_required
 def receipt_pdf(tx_id):
-    # --- auth ---
+    # --- ambil transaksi & auth ---
     tx = Transaction.query.get_or_404(tx_id)
     if current_user.role != 'admin' and current_user.id != tx.user_id:
         abort(403)
 
-    # --- pilih lebar roll: 80mm (default) atau 58mm via ?w=58 ---
+    # --- nama file pakai nomor invoice (sanitize) ---
+    inv = tx.invoice_code or f"INV-{tx.id}"
+    safe_inv = re.sub(r'[^A-Za-z0-9._-]+', '-', inv)
+
+    # --- pilih lebar roll ---
     try:
         width_mm = int(request.args.get('w', 80))
         width_mm = 58 if width_mm == 58 else 80
     except Exception:
         width_mm = 80
-
     page_w = width_mm * mm
 
-    # --- tinggi halaman dinamis berdasarkan jumlah konten ---
-    # estimasi jumlah baris:
-    header_lines = 5 + (1 if tx.customer_name else 0)   # judul, tanggal, kapster, (pelanggan), pembayaran, garis
-    item_lines   = max(1, len(tx.items))                # minimal 1
+    # --- hitung tinggi halaman & render PDF ---
+    header_lines = 5 + (1 if tx.customer_name else 0)
+    item_lines   = max(1, len(tx.items))
     total_lines  = 1 + (2 if (tx.payment_type == 'cash' and tx.cash_given is not None) else 0)
     footer_lines = 1
 
     line_h = 5 * mm
     top_margin = 6 * mm
     bottom_margin = 8 * mm
-
     est_h = top_margin + (header_lines + item_lines + total_lines + footer_lines) * line_h + bottom_margin
-    # minimal panjang kertas supaya tidak terlalu pendek
     page_h = max(est_h, 120 * mm)
 
-    # --- canvas ---
     buf = BytesIO()
     p = canvas.Canvas(buf, pagesize=(page_w, page_h))
 
-    # margin & kolom
-    x_l = 5 * mm                  # left margin
-    x_r = page_w - 5 * mm         # right margin
-    y   = page_h - 8 * mm         # start from top
+    x_l = 5 * mm
+    x_r = page_w - 5 * mm
+    y   = page_h - 8 * mm
 
     def draw(txt, sz=9, bold=False, x=None):
         nonlocal y
@@ -256,40 +263,31 @@ def receipt_pdf(tx_id):
     p.setFont("Helvetica-Bold", 11)
     p.drawCentredString(page_w/2, y, tx.barber_name or Config.BARBER_NAME); y -= line_h
     p.setFont("Helvetica", 9)
-    
+
     code = tx.invoice_code or ("INV-" + tx.created_at.strftime("%d/%m/%Y") + "-XXX")
     draw(f"Invoice : {code}")
-
     draw(f"Tanggal : {tx.created_at.strftime('%d-%m-%Y %H:%M:%S')}")
     draw(f"Kapster : {tx.user.name}")
     if tx.customer_name:
         draw(f"Pelanggan : {tx.customer_name}")
-    # tampilkan jumlah kunjungan jika tersedia
     if getattr(tx, "visit_number", None):
         draw(f"Kunjungan ke : {tx.visit_number}")
-
     draw(f"Pembayaran : {tx.payment_type.upper()}")
-    # garis
     p.line(x_l, y, x_r, y); y -= line_h
 
-    # --- tabel item (layout sederhana: nama + qty×harga ... subtotal kanan) ---
+    # --- items ---
     p.setFont("Helvetica-Bold", 9)
     p.drawString(x_l, y, "Layanan")
     p.drawRightString(x_r, y, "Subtotal"); y -= line_h
     p.setFont("Helvetica", 9)
-
-    for it in tx.items:  # tx.items relationship ada di model
-        # nama layanan (potong kalau terlalu panjang untuk kertas kecil)
+    for it in tx.items:
         name = (it.service.name or "")[:24] if width_mm == 58 else (it.service.name or "")[:32]
         p.drawString(x_l, y, f"{name}")
-        # qty x price
         p.drawRightString(x_r, y, f"{it.qty}×{it.price_each:,}  =  {it.line_total:,}")
         y -= line_h
 
-    # garis
     p.line(x_l, y, x_r, y); y -= line_h
 
-    # --- total & pembayaran ---
     p.setFont("Helvetica-Bold", 10)
     p.drawString(x_l, y, "TOTAL")
     p.drawRightString(x_r, y, f"Rp {tx.total:,}"); y -= line_h
@@ -301,20 +299,16 @@ def receipt_pdf(tx_id):
         p.drawString(x_l, y, "Kembalian")
         p.drawRightString(x_r, y, f"Rp {tx.change_amount:,}"); y -= line_h
 
-    # --- footer kecil ---
     y -= (line_h / 2)
     p.setFont("Helvetica", 8)
-    p.drawCentredString(page_w/2, y, "Terima kasih 🙏"); y -= line_h
+    p.drawCentredString(page_w/2, y, "Terima kasih"); y -= line_h
 
-    # selesai
     p.showPage()
     p.save()
     buf.seek(0)
+    pdf_data = buf.getvalue()  # untuk email; tidak mengubah posisi pointer
 
-    pdf_data = buf.getvalue()
-
-    # --- kirim email ke customer kalau ada email ---
-    if tx.customer_email:   # pastikan kolom customer_email ada di Transaction
+    if tx.customer_email:
         msg = Message(
             subject=f"Invoice {tx.invoice_code} - Putera Barbershop",
             sender=current_app.config['MAIL_USERNAME'],
@@ -326,20 +320,18 @@ def receipt_pdf(tx_id):
             f"Berikut kami lampirkan invoice {tx.invoice_code}."
         )
         msg.attach(f"{tx.invoice_code}.pdf", "application/pdf", pdf_data)
-        # ⬇️ ambil instance Mail yang sudah di-init di app.py
         mail = current_app.extensions.get("mail")
         if mail is not None:
             mail.send(msg)
-        else:
-            current_app.logger.warning("Mail extension not initialized; skipping send.")
-        
+
     return send_file(
         buf,
         mimetype="application/pdf",
         as_attachment=True,
-        download_name=f"nota_{tx.id}.pdf",
-        max_age=0,  # hint no-cache
+        download_name=f"{safe_inv}.pdf",
+        max_age=0,
     )
+
     
 @bp.route('/customer-visits')
 @login_required

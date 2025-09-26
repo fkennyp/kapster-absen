@@ -5,7 +5,20 @@
     <div class="sale-form">
         <h1>Transaksi Baru</h1>
         
-        <form method="post" class="form" id="saleForm" target="_blank">
+        <!-- FLASH MESSAGE AREA -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container" style="position:sticky; top:0; z-index:1030; margin-bottom:12px;">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" class="form" id="saleForm">
             <!-- Customer Information -->
             <div class="card">
                 <h3>Informasi Pelanggan</h3>
