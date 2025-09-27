@@ -18,7 +18,11 @@
     </div>
 </form>
 <div style="margin-bottom:1em;">
-    <strong>Total transaksi ditampilkan:</strong> Rp {{ "{:,}".format(total_filtered) }}
+    {% if not start_date and not end_date %}
+        <strong>Total transaksi hari ini:</strong> Rp {{ "{:,}".format(total_filtered) }}
+    {% else %}
+        <strong>Total transaksi ditampilkan:</strong> Rp {{ "{:,}".format(total_filtered) }}
+    {% endif %}
 </div>
 <table class="table">
     <thead>
