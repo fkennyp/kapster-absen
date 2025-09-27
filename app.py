@@ -9,6 +9,7 @@ from attendance import bp as attendance_bp
 from admin import bp as admin_bp
 from reports import bp as reports_bp
 from sales import bp as sales_bp
+from user_transactions import bp as user_transactions_bp
 from datetime import date, datetime
 from models import Attendance
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -31,6 +32,7 @@ def create_app():
     app.register_blueprint(attendance_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(reports_bp)
+    app.register_blueprint(user_transactions_bp)
 
     # For reverse proxy (nginx)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
@@ -81,13 +83,16 @@ def create_app():
             att = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
             working_now = att and att.check_in and not att.check_out
 
+
             allowed_endpoints = (
                 "attendance.check_in",        # biarin tetap di whitelist untuk POST submit
-            "attendance.check_out",       # tambahkan juga kalau perlu
-            "attendance.my_attendance",   # halaman GET yang aman
-            "auth.login",                 # biar bisa lihat login
-            "auth.logout",
-            "static",
+                "attendance.check_out",       # tambahkan juga kalau perlu
+                "attendance.my_attendance",   # halaman GET yang aman
+                "auth.login",                 # biar bisa lihat login
+                "auth.logout",
+                "static",
+                "user_transactions.my_transactions", # agar kapster bisa akses transaksi sendiri kapan saja
+                "sales.receipt_pdf", # agar kapster bisa download nota PDF kapan saja
             )
 
             if not working_now and request.endpoint not in allowed_endpoints:

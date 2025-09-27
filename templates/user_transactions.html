@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Transaksi Saya</h2>
+<div style="margin-bottom:1em;">
+    <strong>Total transaksi hari ini:</strong> Rp {{ "{:,}".format(total_today) }}
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tanggal</th>
+            <th>Invoice</th>
+            <th>Pelanggan</th>
+            <th>Total</th>
+            <th>Nota</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for tx in txs %}
+        <tr>
+            <td>{{ tx.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
+            <td>{{ tx.invoice_code }}</td>
+            <td>{{ tx.customer_name }}</td>
+            <td>Rp {{ "{:,}".format(tx.total) }}</td>
+            <td>
+                <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank" class="btn btn-sm btn-primary">Download PDF</a>
+            </td>
+        </tr>
+    {% else %}
+        <tr><td colspan="5">Belum ada transaksi.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+<div>
+    {% if pagination.has_prev %}
+        <a href="?page={{ pagination.prev_num }}">Sebelumnya</a>
+    {% endif %}
+    Halaman {{ pagination.page }} dari {{ pagination.pages }}
+    {% if pagination.has_next %}
+        <a href="?page={{ pagination.next_num }}">Berikutnya</a>
+    {% endif %}
+</div>
+{% endblock %}
