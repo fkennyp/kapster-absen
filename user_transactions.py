@@ -37,14 +37,22 @@ def my_transactions():
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
     txs = pagination.items
 
-    # Hitung total transaksi hari ini (tidak terfilter)
-    today = datetime.now(TZ).date()
-    total_today = (
-        Transaction.query
-        .filter(Transaction.user_id == current_user.id)
-        .filter(Transaction.created_at >= datetime.combine(today, datetime.min.time(), tzinfo=TZ))
-        .filter(Transaction.created_at < datetime.combine(today, datetime.max.time(), tzinfo=TZ))
-        .with_entities(db.func.sum(Transaction.total)).scalar() or 0
-    )
+    # Hitung total transaksi sesuai filter
+    total_query = Transaction.query.filter(Transaction.user_id == current_user.id)
+    if start_date:
+        try:
+            start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+            total_query = total_query.filter(Transaction.created_at >= start_dt)
+        except Exception:
+            pass
+    if end_date:
+        try:
+            end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+            from datetime import timedelta
+            end_dt = end_dt + timedelta(days=1)
+            total_query = total_query.filter(Transaction.created_at < end_dt)
+        except Exception:
+            pass
+    total_filtered = total_query.with_entities(db.func.sum(Transaction.total)).scalar() or 0
 
-    return render_template('user_transactions.html', txs=txs, pagination=pagination, total_today=total_today, start_date=start_date, end_date=end_date)
+    return render_template('user_transactions.html', txs=txs, pagination=pagination, total_filtered=total_filtered, start_date=start_date, end_date=end_date)
