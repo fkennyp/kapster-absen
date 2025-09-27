@@ -1,6 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Transaksi Saya</h2>
+<form method="get" class="filter-form">
+    <div class="filter-group">
+        <label for="start_date">Dari tanggal:</label>
+        <input type="date" id="start_date" name="start_date" value="{{ start_date or '' }}">
+    </div>
+    <div class="filter-group">
+        <label for="end_date">Sampai tanggal:</label>
+        <input type="date" id="end_date" name="end_date" value="{{ end_date or '' }}">
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        {% if start_date or end_date %}
+        <a href="{{ url_for('user_transactions.my_transactions') }}" class="btn btn-secondary">Reset</a>
+        {% endif %}
+    </div>
+</form>
 <div style="margin-bottom:1em;">
     <strong>Total transaksi hari ini:</strong> Rp {{ "{:,}".format(total_today) }}
 </div>
@@ -15,28 +31,33 @@
         </tr>
     </thead>
     <tbody>
-    {% for tx in txs %}
+        {% for tx in txs %}
         <tr>
             <td>{{ tx.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
             <td>{{ tx.invoice_code }}</td>
             <td>{{ tx.customer_name }}</td>
             <td>Rp {{ "{:,}".format(tx.total) }}</td>
             <td>
-                <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank" class="btn btn-sm btn-primary">Download PDF</a>
+                <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank"
+                    class="btn btn-sm btn-primary">Download PDF</a>
             </td>
         </tr>
-    {% else %}
-        <tr><td colspan="5">Belum ada transaksi.</td></tr>
-    {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="5">Belum ada transaksi.</td>
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
 <div>
     {% if pagination.has_prev %}
-        <a href="?page={{ pagination.prev_num }}">Sebelumnya</a>
+    <a
+        href="?page={{ pagination.prev_num }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">Sebelumnya</a>
     {% endif %}
     Halaman {{ pagination.page }} dari {{ pagination.pages }}
     {% if pagination.has_next %}
-        <a href="?page={{ pagination.next_num }}">Berikutnya</a>
+    <a
+        href="?page={{ pagination.next_num }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">Berikutnya</a>
     {% endif %}
 </div>
 {% endblock %}

@@ -1,7 +1,8 @@
 /* ===== FORM STYLES ===== */
 
 /* Inputs & Selects */
-input, select {
+input,
+select {
   font: inherit;
   padding: 10px 12px;
   background: #fff;
@@ -44,7 +45,8 @@ input, select {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 14px;
   align-items: end;
-  max-width: 600px; /* biar gak terlalu lebar */
+  max-width: 600px;
+  /* biar gak terlalu lebar */
 }
 
 /* Input field */
@@ -68,12 +70,15 @@ input, select {
 }
 
 /* Tombol turun ke baris bawah */
-.filter-form > div:last-child {
-  grid-column: 1 / -1;      /* span full row */
+.filter-form>div:last-child {
+  grid-column: 1 / -1;
+  /* span full row */
   display: flex;
   gap: 10px;
   justify-content: flex-start;
-  flex-wrap: wrap;          /* responsif di layar kecil */
+  flex-wrap: wrap;
+  /* responsif di layar kecil */
+  margin-bottom: 1.2em;
 }
 
 /* Styling tombol di filter */
