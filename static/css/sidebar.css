@@ -1,3 +1,20 @@
+.sb-user-change-pass {
+  margin-top: 6px;
+}
+
+.change-pass-link {
+  font-size: 12px;
+  color: #4f8cff;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.change-pass-link:hover {
+  color: #1d4ed8;
+}
+
 /* ===== sidebar.css ===== */
 
 /* Sidebar base */

@@ -1,5 +1,11 @@
 import os
 from dotenv import load_dotenv
+# SMTP config (Gmail)
+SMTP_HOST = 'smtp.gmail.com'
+SMTP_PORT = 587
+SMTP_USER = os.getenv('MAIL_USER', 'your_email@gmail.com')
+SMTP_PASS = os.getenv('MAIL_PASS', 'your_email_password')
+SMTP_SENDER = SMTP_USER
 
 load_dotenv()
 

@@ -27,6 +27,9 @@
       <div class="sb-user">
         <div class="sb-user-name">{{ current_user.name }}</div>
         <div class="sb-user-role">{{ current_user.role|capitalize }}</div>
+        <div class="sb-user-change-pass">
+          <a href="{{ url_for('auth.change_password') }}" class="change-pass-link">Ubah Password</a>
+        </div>
       </div>
       {% endif %}
 

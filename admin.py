@@ -34,11 +34,18 @@ def users():
 @login_required
 def user_create():
     if request.method == 'POST':
+        import re
         name = request.form['name'].strip()
         username = request.form['username'].strip()
+        email = request.form['email'].strip()
         password = request.form['password']
         role = request.form.get('role', 'kapster')
-        u = User(name=name, username=username, role=role)
+        # Validasi email regex
+        email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if not re.match(email_regex, email):
+            flash('Email tidak valid', 'danger')
+            return render_template('user_form.html', user=None)
+        u = User(name=name, username=username, email=email, role=role)
         u.set_password(password)
         db.session.add(u)
         db.session.commit()
@@ -52,8 +59,20 @@ def user_create():
 def user_edit(user_id):
     u = User.query.get_or_404(user_id)
     if request.method == 'POST':
+        import re
         u.name = request.form['name'].strip()
         u.username = request.form['username'].strip()
+        email = request.form['email'].strip()
+        email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if not re.match(email_regex, email):
+            flash('Email tidak valid', 'danger')
+            return render_template('user_form.html', user=u)
+        # Cek email unik (tidak boleh sama dengan user lain)
+        existing = User.query.filter(User.email == email, User.id != u.id).first()
+        if existing:
+            flash('Email telah terdaftar pada user lain.', 'danger')
+            return render_template('user_form.html', user=u)
+        u.email = email
         role = request.form.get('role', 'kapster')
         u.role = role
         if request.form.get('password'):

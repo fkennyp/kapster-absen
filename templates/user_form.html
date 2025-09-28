@@ -5,6 +5,7 @@
 <form method="post" class="form">
     <label>Name<input type="text" name="name" value="{{ user.name if user else '' }}" required></label>
     <label>Username<input type="text" name="username" value="{{ user.username if user else '' }}" required></label>
+    <label>Email<input type="email" name="email" value="{{ user.email if user else '' }}" required pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"></label>
     <label>Password{% if user %} (leave blank to keep){% endif %}<input type="password" name="password" {% if not user
             %}required{% endif %}></label>
     <label>Role

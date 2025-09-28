@@ -7,4 +7,7 @@
     <label>Password<input type="password" name="password" required></label>
     <button type="submit">Login</button>
 </form>
+<div style="margin-top:1em;">
+    <a href="{{ url_for('auth.forgot_password') }}">Lupa password?</a>
+</div>
 {% endblock %}
