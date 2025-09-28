@@ -19,7 +19,7 @@
 </form>
 <div style="margin-bottom:1em;">
     {% if not start_date and not end_date %}
-        <strong>Total transaksi hari ini:</strong> Rp {{ "{:,}".format(total_filtered) }}
+        <strong>Silakan pilih filter tanggal untuk melihat transaksi.</strong>
     {% else %}
         <strong>Total transaksi ditampilkan:</strong> Rp {{ "{:,}".format(total_filtered) }}
     {% endif %}
@@ -35,33 +35,41 @@
         </tr>
     </thead>
     <tbody>
-        {% for tx in txs %}
-        <tr>
-            <td>{{ tx.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
-            <td>{{ tx.invoice_code }}</td>
-            <td>{{ tx.customer_name }}</td>
-            <td>Rp {{ "{:,}".format(tx.total) }}</td>
-            <td>
-                <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank"
-                    class="btn btn-sm btn-primary">Download PDF</a>
-            </td>
-        </tr>
+        {% if not start_date and not end_date %}
+            <tr>
+                <td colspan="5" style="text-align:center;">Tidak ada data. Silakan filter tanggal terlebih dahulu.</td>
+            </tr>
         {% else %}
-        <tr>
-            <td colspan="5">Belum ada transaksi.</td>
-        </tr>
-        {% endfor %}
+            {% for tx in txs %}
+            <tr>
+                <td>{{ tx.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
+                <td>{{ tx.invoice_code }}</td>
+                <td>{{ tx.customer_name }}</td>
+                <td>Rp {{ "{:,}".format(tx.total) }}</td>
+                <td>
+                    <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank"
+                        class="btn btn-sm btn-primary">Download PDF</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">Belum ada transaksi.</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
     </tbody>
 </table>
 <div>
-    {% if pagination.has_prev %}
-    <a
-        href="?page={{ pagination.prev_num }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">Sebelumnya</a>
-    {% endif %}
-    Halaman {{ pagination.page }} dari {{ pagination.pages }}
-    {% if pagination.has_next %}
-    <a
-        href="?page={{ pagination.next_num }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">Berikutnya</a>
+    {% if pagination and pagination.pages > 0 %}
+        {% if pagination.has_prev %}
+        <a
+            href="?page={{ pagination.prev_num }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">Sebelumnya</a>
+        {% endif %}
+        Halaman {{ pagination.page }} dari {{ pagination.pages }}
+        {% if pagination.has_next %}
+        <a
+            href="?page={{ pagination.next_num }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">Berikutnya</a>
+        {% endif %}
     {% endif %}
 </div>
 {% endblock %}
