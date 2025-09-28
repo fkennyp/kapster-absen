@@ -37,55 +37,57 @@
         </div>
     </form>
 
-    <!-- Total Transaksi -->
-    {% if request.args.get('start_date') or request.args.get('end_date') or request.args.get('user_id') %}
-    <div class="total-summary" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-        <h4>Summary Transaksi yang Difilter:</h4>
-        <p><strong>Jumlah Transaksi:</strong> {{ total_count }}</p>
-        <p><strong>Total Nilai Transaksi:</strong> Rp {{ "{:,}".format(total_amount) }}</p>
-    </div>
-    {% endif %}
-</div>
-
-<!-- Transaction List -->
-<div class="card">
-    <h3>Data Transaksi ({{ pagination.total }})</h3>
-
-    {% if txs %}
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Invoice</th>
-                    <th>Tanggal</th>
-                    <th>Pelanggan</th>
-                    <th>Kapster</th>
-                    <th class="text-right">Total</th>
-                    <th>Pembayaran</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for tx in txs %}
-                <tr>
-                    <td>{{ tx.invoice_code or ("INV-" ~ tx.created_at.strftime("%d/%m/%Y") ~ "-" ~ (tx.invoice_seq or
-                        "XXX")) }}</td>
-                    <td>{{ tx.created_at.strftime("%d-%m-%Y %H:%M") }}</td>
-                    <td>{{ tx.customer_name }}</td>
-                    <td>{{ tx.user.name }}</td>
-                    <td class="text-right">Rp {{ "{:,}".format(tx.total) }}</td>
-                    <td>{{ tx.payment_type|upper }}</td>
-                    <td>
-                        <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank" class="btn btn-small">
-                            📄 Nota
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Penjelasan total transaksi sesuai filter -->
+    <div style="margin: 18px 0 10px 0;">
+        {% if request.args.get('start_date') or request.args.get('end_date') or request.args.get('user_id') %}
+        <strong>Total transaksi ditampilkan:</strong> Rp {{ "{:,}".format(total_amount) }}
+        {% endif %}
     </div>
 
+    <!-- Transaction List -->
+    <div class="card">
+        {% if not request.args.get('start_date') and not request.args.get('end_date') %}
+            <h3>Data Transaksi</h3>
+            <div style="padding: 2em; text-align: center; color: #888;">Silakan filter tanggal untuk melihat transaksi.</div>
+        {% else %}
+            <h3>Data Transaksi ({{ pagination.total }})</h3>
+            {% if txs %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Invoice</th>
+                            <th>Tanggal</th>
+                            <th>Pelanggan</th>
+                            <th>Kapster</th>
+                            <th class="text-right">Total</th>
+                            <th>Pembayaran</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tx in txs %}
+                        <tr>
+                            <td>{{ tx.invoice_code or ("INV-" ~ tx.created_at.strftime("%d/%m/%Y") ~ "-" ~ (tx.invoice_seq or "XXX")) }}</td>
+                            <td>{{ tx.created_at.strftime("%d-%m-%Y %H:%M") }}</td>
+                            <td>{{ tx.customer_name }}</td>
+                            <td>{{ tx.user.name }}</td>
+                            <td class="text-right">Rp {{ "{:,}".format(tx.total) }}</td>
+                            <td>{{ tx.payment_type|upper }}</td>
+                            <td>
+                                <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank" class="btn btn-small">
+                                    📄 Nota
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="no-data">Tidak ada transaksi ditemukan.</p>
+            {% endif %}
+        {% endif %}
     <!-- Pagination -->
     {% if pagination.pages > 1 %}
     <div class="pagination">
@@ -105,10 +107,6 @@
         </a>
         {% endif %}
     </div>
-    {% endif %}
-
-    {% else %}
-    <p class="no-data">Tidak ada transaksi ditemukan.</p>
     {% endif %}
 </div>
 {% endblock %}
