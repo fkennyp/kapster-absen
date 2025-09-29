@@ -91,8 +91,10 @@ def service_delete(service_id):
 def transaction_view(transaction_id):
     require_admin()
     transaction = Transaction.query.get_or_404(transaction_id)
+    users = User.query.filter_by(role='kapster', is_active_user=True).all()
     return render_template('admin/transaction_form.html', 
-                         transaction=transaction, 
+                         transaction=transaction,
+                         users=users,
                          edit_mode=False)
 
 @bp.route('/transactions/<int:transaction_id>/edit', methods=['GET', 'POST'])

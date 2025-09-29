@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, abort
 from flask_login import login_required, current_user
 from models import Transaction, User, db
 from datetime import datetime, timedelta
@@ -74,3 +74,13 @@ def my_transactions():
         end_date=end_date,
         is_today_empty=is_today_empty
     )
+
+@bp.route('/<int:transaction_id>')
+@login_required
+def transaction_detail(transaction_id):
+    # Get transaction and verify it belongs to current user
+    transaction = Transaction.query.get_or_404(transaction_id)
+    if transaction.user_id != current_user.id:
+        abort(403)  # Forbidden if transaction doesn't belong to user
+    
+    return render_template('transaction_detail.html', transaction=transaction)

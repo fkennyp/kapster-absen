@@ -145,3 +145,36 @@ select {
   gap: 2rem;
   padding: 1.5rem;
 }
+
+/* Transaction Detail Grid Layout */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem 3rem;
+  padding: 1rem;
+}
+
+.detail-left, .detail-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-left label, .detail-right label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+  min-width: 120px;
+}
+
+.detail-left div, .detail-right div {
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+@media (max-width: 640px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

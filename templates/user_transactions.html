@@ -31,7 +31,7 @@
             <th>Invoice</th>
             <th>Pelanggan</th>
             <th>Total</th>
-            <th>Nota</th>
+            <th>Aksi</th>
         </tr>
     </thead>
     <tbody>
@@ -47,8 +47,8 @@
                 <td>{{ tx.customer_name }}</td>
                 <td>Rp {{ "{:,}".format(tx.total) }}</td>
                 <td>
-                    <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank"
-                        class="btn btn-sm btn-primary">Download PDF</a>
+                    <a href="{{ url_for('user_transactions.transaction_detail', transaction_id=tx.id, start_date=start_date, end_date=end_date, page=pagination.page if pagination else 1) }}" class="btn btn-sm">Lihat</a>
+                    <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank" class="btn btn-sm btn-primary">Download PDF</a>
                 </td>
             </tr>
             {% else %}

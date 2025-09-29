@@ -80,7 +80,7 @@
                             <td class="text-right">Rp {{ "{:,}".format(tx.total) }}</td>
                             <td>{{ tx.payment_type|upper }}</td>
                             <td>
-                                <a href="{{ url_for('admin.transaction_view', transaction_id=tx.id) }}" class="btn btn-small">
+                                <a href="{{ url_for('admin.transaction_view', transaction_id=tx.id, start_date=request.args.get('start_date'), end_date=request.args.get('end_date'), user_id=request.args.get('user_id'), page=request.args.get('page', 1)) }}" class="btn btn-small">
                                     Lihat
                                 </a>
                                 <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank" class="btn btn-small">
