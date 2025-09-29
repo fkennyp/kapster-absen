@@ -6,7 +6,7 @@
 <div class="container">
     <div class="page-header">
         <h1>Manajemen Layanan</h1>
-        <a href="{{ url_for('admin.service_create') }}" class="btn btn-primary">Tambah Layanan</a>
+        <a href="{{ url_for('admin.service_create') }}" class="btn">Tambah Layanan Baru</a>
     </div>
 
     <div class="card">
@@ -26,17 +26,17 @@
                         <td>Rp {{ "{:,}".format(service.price) }}</td>
                         <td class="actions" style="white-space: nowrap;">
                             <a href="{{ url_for('admin.service_edit', service_id=service.id) }}"
-                                class="btn btn-sm btn-edit" style="min-width: 60px; margin-right: 4px;">Edit</a>
+                                class="btn btn-sm" style="margin-right: 4px;">Ubah Data</a>
                             <form action="{{ url_for('admin.service_delete', service_id=service.id) }}"
                                 method="post" style="display: inline-block;"
-                                onsubmit="return confirm('Yakin ingin menghapus layanan ini?');">
-                                <button type="submit" class="btn btn-sm btn-danger" style="min-width: 60px;">Hapus</button>
+                                onsubmit="return confirm('Anda yakin ingin menghapus layanan ini? Aksi ini tidak dapat dibatalkan.');">
+                                <button type="submit" class="btn btn-sm btn-secondary">Hapus Data</button>
                             </form>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="3" class="text-center">Belum ada layanan tersedia.</td>
+                        <td colspan="3" class="text-center">Belum ada layanan yang tersedia. Silakan tambah layanan baru.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

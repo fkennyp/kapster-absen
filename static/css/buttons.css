@@ -6,47 +6,40 @@ button, a.btn {
   align-items: center;
   justify-content: center;
   padding: 10px 20px;
-  background-color: #111827;
+  background-color: #2563eb;
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font: inherit;
   font-weight: 500;
   text-decoration: none;
   margin: 8px 0;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 button:hover, a.btn:hover {
-  background-color: #1f2937;
+  background-color: #1d4ed8;
 }
 
-button[disabled] {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Button States */
-button:disabled {
+button[disabled], button:disabled {
   background-color: #9ca3af !important;
   cursor: not-allowed !important;
-}
-
-button:disabled:hover {
-  background-color: #9ca3af !important;
+  opacity: 0.7;
 }
 
 /* Button Variants */
 .btn-secondary {
-  /* background-color: #6b7280 !important; */
+  background-color: #4b5563;
 }
 
 .btn-secondary:hover {
-  background-color: #4b5563 !important;
+  background-color: #374151;
 }
 
-.btn-small {
-  padding: 6px 12px !important;
-  font-size: 12px !important;
+/* Small button variant */
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 14px;
   text-decoration: none;
 }

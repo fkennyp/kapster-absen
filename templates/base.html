@@ -12,23 +12,23 @@
 </head>
 
 <body>
-  <!-- FAB hamburger (mobile) -->
-  <button class="sb-fab" type="button" aria-label="Menu" onclick="document.body.classList.toggle('sb-open')">☰</button>
+  <!-- Menu toggle untuk mobile -->
+  <button class="sb-fab" type="button" aria-label="Menu" onclick="document.body.classList.toggle('sb-open')">Menu</button>
 
-  <!-- Overlay gelap -->
+  <!-- Overlay untuk menu mobile -->
   <div class="sb-overlay" onclick="document.body.classList.remove('sb-open')"></div>
 
   <div class="app">
     <!-- SIDEBAR -->
     <aside class="sidebar">
-      <div class="sb-brand">✂️ Putera Barbershop</div>
+      <div class="sb-brand">Putera Barbershop</div>
 
       {% if current_user.is_authenticated %}
       <div class="sb-user">
         <div class="sb-user-name">{{ current_user.name }}</div>
         <div class="sb-user-role">{{ current_user.role|capitalize }}</div>
         <div class="sb-user-change-pass">
-          <a href="{{ url_for('auth.change_password') }}" class="change-pass-link">Ubah Password</a>
+          <a href="{{ url_for('auth.change_password') }}" class="change-pass-link">Ganti Password</a>
         </div>
       </div>
       {% endif %}
@@ -36,17 +36,17 @@
       <nav class="sb-nav">
         {% if current_user.is_authenticated and current_user.role == 'admin' %}
         <a class="sb-link" href="/admin/dashboard">Dashboard</a>
-        <a class="sb-link" href="/reports/">Absensi</a>
-        <a class="sb-link" href="/admin/transactions">Transaksi</a>
-        <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Buat Nota</a>
-        <a class="sb-link" href="/admin/users">Users</a>
-        <a class="sb-link" href="{{ url_for('admin.services_list') }}">Layanan</a>
+        <a class="sb-link" href="/reports/">Data Kehadiran</a>
+        <a class="sb-link" href="/admin/transactions">Data Transaksi</a>
+        <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Buat Transaksi Baru</a>
+        <a class="sb-link" href="/admin/users">Data Pengguna</a>
+        <a class="sb-link" href="{{ url_for('admin.services_list') }}">Data Layanan</a>
         {% elif current_user.is_authenticated and current_user.role == 'kapster' %}
-        <a class="sb-link" href="/attendance">Attendance</a>
+        <a class="sb-link" href="/attendance">Kehadiran</a>
         {% if is_working_now %}
-        <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Buat Transaksi</a>
+        <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Buat Transaksi Baru</a>
         {% endif %}
-        <a class="sb-link" href="{{ url_for('user_transactions.my_transactions') }}">Transaksi Saya</a>
+        <a class="sb-link" href="{{ url_for('user_transactions.my_transactions') }}">Riwayat Transaksi</a>
         {% endif %}
       </nav>
 

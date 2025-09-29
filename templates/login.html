@@ -1,11 +1,11 @@
 {% extends 'auth_base.html' %}
-{% block title %}Login - Kapster Absen{% endblock %}
+{% block title %}Masuk - Kapster Absen{% endblock %}
 {% block content %}
-<h1>Login</h1>
+<h1>Masuk</h1>
 <form method="post" class="form">
     <label>Username<input type="text" name="username" required></label>
     <label>Password<input type="password" name="password" required></label>
-    <button type="submit">Login</button>
+    <button type="submit">Masuk</button>
 </form>
 <div style="margin-top:1em;">
     <a href="{{ url_for('auth.forgot_password') }}">Lupa password?</a>

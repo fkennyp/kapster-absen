@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Transaksi Saya</h2>
+<h2>Riwayat Transaksi Saya</h2>
 <form method="get" class="filter-form">
     <div class="filter-group">
-        <label for="start_date">Dari tanggal:</label>
+        <label for="start_date">Dari Tanggal:</label>
         <input type="date" id="start_date" name="start_date" value="{{ start_date or '' }}">
     </div>
     <div class="filter-group">
-        <label for="end_date">Sampai tanggal:</label>
+        <label for="end_date">Sampai Tanggal:</label>
         <input type="date" id="end_date" name="end_date" value="{{ end_date or '' }}">
     </div>
     <div>
-        <button type="submit" class="btn btn-primary">Filter</button>
+        <button type="submit" class="btn">Tampilkan Data</button>
         {% if start_date or end_date %}
-        <a href="{{ url_for('user_transactions.my_transactions') }}" class="btn btn-secondary">Reset</a>
+        <a href="{{ url_for('user_transactions.my_transactions') }}" class="btn btn-secondary">Hapus Filter</a>
         {% endif %}
     </div>
 </form>
@@ -28,16 +28,16 @@
     <thead>
         <tr>
             <th>Tanggal</th>
-            <th>Invoice</th>
-            <th>Pelanggan</th>
-            <th>Total</th>
+            <th>Nomor Nota</th>
+            <th>Nama Pelanggan</th>
+            <th>Total Pembayaran</th>
             <th>Aksi</th>
         </tr>
     </thead>
     <tbody>
         {% if not start_date and not end_date %}
             <tr>
-                <td colspan="5" style="text-align:center;">Tidak ada data. Silakan filter tanggal terlebih dahulu.</td>
+                <td colspan="5" style="text-align:center;">Silakan pilih rentang tanggal untuk menampilkan data transaksi.</td>
             </tr>
         {% else %}
             {% for tx in txs %}
@@ -47,7 +47,7 @@
                 <td>{{ tx.customer_name }}</td>
                 <td>Rp {{ "{:,}".format(tx.total) }}</td>
                 <td>
-                    <a href="{{ url_for('user_transactions.transaction_detail', transaction_id=tx.id, start_date=start_date, end_date=end_date, page=pagination.page if pagination else 1) }}" class="btn btn-sm">Lihat</a>
+                    <a href="{{ url_for('user_transactions.transaction_detail', transaction_id=tx.id, start_date=start_date, end_date=end_date, page=pagination.page if pagination else 1) }}" class="btn btn-sm">Lihat Detail</a>
                     <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank" class="btn btn-sm btn-primary">Download PDF</a>
                 </td>
             </tr>
