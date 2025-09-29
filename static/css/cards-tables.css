@@ -47,3 +47,18 @@
   color: #6b7280;
   font-style: italic;
 }
+
+/* Table Actions */
+.table td.text-center {
+  text-align: center;
+}
+
+.table .btn-sm {
+  padding: 4px 8px;
+  font-size: 14px;
+  margin: 0 2px;
+}
+
+.d-inline {
+  display: inline-block;
+}

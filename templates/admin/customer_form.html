@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="flex-between-center">
+            <h1>{{ 'Edit' if customer else 'Tambah' }} Pelanggan</h1>
+            <a href="{{ url_for('admin.customers_list') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+        </div>
+    </div>
+
+    <div class="content-body">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="name">Nama Pelanggan <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="name" 
+                               name="name" 
+                               value="{{ customer.name if customer else '' }}" 
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">No. Telepon</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="phone" 
+                               name="phone" 
+                               value="{{ customer.phone if customer else '' }}" 
+                               placeholder="Opsional">
+                        <small class="text-muted">Nomor telepon harus unik jika diisi</small>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

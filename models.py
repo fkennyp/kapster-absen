@@ -72,6 +72,42 @@ class Customer(db.Model):
     def touch(self):
         self.updated_at = tznow()
 
+    @staticmethod
+    def create(name: str, phone: str = None):
+        now = tznow()
+        customer = Customer(
+            name=name,
+            phone=phone,
+            created_at=now,
+            updated_at=now
+        )
+        db.session.add(customer)
+        db.session.commit()
+        return customer
+
+    @staticmethod
+    def update(id: int, name: str, phone: str = None):
+        customer = Customer.query.get_or_404(id)
+        customer.name = name
+        customer.phone = phone
+        customer.touch()
+        db.session.commit()
+        return customer
+
+    @staticmethod
+    def delete(id: int):
+        customer = Customer.query.get_or_404(id)
+        db.session.delete(customer)
+        db.session.commit()
+
+    @staticmethod
+    def get_all():
+        return Customer.query.order_by(Customer.name).all()
+
+    @staticmethod
+    def get_by_id(id: int):
+        return Customer.query.get_or_404(id)
+
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'

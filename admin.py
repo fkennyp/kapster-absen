@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, Response
 from flask_login import login_required, current_user
 from sqlalchemy import func
-from models import db, User, Attendance, tznow, Transaction, TransactionItem, Service
+from models import db, User, Attendance, tznow, Transaction, TransactionItem, Service, Customer
 from io import BytesIO
 import pandas as pd
 from datetime import datetime, timedelta
@@ -421,3 +421,79 @@ def export_transactions_xlsx():
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         headers={'Content-Disposition': f'attachment; filename={filename}'}
     )
+
+# ====== Customer Management =======
+@bp.route('/customers')
+@login_required
+def customers_list():
+    require_admin()
+    customers = Customer.query.order_by(Customer.name).all()
+    return render_template('admin/customers_list.html', customers=customers)
+
+@bp.route('/customers/new', methods=['GET', 'POST'])
+@login_required
+def customer_create():
+    require_admin()
+    if request.method == 'POST':
+        name = request.form['name'].strip()
+        phone = request.form['phone'].strip() or None
+        
+        if not name:
+            flash('Nama pelanggan wajib diisi.', 'danger')
+        else:
+            try:
+                Customer.create(name=name, phone=phone)
+                flash('Data pelanggan berhasil ditambahkan.', 'success')
+                return redirect(url_for('admin.customers_list'))
+            except Exception as e:
+                if 'uq_customers_phone' in str(e):
+                    flash('Nomor telepon sudah terdaftar untuk pelanggan lain.', 'danger')
+                else:
+                    flash('Terjadi kesalahan. Silakan coba lagi.', 'danger')
+            
+    return render_template('admin/customer_form.html', customer=None)
+
+@bp.route('/customers/<int:customer_id>/edit', methods=['GET', 'POST'])
+@login_required
+def customer_edit(customer_id):
+    require_admin()
+    customer = Customer.query.get_or_404(customer_id)
+    
+    if request.method == 'POST':
+        name = request.form['name'].strip()
+        phone = request.form['phone'].strip() or None
+        
+        if not name:
+            flash('Nama pelanggan wajib diisi.', 'danger')
+        else:
+            try:
+                Customer.update(id=customer_id, name=name, phone=phone)
+                flash('Data pelanggan berhasil diperbarui.', 'success')
+                return redirect(url_for('admin.customers_list'))
+            except Exception as e:
+                if 'uq_customers_phone' in str(e):
+                    flash('Nomor telepon sudah terdaftar untuk pelanggan lain.', 'danger')
+                else:
+                    flash('Terjadi kesalahan. Silakan coba lagi.', 'danger')
+            
+    return render_template('admin/customer_form.html', customer=customer)
+
+@bp.route('/customers/<int:customer_id>/delete', methods=['POST'])
+@login_required
+def customer_delete(customer_id):
+    require_admin()
+    customer = Customer.query.get_or_404(customer_id)
+    
+    # Check if customer has any transactions
+    transaction_count = Transaction.query.filter_by(customer_id=customer.id).count()
+    if transaction_count > 0:
+        flash(f'Pelanggan tidak dapat dihapus karena memiliki {transaction_count} transaksi.', 'danger')
+        return redirect(url_for('admin.customers_list'))
+        
+    try:
+        Customer.delete(id=customer_id)
+        flash('Data pelanggan berhasil dihapus.', 'success')
+    except Exception as e:
+        flash('Terjadi kesalahan saat menghapus data.', 'danger')
+        
+    return redirect(url_for('admin.customers_list'))

@@ -5,6 +5,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}Kapster Absen{% endblock %}</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <!-- sesudah -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
@@ -41,6 +43,7 @@
         <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Buat Transaksi Baru</a>
         <a class="sb-link" href="/admin/users">Data Pengguna</a>
         <a class="sb-link" href="{{ url_for('admin.services_list') }}">Data Layanan</a>
+        <a class="sb-link" href="{{ url_for('admin.customers_list') }}">Data Pelanggan</a>
         {% elif current_user.is_authenticated and current_user.role == 'kapster' %}
         <a class="sb-link" href="/attendance">Kehadiran</a>
         {% if is_working_now %}

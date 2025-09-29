@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Data Pelanggan{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Data Pelanggan</h1>
+        <a href="{{ url_for('admin.customer_create') }}" class="btn">Tambah Pelanggan Baru</a>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>No. Telepon</th>
+                        <th>Terakhir Diubah</th>
+                        <th class="actions-column">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td>{{ customer.name }}</td>
+                        <td>{{ customer.phone or '-' }}</td>
+                        <td>{{ customer.updated_at.strftime('%d-%m-%Y %H:%M') }}</td>
+                        <td class="actions" style="white-space: nowrap;">
+                            <a href="{{ url_for('admin.customer_edit', customer_id=customer.id) }}"
+                                class="btn btn-sm" style="margin-right: 4px;">Ubah Data</a>
+                            <form action="{{ url_for('admin.customer_delete', customer_id=customer.id) }}"
+                                method="post" style="display: inline-block;"
+                                onsubmit="return confirm('Anda yakin ingin menghapus data pelanggan ini? Aksi ini tidak dapat dibatalkan.');">
+                                <button type="submit" class="btn btn-sm btn-secondary">Hapus Data</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">Belum ada data pelanggan. Silakan tambah pelanggan baru.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
