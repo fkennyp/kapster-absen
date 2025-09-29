@@ -132,12 +132,12 @@ def transaction_edit(transaction_id):
 @login_required
 def transaction_delete(transaction_id):
     require_admin()
-    transaction = Transaction.query.get_or_404(transaction_id)
+    try:
+        Transaction.delete(transaction_id)
+        flash('Transaksi berhasil dihapus.', 'success')
+    except Exception as e:
+        flash('Gagal menghapus transaksi.', 'danger')
     
-    db.session.delete(transaction)
-    db.session.commit()
-    
-    flash('Transaksi berhasil dihapus.', 'success')
     return redirect(url_for('admin.transactions_list'))
 
 @bp.before_request

@@ -16,6 +16,11 @@
             {% if not edit_mode %}
             <a href="{{ url_for('admin.transaction_edit', transaction_id=transaction.id) }}"
                 class="btn btn-primary">Edit Transaksi</a>
+            <form action="{{ url_for('admin.transaction_delete', transaction_id=transaction.id) }}"
+                method="post" style="display: inline-block;"
+                onsubmit="return confirm('Anda yakin ingin menghapus transaksi ini? Aksi ini tidak dapat dibatalkan.');">
+                <button type="submit" class="btn btn-danger">Hapus Transaksi</button>
+            </form>
             {% endif %}
         </div>
     </div>

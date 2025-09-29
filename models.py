@@ -107,6 +107,9 @@ class Customer(db.Model):
     @staticmethod
     def get_by_id(id: int):
         return Customer.query.get_or_404(id)
+        
+    def get_visit_count(self):
+        return Transaction.query.filter_by(customer_id=self.id).count()
 
 
 class Transaction(db.Model):
@@ -132,6 +135,19 @@ class Transaction(db.Model):
     user = relationship('User')
     items = relationship('TransactionItem', backref='transaction', cascade='all, delete-orphan')
     customer = relationship('Customer', lazy='joined')
+
+    @staticmethod
+    def delete(id: int):
+        transaction = Transaction.query.get_or_404(id)
+        # Delete all related transaction items first (though cascade should handle this)
+        TransactionItem.query.filter_by(transaction_id=id).delete()
+        db.session.delete(transaction)
+        db.session.commit()
+        return True
+
+    @staticmethod
+    def get_by_id(id: int):
+        return Transaction.query.get_or_404(id)
 
 
 class TransactionItem(db.Model):

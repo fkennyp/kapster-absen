@@ -38,6 +38,19 @@
   background: #dbeafe;
 }
 
+/* Badge */
+.badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+.bg-info {
+  background-color: #3b82f6;
+  color: white;
+}
+
 /* Pagination */
 .pagination {
   display: flex;

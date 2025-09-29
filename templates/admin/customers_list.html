@@ -16,6 +16,7 @@
                     <tr>
                         <th>Nama</th>
                         <th>No. Telepon</th>
+                        <th class="text-center">Jumlah Kunjungan</th>
                         <th>Terakhir Diubah</th>
                         <th class="actions-column">Aksi</th>
                     </tr>
@@ -25,6 +26,9 @@
                     <tr>
                         <td>{{ customer.name }}</td>
                         <td>{{ customer.phone or '-' }}</td>
+                        <td class="text-center">
+                            <span class="badge bg-info">{{ customer.get_visit_count() }}</span>
+                        </td>
                         <td>{{ customer.updated_at.strftime('%d-%m-%Y %H:%M') }}</td>
                         <td class="actions" style="white-space: nowrap;">
                             <a href="{{ url_for('admin.customer_edit', customer_id=customer.id) }}"
