@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 {% block title %}List Transaksi{% endblock %}
+
+{% block head %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/transaction-filters.js') }}" defer></script>
+{% endblock %}
+
 {% block content %}
 <h1>List Transaksi</h1>
 
@@ -46,67 +52,12 @@
 
     <!-- Transaction List -->
     <div class="card">
-        {% if not request.args.get('start_date') and not request.args.get('end_date') %}
-            <h3>Data Transaksi</h3>
-            <div style="padding: 2em; text-align: center; color: #888;">Silakan filter tanggal untuk melihat transaksi.</div>
-        {% else %}
-            <h3>Data Transaksi ({{ pagination.total }})</h3>
-            {% if txs %}
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Invoice</th>
-                            <th>Tanggal</th>
-                            <th>Pelanggan</th>
-                            <th>Kapster</th>
-                            <th class="text-right">Total</th>
-                            <th>Pembayaran</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for tx in txs %}
-                        <tr>
-                            <td>{{ tx.invoice_code or ("INV-" ~ tx.created_at.strftime("%d/%m/%Y") ~ "-" ~ (tx.invoice_seq or "XXX")) }}</td>
-                            <td>{{ tx.created_at.strftime("%d-%m-%Y %H:%M") }}</td>
-                            <td>{{ tx.customer_name }}</td>
-                            <td>{{ tx.user.name }}</td>
-                            <td class="text-right">Rp {{ "{:,}".format(tx.total) }}</td>
-                            <td>{{ tx.payment_type|upper }}</td>
-                            <td>
-                                <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank" class="btn btn-small">
-                                    📄 Nota
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <p class="no-data">Tidak ada transaksi ditemukan.</p>
-            {% endif %}
-        {% endif %}
-    <!-- Pagination -->
-    {% if pagination.pages > 1 %}
-    <div class="pagination">
-        {% if pagination.has_prev %}
-        <a href="?page={{ pagination.prev_num }}{% if request.args.get('start_date') %}&start_date={{ request.args.get('start_date') }}{% endif %}{% if request.args.get('end_date') %}&end_date={{ request.args.get('end_date') }}{% endif %}{% if request.args.get('user_id') %}&user_id={{ request.args.get('user_id') }}{% endif %}"
-            class="btn">
-            &laquo; Prev
-        </a>
-        {% endif %}
-
-        <span class="pagination-info">Page {{ pagination.page }} of {{ pagination.pages }}</span>
-
-        {% if pagination.has_next %}
-        <a href="?page={{ pagination.next_num }}{% if request.args.get('start_date') %}&start_date={{ request.args.get('start_date') }}{% endif %}{% if request.args.get('end_date') %}&end_date={{ request.args.get('end_date') }}{% endif %}{% if request.args.get('user_id') %}&user_id={{ request.args.get('user_id') }}{% endif %}"
-            class="btn">
-            Next &raquo;
-        </a>
-        {% endif %}
+        <h3>Data Transaksi</h3>
+        <div class="table-responsive" id="transactions-table">
+            <!-- Content will be loaded here via AJAX -->
+            {% include 'admin/transactions_table.html' %}
+        </div>
     </div>
-    {% endif %}
+    </div>
 </div>
 {% endblock %}

@@ -89,3 +89,59 @@ select {
   margin: 0;
   line-height: 1.2;
 }
+
+/* ===== DETAILS VIEW STYLES ===== */
+
+/* Grid layout for details view */
+.details-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1.5rem;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  align-items: start;
+}
+
+.detail-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-group label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.detail-group div {
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+/* Section Headers */
+.details-grid h3 {
+  margin: 1rem 0;
+  color: #1f2937;
+  font-size: 1.25rem;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Form Grid Layout */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1.5rem;
+}

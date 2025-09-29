@@ -4,7 +4,7 @@ from sqlalchemy import func
 from models import db, User, Attendance, tznow, Transaction, TransactionItem, Service
 from io import BytesIO
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import openpyxl
 from openpyxl.styles import Font, PatternFill
@@ -85,6 +85,58 @@ def service_delete(service_id):
     flash('Layanan berhasil dihapus.', 'success')
     return redirect(url_for('admin.services_list'))
 
+
+@bp.route('/transactions/<int:transaction_id>')
+@login_required
+def transaction_view(transaction_id):
+    require_admin()
+    transaction = Transaction.query.get_or_404(transaction_id)
+    return render_template('admin/transaction_form.html', 
+                         transaction=transaction, 
+                         edit_mode=False)
+
+@bp.route('/transactions/<int:transaction_id>/edit', methods=['GET', 'POST'])
+@login_required
+def transaction_edit(transaction_id):
+    require_admin()
+    transaction = Transaction.query.get_or_404(transaction_id)
+    
+    if request.method == 'POST':
+        # Update basic transaction info
+        transaction.customer_name = request.form['customer_name'].strip()
+        transaction.barber_name = request.form['barber_name']
+        transaction.payment_type = request.form['payment_type']
+        
+        if transaction.payment_type == 'cash':
+            cash_given = request.form.get('cash_given', type=int)
+            if cash_given and cash_given >= transaction.total:
+                transaction.cash_given = cash_given
+                transaction.change_amount = cash_given - transaction.total
+            else:
+                flash('Jumlah uang yang diterima harus lebih besar atau sama dengan total transaksi.', 'danger')
+                return redirect(url_for('admin.transaction_edit', transaction_id=transaction_id))
+        
+        db.session.commit()
+        flash('Transaksi berhasil diperbarui.', 'success')
+        return redirect(url_for('admin.transactions_list'))
+        
+    users = User.query.filter_by(role='kapster', is_active_user=True).all()
+    return render_template('admin/transaction_form.html', 
+                         transaction=transaction,
+                         users=users,
+                         edit_mode=True)
+
+@bp.route('/transactions/<int:transaction_id>/delete', methods=['POST'])
+@login_required
+def transaction_delete(transaction_id):
+    require_admin()
+    transaction = Transaction.query.get_or_404(transaction_id)
+    
+    db.session.delete(transaction)
+    db.session.commit()
+    
+    flash('Transaksi berhasil dihapus.', 'success')
+    return redirect(url_for('admin.transactions_list'))
 
 @bp.before_request
 def enforce_admin():
@@ -220,20 +272,31 @@ def transactions_list():
     # Query untuk total (tanpa pagination)
     total_query = Transaction.query
 
-    # Apply date filters
-    if start_date:
-        query = query.filter(Transaction.created_at >= start_date)
-        total_query = total_query.filter(Transaction.created_at >= start_date)
-    if end_date:
-        # Add 1 day to include the end date fully
-        from datetime import datetime, timedelta
-        try:
-            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
-            query = query.filter(Transaction.created_at < end_date_obj)
-            total_query = total_query.filter(Transaction.created_at < end_date_obj)
-        except ValueError:
-            # Handle invalid date format
-            pass
+    # Check if date filters are applied
+    has_date_filter = bool(start_date or end_date)
+    
+    # If no date filter, set empty results
+    if not has_date_filter:
+        query = query.filter(Transaction.id < 0)  # Force empty result
+        total_query = total_query.filter(Transaction.id < 0)
+    else:
+        # Apply date filters
+        if start_date:
+            try:
+                start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+                query = query.filter(Transaction.created_at >= start_date_obj)
+                total_query = total_query.filter(Transaction.created_at >= start_date_obj)
+            except ValueError:
+                flash('Format tanggal mulai tidak valid.', 'danger')
+
+        if end_date:
+            try:
+                # Add 1 day to include the end date fully
+                end_date_obj = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+                query = query.filter(Transaction.created_at < end_date_obj)
+                total_query = total_query.filter(Transaction.created_at < end_date_obj)
+            except ValueError:
+                flash('Format tanggal akhir tidak valid.', 'danger')
 
     # Apply user filter
     if q_user:
@@ -256,11 +319,10 @@ def transactions_list():
 
     return render_template(
         'admin/transactions_list.html',
-        txs=txs,
+        transactions=txs,
         users=users,
         pagination=pagination,
-        total_amount=total_amount,
-        total_count=total_count
+        total_amount=total_amount
     )
     
 @bp.route('/transactions/export.xlsx')
