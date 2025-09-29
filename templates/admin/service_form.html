@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ 'Edit' if service else 'Tambah' }} Layanan{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>{{ 'Edit' if service else 'Tambah' }} Layanan</h1>
+    </div>
+
+    <div class="card">
+        <form method="post" class="form-grid">
+            <div class="form-group">
+                <label for="name">Nama Layanan</label>
+                <input type="text" id="name" name="name" class="form-control"
+                    value="{{ service.name if service else '' }}" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Harga (Rp)</label>
+                <input type="number" id="price" name="price" class="form-control"
+                    value="{{ service.price if service else '' }}" required min="0" step="1000">
+                <small class="form-text text-muted">Masukkan harga dalam Rupiah tanpa titik atau koma</small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Simpan</button>
+                <a href="{{ url_for('admin.services_list') }}" class="btn btn-secondary">Batal</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

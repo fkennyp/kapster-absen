@@ -40,12 +40,13 @@
         <a class="sb-link" href="/admin/transactions">Transaksi</a>
         <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Buat Nota</a>
         <a class="sb-link" href="/admin/users">Users</a>
+        <a class="sb-link" href="{{ url_for('admin.services_list') }}">Layanan</a>
         {% elif current_user.is_authenticated and current_user.role == 'kapster' %}
-  <a class="sb-link" href="/attendance">Attendance</a>
-  {% if is_working_now %}
-  <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Buat Transaksi</a>
-  {% endif %}
-  <a class="sb-link" href="{{ url_for('user_transactions.my_transactions') }}">Transaksi Saya</a>
+        <a class="sb-link" href="/attendance">Attendance</a>
+        {% if is_working_now %}
+        <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Buat Transaksi</a>
+        {% endif %}
+        <a class="sb-link" href="{{ url_for('user_transactions.my_transactions') }}">Transaksi Saya</a>
         {% endif %}
       </nav>
 

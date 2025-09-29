@@ -16,6 +16,75 @@ def require_admin():
     if not current_user.is_authenticated or current_user.role != 'admin':
         abort(403)
 
+# ====== Services Management =======
+@bp.route('/services')
+@login_required
+def services_list():
+    require_admin()
+    services = Service.query.order_by(Service.name.asc()).all()
+    return render_template('admin/services_list.html', services=services)
+
+@bp.route('/services/new', methods=['GET', 'POST'])
+@login_required
+def service_create():
+    require_admin()
+    if request.method == 'POST':
+        name = request.form['name'].strip()
+        price = request.form.get('price', type=int)
+        
+        if not name:
+            flash('Nama layanan wajib diisi.', 'danger')
+        elif not price or price < 0:
+            flash('Harga harus valid.', 'danger')
+        else:
+            service = Service(name=name, price=price)
+            db.session.add(service)
+            db.session.commit()
+            flash('Layanan berhasil ditambahkan.', 'success')
+            return redirect(url_for('admin.services_list'))
+            
+    return render_template('admin/service_form.html', service=None)
+
+@bp.route('/services/<int:service_id>/edit', methods=['GET', 'POST'])
+@login_required
+def service_edit(service_id):
+    require_admin()
+    service = Service.query.get_or_404(service_id)
+    
+    if request.method == 'POST':
+        name = request.form['name'].strip()
+        price = request.form.get('price', type=int)
+        
+        if not name:
+            flash('Nama layanan wajib diisi.', 'danger')
+        elif not price or price < 0:
+            flash('Harga harus valid.', 'danger')
+        else:
+            service.name = name
+            service.price = price
+            db.session.commit()
+            flash('Layanan berhasil diperbarui.', 'success')
+            return redirect(url_for('admin.services_list'))
+            
+    return render_template('admin/service_form.html', service=service)
+
+@bp.route('/services/<int:service_id>/delete', methods=['POST'])
+@login_required
+def service_delete(service_id):
+    require_admin()
+    service = Service.query.get_or_404(service_id)
+    
+    # Cek apakah layanan masih digunakan di transaksi
+    usage_count = TransactionItem.query.filter_by(service_id=service.id).count()
+    if usage_count > 0:
+        flash(f'Layanan tidak bisa dihapus karena masih digunakan di {usage_count} transaksi.', 'danger')
+        return redirect(url_for('admin.services_list'))
+        
+    db.session.delete(service)
+    db.session.commit()
+    flash('Layanan berhasil dihapus.', 'success')
+    return redirect(url_for('admin.services_list'))
+
 
 @bp.before_request
 def enforce_admin():

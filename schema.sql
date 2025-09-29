@@ -98,7 +98,8 @@ INSERT INTO services (name, price, is_active) VALUES
 ON DUPLICATE KEY UPDATE price=VALUES(price), is_active=VALUES(is_active);
 
 -- SEED admin user
-INSERT INTO users (name, username, password_hash, role, is_active_user)
+INSERT INTO users (name, username, email, password_hash, role, is_active_user)
 VALUES ('Kenny', 'admin',
+'kenny.putrajaya@gmail.com',
 'pbkdf2:sha256:600000$6n6oFqfP$2f2e4b6b7c9eac4d0fcab3f2f9bc6d1c9d5c0b3c0be78f0a0b4b8f1f4d6e2c1a',
 'admin', TRUE);

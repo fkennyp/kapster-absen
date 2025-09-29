@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Manajemen Layanan{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Manajemen Layanan</h1>
+        <a href="{{ url_for('admin.service_create') }}" class="btn btn-primary">Tambah Layanan</a>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nama Layanan</th>
+                        <th>Harga</th>
+                        <th class="actions-column">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in services %}
+                    <tr>
+                        <td>{{ service.name }}</td>
+                        <td>Rp {{ "{:,}".format(service.price) }}</td>
+                        <td class="actions" style="white-space: nowrap;">
+                            <a href="{{ url_for('admin.service_edit', service_id=service.id) }}"
+                                class="btn btn-sm btn-edit" style="min-width: 60px; margin-right: 4px;">Edit</a>
+                            <form action="{{ url_for('admin.service_delete', service_id=service.id) }}"
+                                method="post" style="display: inline-block;"
+                                onsubmit="return confirm('Yakin ingin menghapus layanan ini?');">
+                                <button type="submit" class="btn btn-sm btn-danger" style="min-width: 60px;">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center">Belum ada layanan tersedia.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -58,6 +58,7 @@ class Service(db.Model):
     name = db.Column(db.String(120), nullable=False)
     price = db.Column(db.Integer, nullable=False)
     is_active = db.Column(db.Boolean, default=True)
+    transaction_items = relationship('TransactionItem', backref='service_rel')
 
 class Customer(db.Model):
     __tablename__ = 'customers'
