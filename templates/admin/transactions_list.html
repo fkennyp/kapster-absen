@@ -58,14 +58,16 @@
             <h3>Data Transaksi ({{ pagination.total }})</h3>
             {% if transactions %}
             <div class="table-responsive">
-                <table class="table">
+                <table class="transaction-table">
                     <thead>
                         <tr>
                             <th>Invoice</th>
                             <th>Tanggal</th>
                             <th>Pelanggan</th>
                             <th>Kapster</th>
-                            <th class="text-right">Total</th>
+                            <th class="text-right">Subtotal</th>
+                            <th class="text-right">Diskon</th>
+                            <th class="text-right">Total Akhir</th>
                             <th>Pembayaran</th>
                             <th>Aksi</th>
                         </tr>
@@ -73,13 +75,15 @@
                     <tbody>
                         {% for tx in transactions %}
                         <tr>
-                            <td>{{ tx.invoice_code or ("INV-" ~ tx.created_at.strftime("%d/%m/%Y") ~ "-" ~ (tx.invoice_seq or "XXX")) }}</td>
-                            <td>{{ tx.created_at.strftime("%d-%m-%Y %H:%M") }}</td>
-                            <td>{{ tx.customer_name }}</td>
-                            <td>{{ tx.user.name }}</td>
-                            <td class="text-right">Rp {{ "{:,}".format(tx.total) }}</td>
-                            <td>{{ tx.payment_type|upper }}</td>
-                            <td>
+                            <td data-label="Invoice">{{ tx.invoice_code or ("INV-" ~ tx.created_at.strftime("%d/%m/%Y") ~ "-" ~ (tx.invoice_seq or "XXX")) }}</td>
+                            <td data-label="Tanggal">{{ tx.created_at.strftime("%d-%m-%Y %H:%M") }}</td>
+                            <td data-label="Pelanggan">{{ tx.customer_name }}</td>
+                            <td data-label="Kapster">{{ tx.user.name }}</td>
+                            <td data-label="Subtotal" class="text-right">Rp {{ "{:,}".format((tx.total or 0) + (tx.discount or 0)) }}</td>
+                            <td data-label="Diskon" class="text-right">Rp {{ "{:,}".format(tx.discount or 0) }}</td>
+                            <td data-label="Total Akhir" class="text-right">Rp {{ "{:,}".format(tx.total or 0) }}</td>
+                            <td data-label="Pembayaran">{{ tx.payment_type|upper }}</td>
+                            <td data-label="Aksi">
                                 <a href="{{ url_for('admin.transaction_view', transaction_id=tx.id, start_date=request.args.get('start_date'), end_date=request.args.get('end_date'), user_id=request.args.get('user_id'), page=request.args.get('page', 1)) }}" class="btn btn-small">
                                     Lihat
                                 </a>

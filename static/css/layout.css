@@ -3,6 +3,5 @@
 /* Import semua bagian */
 @import url('variables.css');
 @import url('grid.css');
-@import url('navbar.css');
 @import url('sidebar.css');
 @import url('sidebar-mobile.css');
