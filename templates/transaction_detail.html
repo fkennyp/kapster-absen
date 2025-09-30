@@ -1,17 +1,19 @@
 {% extends 'base.html' %}
 {% block title %}Detail Transaksi{% endblock %}
-
-{% block content %}
-<div class="container">
-    <div class="page-header">
-        <h1>Detail Transaksi</h1>
-        <div class="page-header-actions">
-            <a href="{{ url_for('user_transactions.my_transactions', start_date=request.args.get('start_date'), end_date=request.args.get('end_date'), page=request.args.get('page', 1)) }}" class="btn">Kembali</a>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="details-grid">
+                    <tr>
+                        <th colspan="2" class="text-right">Subtotal:</th>
+                        <th colspan="2">Rp {{ "{:,}".format((transaction.total or 0) + (transaction.discount or 0)) }}</th>
+                    </tr>
+                    {% if transaction.discount and transaction.discount > 0 %}
+                    <tr>
+                        <th colspan="2" class="text-right">Diskon{% if transaction.discount_name %} ({{ transaction.discount_name }}){% endif %}:</th>
+                        <th colspan="2">- Rp {{ "{:,}".format(transaction.discount) }}</th>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th colspan="2" class="text-right">Total Setelah Diskon:</th>
+                        <th colspan="2">Rp {{ "{:,}".format(transaction.total or 0) }}</th>
+                    </tr>
             <div class="detail-grid">
                 <div class="detail-left">
                     <label>No. Invoice</label>
@@ -41,8 +43,19 @@
                 </div>
 
                 <div class="detail-left">
-                    <label>Total</label>
-                    <div>Rp {{ "{:,}".format(transaction.total) }}</div>
+                    <label>Subtotal</label>
+                    <div>Rp {{ "{:,}".format((transaction.total or 0) + (transaction.discount or 0)) }}</div>
+                </div>
+                <div class="detail-right">
+                    <label>Diskon{% if transaction.discount_name %} ({{ transaction.discount_name }}){% endif %}</label>
+                    <div>
+                        Rp {{ "{:,}".format(transaction.discount or 0) }}
+                        {% if transaction.discount_name %}<span style="color:#888; font-size:90%;">({{ transaction.discount_name }})</span>{% endif %}
+                    </div>
+                </div>
+                <div class="detail-left">
+                    <label>Total Setelah Diskon</label>
+                    <div>Rp {{ "{:,}".format(transaction.total or 0) }}</div>
                 </div>
                 {% if transaction.payment_type == 'cash' %}
                 <div class="detail-right">
@@ -70,17 +83,27 @@
                 <tbody>
                     {% for item in transaction.items %}
                     <tr>
-                        <td>{{ item.service.name }}</td>
-                        <td>Rp {{ "{:,}".format(item.price_each) }}</td>
-                        <td>{{ item.qty }}</td>
-                        <td>Rp {{ "{:,}".format(item.line_total) }}</td>
+                        <td data-label="Layanan">{{ item.service.name }}</td>
+                        <td data-label="Harga">Rp {{ "{:,}".format(item.price_each) }}</td>
+                        <td data-label="Jumlah">{{ item.qty }}</td>
+                        <td data-label="Total">Rp {{ "{:,}".format(item.line_total) }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan="3" class="text-right">Total:</th>
-                        <th>Rp {{ "{:,}".format(transaction.total) }}</th>
+                        <th colspan="2" class="text-right">Subtotal:</th>
+                        <th colspan="2">Rp {{ "{:,}".format((transaction.total or 0) + (transaction.discount or 0)) }}</th>
+                    </tr>
+                    {% if transaction.discount and transaction.discount > 0 %}
+                    <tr>
+                        <th colspan="2" class="text-right">Diskon{% if transaction.discount_name %} ({{ transaction.discount_name }}){% endif %}:</th>
+                        <th colspan="2">- Rp {{ "{:,}".format(transaction.discount) }}</th>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th colspan="2" class="text-right">Total:</th>
+                        <th colspan="2">Rp {{ "{:,}".format(transaction.total or 0) }}</th>
                     </tr>
                 </tfoot>
             </table>

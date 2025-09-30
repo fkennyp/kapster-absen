@@ -67,13 +67,21 @@
                     </select>
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="total">Total</label>
-                    <input type="text" value="Rp {{ '{:,}'.format(transaction.total) }}" class="form-control" readonly>
+                    <label for="subtotal">Subtotal</label>
+                    <input type="text" value="Rp {{ '{:,}'.format((transaction.total or 0) + (transaction.discount or 0)) }}" class="form-control" readonly>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="discount">Diskon</label>
+                    <input type="text" value="Rp {{ '{:,}'.format(transaction.discount or 0) }}" class="form-control" readonly>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="total">Total Setelah Diskon</label>
+                    <input type="text" value="Rp {{ '{:,}'.format(transaction.total or 0) }}" class="form-control" readonly>
                 </div>
             </div>
 
-            {% if transaction.payment_type == 'cash' %}
-            <div class="form-row">
+
+            <div class="form-row" id="cash-row" style="display: {% if transaction.payment_type == 'cash' %}flex{% else %}none{% endif %};">
                 <div class="form-group col-md-6">
                     <label for="cash_given">Uang Diterima</label>
                     <input type="number" id="cash_given" name="cash_given" class="form-control"
@@ -85,7 +93,22 @@
                         class="form-control" readonly>
                 </div>
             </div>
-            {% endif %}
+
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var paymentType = document.getElementById('payment_type');
+                var cashRow = document.getElementById('cash-row');
+                function toggleCashRow() {
+                    if (paymentType.value === 'cash') {
+                        cashRow.style.display = 'flex';
+                    } else {
+                        cashRow.style.display = 'none';
+                    }
+                }
+                paymentType.addEventListener('change', toggleCashRow);
+                toggleCashRow();
+            });
+            </script>
 
             <h3>Detail Layanan</h3>
             <table class="table">
@@ -152,8 +175,16 @@
                 </div>
 
                 <div class="detail-left">
-                    <label>Total</label>
-                    <div>Rp {{ "{:,}".format(transaction.total) }}</div>
+                    <label>Subtotal</label>
+                    <div>Rp {{ "{:,}".format((transaction.total or 0) + (transaction.discount or 0)) }}</div>
+                </div>
+                <div class="detail-right">
+                    <label>Diskon</label>
+                    <div>Rp {{ "{:,}".format(transaction.discount or 0) }}</div>
+                </div>
+                <div class="detail-left">
+                    <label>Total Setelah Diskon</label>
+                    <div>Rp {{ "{:,}".format(transaction.total or 0) }}</div>
                 </div>
                 {% if transaction.payment_type == 'cash' %}
                 <div class="detail-right">

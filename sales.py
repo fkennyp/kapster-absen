@@ -6,13 +6,26 @@ from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
-from models import db, Service, Transaction, TransactionItem, tznow, Attendance, Customer
+from models import db, Service, Transaction, TransactionItem, tznow, Attendance, Customer, DiscountRule
 from config import Config
 from datetime import timedelta, datetime
 from functools import wraps 
 from zoneinfo import ZoneInfo
 
+
 bp = Blueprint('sales', __name__, url_prefix='/sales')
+
+@bp.route('/phone-autocomplete')
+@login_required
+def phone_autocomplete():
+    """Endpoint untuk autocomplete nomor HP dari transaksi yang pernah ada"""
+    q = request.args.get('q', '').strip()
+    # Ambil semua nomor HP unik dari tabel Customer, filter by q jika ada
+    query = db.session.query(Customer.phone).filter(Customer.phone != None)
+    if q:
+        query = query.filter(Customer.phone.like(f"%{q}%"))
+    phones = query.distinct().order_by(Customer.phone.asc()).limit(15).all()
+    return {'phones': [p[0] for p in phones if p[0]]}
 TZ = ZoneInfo(os.getenv("TIMEZONE", "Asia/Jakarta"))
 EMAIL_RE = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 
@@ -62,6 +75,17 @@ def new_sale():
     # --- /VALIDASI ---
     
     services = Service.query.filter_by(is_active=True).order_by(Service.name.asc()).all()
+    # Ambil diskon aktif (periode valid & is_active)
+    today = tznow().date()
+    discounts = DiscountRule.query.filter(
+        DiscountRule.is_active == True,
+        DiscountRule.start_date <= today,
+        DiscountRule.end_date >= today
+    ).order_by(DiscountRule.name.asc()).all()
+
+    customer_phone = None
+    customer_name = None
+
 
     if request.method == 'POST':
         # --- ambil input ---
@@ -69,6 +93,16 @@ def new_sale():
         qtys = request.form.getlist('qty')
         pay_type = (request.form.get('payment_type') or 'cash').lower()
         cash_given_raw = request.form.get('cash_given')  # boleh kosong untuk non-cash
+        discount_id = request.form.get('discount')
+        discount_type = 'none'
+        discount_val = 0
+        discount_name = None
+        if discount_id:
+            rule = DiscountRule.query.filter_by(id=discount_id).first()
+            if rule:
+                discount_type = rule.discount_type
+                discount_val = rule.value
+                discount_name = rule.name
         customer_name = (request.form.get('customer_name') or '').strip()
         customer_email = request.form.get('customer_email') or None
         customer_phone = (request.form.get('customer_phone') or '').strip()
@@ -77,16 +111,17 @@ def new_sale():
         # --- validasi 1: nama wajib ---
         if not customer_name:
             flash('Nama pelanggan harus diisi.', 'danger')
-            return render_template('sale_new.html', services=services), 400
+            return render_template('sale_new.html', services=services, discounts=discounts), 400
 
         # --- validasi email kalau diisi ---
         if customer_email and not EMAIL_RE.fullmatch(customer_email):
             flash("Format email customer tidak valid.", "danger")
-            return render_template('sale_new.html', services=services), 400
+            return render_template('sale_new.html', services=services, discounts=discounts), 400
 
-        # --- bangun item & hitung total ---
+
+        # --- bangun item & hitung subtotal ---
         items = []
-        total = 0
+        subtotal = 0
         for sid, q in zip(ids, qtys):
             try:
                 q = int(q or 0)
@@ -98,13 +133,28 @@ def new_sale():
             if not svc or not svc.is_active:
                 continue
             line_total = svc.price * q
-            total += line_total
+            subtotal += line_total
             items.append((svc, q, svc.price, line_total))
 
+        # --- ambil diskon (nominal/persen) ---
+        if discount_type == 'persen':
+            discount = int(subtotal * discount_val / 100)
+        elif discount_type == 'nominal':
+            discount = discount_val
+        else:
+            discount = 0
+        if discount < 0:
+            discount = 0
+        if discount > subtotal:
+            discount = subtotal
+
+        total = subtotal - discount
+
         # --- validasi 2: harus ada minimal 1 layanan ---
-        if total == 0 or not items:
+
+        if subtotal == 0 or not items:
             flash('Pilih minimal 1 layanan dengan qty > 0.', 'danger')
-            return render_template('sale_new.html', services=services), 400
+            return render_template('sale_new.html', services=services, discounts=discounts), 400
 
         # --- validasi 3: kalau cash, nominal >= total ---
         cash_val = None
@@ -116,10 +166,13 @@ def new_sale():
                 cash_val = 0
 
             if cash_val <= 0 or cash_val < total:
-                flash('Jumlah yang dibayarkan masih kurang dari total.', 'danger')
-                return render_template('sale_new.html', services=services), 400
+                flash('Jumlah yang dibayarkan masih kurang dari total setelah diskon.', 'danger')
+                return render_template('sale_new.html', services=services, discounts=discounts), 400
 
             change = cash_val - total
+        else:
+            cash_val = None
+            change = 0
 
         # --- buat kode invoice ---
         now_local = tznow()  # sudah timezone-aware sesuai Config
@@ -134,7 +187,7 @@ def new_sale():
 
         next_seq = (max_seq or 0) + 1
         invoice_code = f"INV-{now_local.strftime('%d/%m/%Y')}-{next_seq:03d}"
-        
+
         # --- resolve CUSTOMER ---
         cust = None
         if customer_phone:
@@ -160,8 +213,7 @@ def new_sale():
         visit_number = prev_count + 1
         cust.touch()  # update updated_at
 
-        
-        # --- simpan transaksi ---
+    # --- simpan transaksi ---
         tx = Transaction(
             user_id=current_user.id,
             barber_name=barber_name,
@@ -169,6 +221,8 @@ def new_sale():
             customer_email=customer_email,
             payment_type=pay_type,
             total=total,
+            discount=discount,
+            discount_name=discount_name,
             cash_given=cash_val,
             change_amount=change,
             created_at=tznow(),
@@ -191,21 +245,17 @@ def new_sale():
 
         db.session.commit()
 
+    if request.method == 'POST':
         flash(f"Transaksi #{tx.id} berhasil dibuat.", "success")
-
         pdf_url = url_for('sales.receipt_pdf', tx_id=tx.id)
-        redirect_url = url_for('sales.new_sale')  # halaman form
-
         return render_template(
             'sales/after_create.html',
             pdf_url=url_for('sales.receipt_pdf', tx_id=tx.id),
             redirect_url=url_for('sales.new_sale'),
             tx_id=tx.id
         )
-
     # GET render form
-    services = Service.query.filter_by(is_active=True).order_by(Service.name.asc()).all()
-    return render_template('sale_new.html', services=services)
+    return render_template('sale_new.html', services=services, discounts=discounts)
 
 
 @bp.route('/receipt/<int:tx_id>.pdf')
@@ -275,6 +325,7 @@ def receipt_pdf(tx_id):
     draw(f"Pembayaran : {tx.payment_type.upper()}")
     p.line(x_l, y, x_r, y); y -= line_h
 
+
     # --- items ---
     p.setFont("Helvetica-Bold", 9)
     p.drawString(x_l, y, "Layanan")
@@ -288,6 +339,17 @@ def receipt_pdf(tx_id):
 
     p.line(x_l, y, x_r, y); y -= line_h
 
+    subtotal = (tx.total or 0) + (tx.discount or 0)
+    p.setFont("Helvetica-Bold", 10)
+    p.drawString(x_l, y, "Subtotal")
+    p.drawRightString(x_r, y, f"Rp {subtotal:,}"); y -= line_h
+    if (tx.discount or 0) > 0:
+        p.setFont("Helvetica-Bold", 10)
+        if getattr(tx, 'discount_name', None):
+            p.drawString(x_l, y, f"Diskon ({tx.discount_name})")
+        else:
+            p.drawString(x_l, y, "Diskon")
+        p.drawRightString(x_r, y, f"-Rp {tx.discount:,}"); y -= line_h
     p.setFont("Helvetica-Bold", 10)
     p.drawString(x_l, y, "TOTAL")
     p.drawRightString(x_r, y, f"Rp {tx.total:,}"); y -= line_h
@@ -338,22 +400,15 @@ def receipt_pdf(tx_id):
 def customer_visits():
     """Endpoint untuk mendapatkan jumlah kunjungan customer berdasarkan nomor HP"""
     phone = request.args.get('phone', '').strip()
-    
+    print(f"[DEBUG] /customer-visits called with phone: '{phone}'")
     if not phone:
+        print("[DEBUG] No phone provided, returning 0 visits")
         return {'visits': 0}
-    
     try:
-        # Cari customer berdasarkan nomor HP
-        customer = Customer.query.filter_by(phone=phone).first()
-        
-        if not customer:
-            return {'visits': 0}
-        
-        # Hitung jumlah transaksi sebelumnya
         prev_count = db.session.query(db.func.count(Transaction.id))\
-            .filter(Transaction.customer_id == customer.id).scalar() or 0
-        
+            .filter(Transaction.customer_phone == phone).scalar() or 0
+        print(f"[DEBUG] Found {prev_count} visits for phone '{phone}'")
         return {'visits': prev_count}
     except Exception as e:
-        print(f"Error in customer_visits: {e}")
+        print(f"[ERROR] Error in customer_visits: {e}")
         return {'visits': 0}
