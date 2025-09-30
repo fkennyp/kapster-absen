@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Master Diskon{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Atur Diskon</h1>
+        <a href="{{ url_for('admin.discount_create') }}" class="btn">Tambah Diskon Baru</a>
+    </div>
+    <div class="card">
+        <table class="table responsive-table">
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Periode</th>
+                    <th>Tipe</th>
+                    <th>Nilai</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in rules %}
+                <tr>
+                    <td data-label="Nama">{{ d.name }}</td>
+                    <td data-label="Periode">{{ d.start_date.strftime('%d-%m-%Y') }} s/d {{
+                        d.end_date.strftime('%d-%m-%Y') }}</td>
+                    <td data-label="Tipe">{{ d.discount_type|capitalize }}</td>
+                    <td data-label="Nilai">
+                        {% if d.discount_type == 'nominal' %}
+                        Rp {{ "{:,}".format(d.value) }}
+                        {% else %}
+                        {{ d.value }}%
+                        {% endif %}
+                    </td>
+                    <td data-label="Status">{{ 'Aktif' if d.is_active else 'Nonaktif' }}</td>
+                    <td data-label="Aksi">
+                        <a href="{{ url_for('admin.discount_edit', rule_id=d.id) }}" class="btn btn-sm">Edit</a>
+                        <form action="{{ url_for('admin.discount_delete', rule_id=d.id) }}" method="post"
+                            style="display:inline;" onsubmit="return confirm('Hapus diskon ini?');">
+                            <button type="submit" class="btn btn-sm btn-secondary">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">Belum ada diskon.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

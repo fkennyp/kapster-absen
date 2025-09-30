@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if rule else 'Tambah' }} Diskon{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>{{ 'Edit' if rule else 'Tambah' }} Diskon</h1>
+    </div>
+    <div class="diskon-form-card">
+        <form method="post">
+            <div class="diskon-form-group">
+                <label for="name">Nama Diskon</label>
+                <input type="text" id="name" name="name" value="{{ rule.name if rule else '' }}" required>
+            </div>
+            <div class="diskon-form-group">
+                <label for="start_date">Tanggal Mulai</label>
+                <input type="date" id="start_date" name="start_date" value="{{ rule.start_date if rule else '' }}" required>
+            </div>
+            <div class="diskon-form-group">
+                <label for="end_date">Tanggal Selesai</label>
+                <input type="date" id="end_date" name="end_date" value="{{ rule.end_date if rule else '' }}" required>
+            </div>
+            <div class="diskon-form-group">
+                <label for="discount_type">Tipe Diskon</label>
+                <select id="discount_type" name="discount_type" required>
+                    <option value="nominal" {% if rule and rule.discount_type=='nominal' %}selected{% endif %}>Nominal (Rp)</option>
+                    <option value="persen" {% if rule and rule.discount_type=='persen' %}selected{% endif %}>Persentase (%)</option>
+                </select>
+            </div>
+            <div class="diskon-form-group">
+                <label for="value">Nilai Diskon</label>
+                <input type="number" id="value" name="value" value="{{ rule.value if rule else '' }}" required min="1">
+            </div>
+            <div class="diskon-form-group">
+                <label for="is_active">Aktif</label>
+                <input type="checkbox" id="is_active" name="is_active" {% if rule and rule.is_active %}checked{% endif %}>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Simpan</button>
+                <a href="{{ url_for('admin.discounts_list') }}" class="btn btn-secondary">Batal</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

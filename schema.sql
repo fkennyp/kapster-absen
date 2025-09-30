@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS transactions (
   customer_email VARCHAR(120) NULL,     -- email pelanggan (optional)
   payment_type VARCHAR(20) NOT NULL,    -- cash/qris/ewallet/transfer
   total INT NOT NULL,
+  discount INT NULL DEFAULT 0,
   cash_given INT NULL,
   change_amount INT NULL,
   created_at DATETIME NOT NULL,
@@ -54,6 +55,7 @@ CREATE TABLE IF NOT EXISTS transactions (
   -- invoice per-hari
   invoice_seq INT NULL,                 -- urutan per hari: 1,2,3...
   invoice_code VARCHAR(50) NULL,        -- format: INV-DD/MM/YYYY-###
+  discount_name VARCHAR(120) DEFAULT NULL,
 
   FOREIGN KEY (user_id) REFERENCES users(id),
   INDEX idx_tx_created_at (created_at),
@@ -89,6 +91,20 @@ ALTER TABLE transactions
   ADD COLUMN customer_id INT NULL,
   ADD COLUMN visit_number INT NULL,
   ADD CONSTRAINT fk_tx_customer FOREIGN KEY (customer_id) REFERENCES customers(id);
+
+-- DISCOUNT RULES
+CREATE TABLE IF NOT EXISTS discount_rules (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  discount_type VARCHAR(10) NOT NULL, -- 'nominal' atau 'persen'
+  value INT NOT NULL, -- nominal (Rp) atau persen (1-100)
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL
+) ENGINE=InnoDB;
+
 
 -- SEED layanan (aman karena UNIQUE name)
 INSERT INTO services (name, price, is_active) VALUES

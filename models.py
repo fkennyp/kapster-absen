@@ -12,6 +12,29 @@ def tznow():
     tz = pytz.timezone(Config.TIMEZONE)
     return datetime.now(tz)
 
+class DiscountRule(db.Model):
+    __tablename__ = 'discount_rules'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+    discount_type = db.Column(db.String(10), nullable=False)  # 'nominal' atau 'persen'
+    value = db.Column(db.Integer, nullable=False)  # nominal (Rp) atau persen (1-100)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=tznow)
+    updated_at = db.Column(db.DateTime, nullable=False, default=tznow, onupdate=tznow)
+from datetime import datetime, date
+import pytz
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+from config import Config
+from sqlalchemy.orm import relationship
+
+def tznow():
+    tz = pytz.timezone(Config.TIMEZONE)
+    return datetime.now(tz)
+
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -88,10 +111,18 @@ class Customer(db.Model):
     @staticmethod
     def update(id: int, name: str, phone: str = None):
         customer = Customer.query.get_or_404(id)
+        old_phone = customer.phone
         customer.name = name
         customer.phone = phone
         customer.touch()
         db.session.commit()
+        # Update all transactions with this customer_id to reflect new phone (if phone changed)
+        if old_phone and phone and old_phone != phone:
+            from models import Transaction
+            txs = Transaction.query.filter_by(customer_id=id).all()
+            for tx in txs:
+                tx.customer_phone = phone
+            db.session.commit()
         return customer
 
     @staticmethod
@@ -122,6 +153,8 @@ class Transaction(db.Model):
     customer_email = db.Column(db.String(120), nullable=True)
     payment_type = db.Column(db.String(20), nullable=False)
     total = db.Column(db.Integer, nullable=False)
+    discount = db.Column(db.Integer, nullable=True, default=0)  # diskon nominal (misal: 10000)
+    discount_name = db.Column(db.String(120), nullable=True)  # nama diskon yang dipakai
     cash_given = db.Column(db.Integer)
     change_amount = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, nullable=False)
@@ -130,6 +163,7 @@ class Transaction(db.Model):
     invoice_code = db.Column(db.String(50))      # tampilan: INV-DD/MM/YYYY-###
     
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=True)
+    customer_phone = db.Column(db.String(30), nullable=True)  # duplikasi nomor HP saat transaksi dibuat
     visit_number = db.Column(db.Integer)  # freeze "kunjungan ke-X" pada saat transaksi
     
     user = relationship('User')
@@ -160,4 +194,4 @@ class TransactionItem(db.Model):
     price_each = db.Column(db.Integer, nullable=False)
     line_total = db.Column(db.Integer, nullable=False)
 
-    service = relationship('Service')
+    service = relationship('Service', overlaps="service_rel,transaction_items")

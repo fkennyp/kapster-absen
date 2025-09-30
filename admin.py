@@ -1,20 +1,41 @@
+
+
+# All imports at the top
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, Response
 from flask_login import login_required, current_user
 from sqlalchemy import func
-from models import db, User, Attendance, tznow, Transaction, TransactionItem, Service, Customer
+from models import db, User, Attendance, tznow, Transaction, TransactionItem, Service, Customer, DiscountRule
 from io import BytesIO
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 import openpyxl
 from openpyxl.styles import Font, PatternFill
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
-
-
 def require_admin():
     if not current_user.is_authenticated or current_user.role != 'admin':
         abort(403)
+
+# ====== User Delete =======
+@bp.route('/users/<int:user_id>/delete', methods=['POST'])
+@login_required
+def user_delete(user_id):
+    u = User.query.get_or_404(user_id)
+    if u.role == 'admin':
+        flash('Tidak bisa menghapus user admin.', 'danger')
+        return redirect(url_for('admin.users'))
+    # Cek relasi attendance
+    attendance_count = Attendance.query.filter_by(user_id=u.id).count()
+    if attendance_count > 0:
+        flash('Tidak bisa menghapus user karena masih ada data absensi terkait.', 'danger')
+        return redirect(url_for('admin.users'))
+    db.session.delete(u)
+    db.session.commit()
+    flash('User berhasil dihapus.', 'success')
+    return redirect(url_for('admin.users'))
+
+
 
 # ====== Services Management =======
 @bp.route('/services')
@@ -150,7 +171,7 @@ def enforce_admin():
 @login_required
 def users():
     q = User.query.order_by(User.role.desc(), User.name.asc()).all()
-    return render_template('users.html', users=q)
+    return render_template('admin/users.html', users=q)
 
 
 @bp.route('/users/new', methods=['GET', 'POST'])
@@ -167,14 +188,20 @@ def user_create():
         email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         if not re.match(email_regex, email):
             flash('Email tidak valid', 'danger')
-            return render_template('user_form.html', user=None)
+            return render_template('admin/user_form.html', user=None)
+        # Cek email unik (tidak boleh sama dengan user lain)
+        existing = User.query.filter_by(email=email).first()
+        if existing:
+            flash('Email telah terdaftar pada user lain.', 'danger')
+            return render_template('admin/user_form.html', user=None)
         u = User(name=name, username=username, email=email, role=role)
         u.set_password(password)
         db.session.add(u)
         db.session.commit()
         flash('User created', 'success')
         return redirect(url_for('admin.users'))
-    return render_template('user_form.html', user=None)
+    else:
+        return render_template('admin/user_form.html', user=None)
 
 
 @bp.route('/users/<int:user_id>/edit', methods=['GET', 'POST'])
@@ -189,12 +216,12 @@ def user_edit(user_id):
         email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         if not re.match(email_regex, email):
             flash('Email tidak valid', 'danger')
-            return render_template('user_form.html', user=u)
+            return render_template('admin/user_form.html', user=u)
         # Cek email unik (tidak boleh sama dengan user lain)
         existing = User.query.filter(User.email == email, User.id != u.id).first()
         if existing:
             flash('Email telah terdaftar pada user lain.', 'danger')
-            return render_template('user_form.html', user=u)
+            return render_template('admin/user_form.html', user=u)
         u.email = email
         role = request.form.get('role', 'kapster')
         u.role = role
@@ -204,7 +231,8 @@ def user_edit(user_id):
         db.session.commit()
         flash('User updated', 'success')
         return redirect(url_for('admin.users'))
-    return render_template('user_form.html', user=u)
+    else:
+        return render_template('admin/user_form.html', user=u)
 
 
 @bp.route('/dashboard')
@@ -366,16 +394,17 @@ def export_transactions_xlsx():
         services = []
         for item in tx.items:
             services.append(f"{item.service.name} ({item.qty}x Rp {item.price_each:,})")
-        
         services_str = ", ".join(services)
-        
+        subtotal = (tx.total or 0) + (tx.discount or 0)
         data.append({
             'Invoice': tx.invoice_code or f"INV-{tx.created_at.strftime('%d/%m/%Y')}-{tx.invoice_seq or 'XXX'}",
             'Tanggal': tx.created_at.strftime('%Y-%m-%d %H:%M'),
             'Pelanggan': tx.customer_name,
             'Kapster': tx.user.name,
             'Layanan': services_str,
-            'Total': tx.total,
+            'Subtotal': subtotal,
+            'Diskon': tx.discount or 0,
+            'Total Setelah Diskon': tx.total or 0,
             'Tipe Pembayaran': tx.payment_type.upper(),
             'Dibayar': tx.cash_given if tx.payment_type == 'cash' else tx.total,
             'Kembalian': tx.change_amount if tx.payment_type == 'cash' else 0,
@@ -398,13 +427,14 @@ def export_transactions_xlsx():
         worksheet.column_dimensions['C'].width = 20  # Pelanggan
         worksheet.column_dimensions['D'].width = 15  # Kapster
         worksheet.column_dimensions['E'].width = 40  # Layanan
-        worksheet.column_dimensions['F'].width = 15  # Total
-        worksheet.column_dimensions['G'].width = 12  # Tipe Pembayaran
-        worksheet.column_dimensions['H'].width = 15  # Dibayar
-        worksheet.column_dimensions['I'].width = 12  # Kembalian
-        worksheet.column_dimensions['J'].width = 25  # Email
-        worksheet.column_dimensions['K'].width = 12  # Kunjungan
-        
+        worksheet.column_dimensions['F'].width = 15  # Subtotal
+        worksheet.column_dimensions['G'].width = 12  # Diskon
+        worksheet.column_dimensions['H'].width = 18  # Total Setelah Diskon
+        worksheet.column_dimensions['I'].width = 12  # Tipe Pembayaran
+        worksheet.column_dimensions['J'].width = 15  # Dibayar
+        worksheet.column_dimensions['K'].width = 12  # Kembalian
+        worksheet.column_dimensions['L'].width = 25  # Email
+        worksheet.column_dimensions['M'].width = 12  # Kunjungan
         # Format header style
         for cell in worksheet[1]:
             cell.font = openpyxl.styles.Font(bold=True)
@@ -422,10 +452,20 @@ def export_transactions_xlsx():
         headers={'Content-Disposition': f'attachment; filename={filename}'}
     )
 
+
 # ====== Customer Management =======
-@bp.route('/customers')
+@bp.route('/customers', methods=['GET'])
 @login_required
 def customers_list():
+    # Only return JSON if ?q= is present (for autocomplete)
+    if request.args.get('q'):
+        q = request.args.get('q', '').strip()
+        query = Customer.query
+        if q:
+            query = query.filter(Customer.phone.like(f"%{q}%") | Customer.name.like(f"%{q}%"))
+        customers = query.order_by(Customer.name).limit(15).all()
+        return {'customers': [ {'name': c.name, 'phone': c.phone} for c in customers if c.phone ]}
+    # Otherwise, always render the normal HTML page
     require_admin()
     customers = Customer.query.order_by(Customer.name).all()
     return render_template('admin/customers_list.html', customers=customers)
@@ -497,3 +537,66 @@ def customer_delete(customer_id):
         flash('Terjadi kesalahan saat menghapus data.', 'danger')
         
     return redirect(url_for('admin.customers_list'))
+
+# ====== DISCOUNT RULES MANAGEMENT =======
+@bp.route('/discounts')
+@login_required
+def discounts_list():
+    require_admin()
+    rules = DiscountRule.query.order_by(DiscountRule.start_date.desc()).all()
+    return render_template('admin/discounts_list.html', rules=rules)
+
+@bp.route('/discounts/new', methods=['GET', 'POST'])
+@login_required
+def discount_create():
+    require_admin()
+    if request.method == 'POST':
+        name = request.form['name'].strip()
+        start_date = request.form['start_date']
+        end_date = request.form['end_date']
+        discount_type = request.form['discount_type']
+        value = int(request.form['value'])
+        is_active = request.form.get('is_active') == 'on'
+        rule = DiscountRule(
+            name=name,
+            start_date=start_date,
+            end_date=end_date,
+            discount_type=discount_type,
+            value=value,
+            is_active=is_active,
+            created_at=date.today(),
+            updated_at=date.today()
+        )
+        db.session.add(rule)
+        db.session.commit()
+        flash('Diskon berhasil ditambahkan.', 'success')
+        return redirect(url_for('admin.discounts_list'))
+    return render_template('admin/discount_form.html', rule=None)
+
+@bp.route('/discounts/<int:rule_id>/edit', methods=['GET', 'POST'])
+@login_required
+def discount_edit(rule_id):
+    require_admin()
+    rule = DiscountRule.query.get_or_404(rule_id)
+    if request.method == 'POST':
+        rule.name = request.form['name'].strip()
+        rule.start_date = request.form['start_date']
+        rule.end_date = request.form['end_date']
+        rule.discount_type = request.form['discount_type']
+        rule.value = int(request.form['value'])
+        rule.is_active = request.form.get('is_active') == 'on'
+        rule.updated_at = date.today()
+        db.session.commit()
+        flash('Diskon berhasil diperbarui.', 'success')
+        return redirect(url_for('admin.discounts_list'))
+    return render_template('admin/discount_form.html', rule=rule)
+
+@bp.route('/discounts/<int:rule_id>/delete', methods=['POST'])
+@login_required
+def discount_delete(rule_id):
+    require_admin()
+    rule = DiscountRule.query.get_or_404(rule_id)
+    db.session.delete(rule)
+    db.session.commit()
+    flash('Diskon berhasil dihapus.', 'success')
+    return redirect(url_for('admin.discounts_list'))
