@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}Check-in Reports{% endblock %}
+{% block title %}Laporan Absensi{% endblock %}
 {% block content %}
-<h1>Check-in Reports</h1>
+<h1>Laporan Absensi</h1>
 
 <!-- Card untuk Filter -->
 <div class="card">
-    <h3>Filter Check-in Reports</h3>
+    <h3>Filter Laporan Absensi</h3>
     <form method="get" class="filter-form">
         <div>
             <label for="start">Start</label>
@@ -36,7 +36,7 @@
 
 <!-- Card untuk Table -->
 <div class="card">
-    <h3>Data Check-in Reports ({{ rows|length }})</h3>
+    <h3>Data Laporan Absensi ({{ rows|length }})</h3>
     <table class="table">
         <thead>
             <tr>
@@ -52,8 +52,8 @@
             <tr>
                 <td>{{ r.date }}</td>
                 <td>{{ r.user.name }}</td>
-                <td>{{ r.check_in }}</td>
-                <td>{{ r.check_out }}</td>
+                <td>{% if r.check_in %}{{ r.check_in.strftime('%H:%M') }}{% endif %}</td>
+                <td>{% if r.check_out %}{{ r.check_out.strftime('%H:%M') }}{% endif %}</td>
                 <td>{{ r.notes }}</td>
             </tr>
             {% endfor %}
