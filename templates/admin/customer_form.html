@@ -1,49 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="content-wrapper">
-    <div class="content-header">
-        <div class="flex-between-center">
-            <h1>{{ 'Edit' if customer else 'Tambah' }} Pelanggan</h1>
-            <a href="{{ url_for('admin.customers_list') }}" class="btn btn-secondary">
-                Kembali
-            </a>
-        </div>
+<div class="form-card" style="max-width: 480px; margin: 36px auto 0 auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
+        <h1 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #222;">{{ 'Edit' if customer else 'Tambah' }} Pelanggan</h1>
+        <a href="{{ url_for('admin.customers_list') }}" class="btn btn-secondary">Kembali</a>
     </div>
-
-    <div class="content-body">
-        <div class="card">
-            <div class="card-body">
-                <form method="POST">
-                    <div class="form-group">
-                        <label for="name">Nama Pelanggan <span class="text-danger">*</span></label>
-                        <input type="text" 
-                               class="form-control" 
-                               id="name" 
-                               name="name" 
-                               value="{{ customer.name if customer else '' }}" 
-                               required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="phone">No. Telepon</label>
-                        <input type="text" 
-                               class="form-control" 
-                               id="phone" 
-                               name="phone" 
-                               value="{{ customer.phone if customer else '' }}" 
-                               placeholder="Opsional">
-                        <small class="text-muted">Nomor telepon harus unik jika diisi</small>
-                    </div>
-
-                    <div class="form-group mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            Simpan
-                        </button>
-                    </div>
-                </form>
-            </div>
+    <form method="POST">
+        <div class="form-group">
+            <label for="name">Nama Pelanggan <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ customer.name if customer else '' }}" required>
         </div>
-    </div>
+        <div class="form-group">
+            <label for="phone">No. Telepon</label>
+            <input type="text" class="form-control" id="phone" name="phone" value="{{ customer.phone if customer else '' }}" placeholder="Opsional">
+            <small class="text-muted">Nomor telepon harus unik jika diisi</small>
+        </div>
+        <div class="form-group" style="margin-top: 28px;">
+            <button type="submit" class="btn btn-primary" style="min-width: 120px;">Simpan</button>
+        </div>
+    </form>
 </div>
 {% endblock %}

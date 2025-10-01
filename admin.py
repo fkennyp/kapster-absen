@@ -477,20 +477,24 @@ def customer_create():
     if request.method == 'POST':
         name = request.form['name'].strip()
         phone = request.form['phone'].strip() or None
-        
+
         if not name:
             flash('Nama pelanggan wajib diisi.', 'danger')
         else:
+            from sqlalchemy.exc import IntegrityError
             try:
                 Customer.create(name=name, phone=phone)
                 flash('Data pelanggan berhasil ditambahkan.', 'success')
                 return redirect(url_for('admin.customers_list'))
+            except IntegrityError as e:
+                from models import db
+                db.session.rollback()
+                flash('Nomor telepon sudah terdaftar untuk pelanggan lain.', 'danger')
             except Exception as e:
-                if 'uq_customers_phone' in str(e):
-                    flash('Nomor telepon sudah terdaftar untuk pelanggan lain.', 'danger')
-                else:
-                    flash('Terjadi kesalahan. Silakan coba lagi.', 'danger')
-            
+                from models import db
+                db.session.rollback()
+                flash('Terjadi kesalahan. Silakan coba lagi.', 'danger')
+
     return render_template('admin/customer_form.html', customer=None)
 
 @bp.route('/customers/<int:customer_id>/edit', methods=['GET', 'POST'])

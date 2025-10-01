@@ -1,3 +1,24 @@
+/* Form vertical untuk card transaksi admin agar field sejajar vertikal dan jarak antar input rapi */
+.form-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 420px;
+  margin: 0 auto 18px auto;
+}
+.form-vertical .form-group {
+  margin-bottom: 0;
+}
+/* ===== GENERIC FORM CARD ===== */
+.form-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(17, 24, 39, 0.06);
+  padding: 32px 28px 28px 28px;
+  margin: 36px auto 0 auto;
+  max-width: 480px;
+}
 /* ===== MASTER DISKON ADMIN FORM ===== */
 .diskon-form-card {
   background: #fff;
