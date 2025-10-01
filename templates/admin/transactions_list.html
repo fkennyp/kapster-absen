@@ -43,7 +43,7 @@
     <strong>Total transaksi ditampilkan:</strong> Rp {{ '{:,}'.format(total_amount or 0) }}
     {% endif %}
     </div>
-    <div class="card">
+    <div class="card card--wide">
         {% if not request.args.get('start_date') and not request.args.get('end_date') %}
             <h3>Data Transaksi</h3>
             <div style="padding: 2em; text-align: center; color: #888;">Silakan filter tanggal untuk melihat transaksi.</div>

@@ -229,6 +229,7 @@ def new_sale():
             invoice_seq=next_seq,
             invoice_code=invoice_code,
             customer_id=cust.id,
+            customer_phone=cust.phone,
             visit_number=visit_number,
         )
         db.session.add(tx)

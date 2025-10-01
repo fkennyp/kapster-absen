@@ -58,21 +58,21 @@
             </div>
             <div class="form-group">
                 <label for="subtotal">Subtotal</label>
-                <input type="text" value="Rp {{ '{:,'.format((transaction.total or 0) + (transaction.discount or 0)) }}" class="form-control" readonly>
+                <input type="text" value="Rp {{ '{:,}'.format((transaction.total or 0) + (transaction.discount or 0)) }}" class="form-control" readonly>
             </div>
             <div class="form-group">
                 <label for="discount">Diskon</label>
-                <input type="text" value="Rp {{ '{:,'.format(transaction.discount or 0) }}" class="form-control" readonly>
+                <input type="text" value="Rp {{ '{:,}'.format(transaction.discount or 0) }}" class="form-control" readonly>
             </div>
             <div class="form-group">
                 <label for="total">Total Setelah Diskon</label>
-                <input type="text" value="Rp {{ '{:,'.format(transaction.total or 0) }}" class="form-control" readonly>
+                <input type="text" value="Rp {{ '{:,}'.format(transaction.total or 0) }}" class="form-control" readonly>
             </div>
-            <div class="form-group" id="cash-row" style="display: {% if transaction.payment_type == 'cash' %}block{% else %}none{% endif %};">
+            <div class="form-group" id="cash-row" style="display: '{{ 'flex' if transaction.payment_type == 'cash' else 'none' }}';">
                 <label for="cash_given">Uang Diterima</label>
                 <input type="number" id="cash_given" name="cash_given" class="form-control" value="{{ transaction.cash_given }}" min="{{ transaction.total }}">
             </div>
-            <div class="form-group" id="change-row" style="display: {% if transaction.payment_type == 'cash' %}block{% else %}none{% endif %};">
+            <div class="form-group" id="change-row" style="display: {{ 'flex' if transaction.payment_type == 'cash' else 'none' }};">
                 <label for="change_amount">Kembalian</label>
                 <input type="text" value="Rp {{ '{:,}'.format(transaction.change_amount or 0) }}" class="form-control" readonly>
             </div>
@@ -167,23 +167,27 @@
 
                 <div class="detail-left">
                     <label>Subtotal</label>
-                    <div>Rp {{ "{:,}".format((transaction.total or 0) + (transaction.discount or 0)) }}</div>
+                    <div>Rp {{ '{:,}'.format((transaction.total or 0) + (transaction.discount or 0)) }}</div>
                 </div>
                 <div class="detail-right">
-                    <label>Diskon</label>
-                    <div>Rp {{ "{:,}".format(transaction.discount or 0) }}</div>
+                    <label>Nama Diskon</label>
+                    <div>{{ transaction.discount_name or '-' }}</div>
                 </div>
                 <div class="detail-left">
+                    <label>Diskon</label>
+                    <div>Rp {{ '{:,}'.format(transaction.discount or 0) }}</div>
+                </div>
+                <div class="detail-right">
                     <label>Total Setelah Diskon</label>
                     <div>Rp {{ "{:,}".format(transaction.total or 0) }}</div>
                 </div>
                 {% if transaction.payment_type == 'cash' %}
-                <div class="detail-right">
+                <div class="detail-left">
                     <label>Uang Diterima</label>
                     <div>Rp {{ "{:,}".format(transaction.cash_given) }}</div>
                 </div>
 
-                <div class="detail-left">
+                <div class="detail-right">
                     <label>Kembalian</label>
                     <div>Rp {{ "{:,}".format(transaction.change_amount) }}</div>
                 </div>
