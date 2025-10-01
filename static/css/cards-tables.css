@@ -20,467 +20,175 @@
   justify-content: center;
   transition: box-shadow 0.18s;
 }
-.dashboard-card.absen-yes {
-  border-left: 6px solid #22c55e;
-}
-.dashboard-card.absen-no {
-  border-left: 6px solid #ef4444;
-}
+.dashboard-card.absen-yes { border-left: 6px solid #22c55e; }
+.dashboard-card.absen-no  { border-left: 6px solid #ef4444; }
 .dashboard-card .card-label {
-  font-size: 1.08rem;
-  color: #374151;
-  font-weight: 600;
-  margin-bottom: 8px;
-  letter-spacing: 0.01em;
+  font-size: 1.08rem; color: #374151; font-weight: 600; margin-bottom: 8px; letter-spacing: .01em;
 }
 .dashboard-card .card-value {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: #111827;
-  margin-bottom: 0;
-  line-height: 1.1;
+  font-size: 2.2rem; font-weight: 800; color: #111827; margin-bottom: 0; line-height: 1.1;
 }
 @media (max-width: 700px) {
-  .dashboard-cards {
-    flex-direction: column;
-    gap: 18px;
-    max-width: 95vw;
-    align-items: center;
-  }
-  .dashboard-card {
-    min-width: 0;
-    width: 100%;
-    padding: 22px 10vw 18px 10vw;
-  }
+  .dashboard-cards { flex-direction: column; gap: 18px; max-width: 95vw; align-items: center; }
+  .dashboard-card { min-width: 0; width: 100%; padding: 22px 10vw 18px; }
 }
-/* Responsive Customer Table (Admin Pelanggan) */
+
+/* ===== Responsive Customer Table (Admin Pelanggan) ===== */
 .customer-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 20px 0 24px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.01);
+  width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden;
+  margin: 20px 0 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.01);
 }
-.customer-table th,
-.customer-table td {
-  padding: 14px 16px;
-  border: 1px solid #e5e7eb;
-  text-align: left;
-  vertical-align: top;
-  word-break: break-word;
+.customer-table th, .customer-table td {
+  padding: 14px 16px; border: 1px solid #e5e7eb; text-align: left; vertical-align: top; word-break: break-word;
 }
 .customer-table th {
-  color: #222;
-  font-weight: 800;
-  background: #f9fafb;
-  border-bottom: 2px solid #e5e7eb;
+  color: #222; font-weight: 800; background: #f9fafb; border-bottom: 2px solid #e5e7eb;
 }
-.customer-table tr {
-  transition: background 0.13s;
-}
-.customer-table tr:hover td {
-  background: #f3f4f6;
-}
+.customer-table tr { transition: background .13s; }
+.customer-table tr:hover td { background: #f3f4f6; }
+
 @media (max-width: 640px) {
-  .customer-table thead {
-    display: none;
-  }
+  .customer-table thead { display: none; }
   .customer-table tr {
-    display: block;
-    margin-bottom: 16px;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    background: #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-    padding: 8px 0;
+    display: block; margin-bottom: 16px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03); padding: 8px 0;
   }
   .customer-table td {
-    display: flex;
-    width: 100%;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: 10px 12px;
-    border: none;
-    border-bottom: 1px solid #f3f4f6;
-    font-size: 15px;
-    position: relative;
-    background: none;
+    display: flex; width: 100%; justify-content: flex-start; align-items: flex-start; padding: 10px 12px;
+    border: none; border-bottom: 1px solid #f3f4f6; font-size: 15px; position: relative; background: none;
   }
-  .customer-table td:last-child {
-    border-bottom: none;
-  }
+  .customer-table td:last-child { border-bottom: none; }
   .customer-table td:before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: #6b7280;
-    flex-basis: 40%;
-    min-width: 110px;
-    text-align: left;
-    padding-right: 10px;
-    white-space: pre-line;
+    content: attr(data-label); font-weight: 600; color: #6b7280; flex-basis: 40%; min-width: 110px;
+    text-align: left; padding-right: 10px; white-space: pre-line;
   }
-  .customer-table td {
-    text-align: left;
-  }
-  .customer-table td.actions {
-    flex-direction: column;
-    align-items: flex-start;
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
+  .customer-table td { text-align: left; }
+  .customer-table td.actions { flex-direction: column; align-items: flex-start; padding: 8px 12px; }
   .customer-table td.actions .actions-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    width: 100%;
-    margin-top: 4px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-top: 4px;
   }
   .customer-table td.actions .btn-edit,
-  .customer-table td.actions .btn-delete {
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-    margin: 0;
-  }
+  .customer-table td.actions .btn-delete { width: 100%; min-width: 0; box-sizing: border-box; margin: 0; }
 }
+/* (duplikat 360px dihapus, sisakan satu saja) */
 @media (max-width: 360px) {
-  .customer-table td.actions .actions-row {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
+  .customer-table td.actions .actions-row { grid-template-columns: 1fr; gap: 6px; }
 }
-@media (max-width: 360px) {
-  .customer-table td.actions .actions-row {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-}
+
 /* Search bar spacing */
-.table-search-bar {
-  margin-bottom: 12px;
-}
+.table-search-bar { margin-bottom: 12px; }
+
 /* === DISKON: Mobile override untuk sel Aksi === */
 @media (max-width: 640px) {
-  /* Putuskan layout flex label:value di sel Aksi */
-  .discount-table td.actions {
-    display: block;
-    padding: 10px 12px;
-    border-bottom: none;
-  }
-
-  /* Tampilkan label "Aksi" di atas tombol */
+  .discount-table td.actions { display: block; padding: 10px 12px; border-bottom: none; }
   .discount-table td.actions::before {
-    content: "Aksi";
-    display: block;
-    font-weight: 600;
-    color: #6b7280;
-    margin-bottom: 8px;
+    content: "Aksi"; display: block; font-weight: 600; color: #6b7280; margin-bottom: 8px;
   }
-
-  /* Baris tombol: dua kolom sama rata, rapi */
   .discount-table td.actions .actions-row {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    align-items: center;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; align-items: center;
   }
-
-  /* Samakan perilaku form agar tidak beda baseline */
-  .discount-table td.actions form {
-    display: contents;
-  }
-
-  /* Ukuran tombol seragam */
+  .discount-table td.actions form { display: contents; }
   .discount-table td.actions .btn-edit,
   .discount-table td.actions .btn-delete {
-    height: 40px;
-    min-width: 0;
-    width: 100%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: .5rem;
-    text-decoration: none;
-    box-sizing: border-box;
-  }
-
-  /* Sangat sempit? fallback 1 kolom */
-  @media (max-width: 360px) {
-    .discount-table td.actions .actions-row {
-      grid-template-columns: 1fr;
-    }
+    height: 40px; min-width: 0; width: 100%; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 600; border-radius: .5rem; text-decoration: none; box-sizing: border-box;
   }
 }
 @media (max-width: 640px) {
   .discount-table td[data-label="Aksi"] {
-    flex-direction: row !important;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 8px;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    flex-direction: row !important; justify-content: flex-start; align-items: center; gap: 8px; padding: 12px 12px;
   }
   .discount-table td[data-label="Aksi"] .btn-edit,
   .discount-table td[data-label="Aksi"] .btn-delete {
-    min-width: 80px;
-    height: 36px;
-    font-size: 15px;
-    margin-bottom: 0;
-    margin-right: 8px;
-  }
-  .discount-table td[data-label="Aksi"] .btn-delete {
-    margin-right: 0;
+    min-width: 80px; height: 36px; font-size: 15px; margin: 0 8px 0 0;
   }
 }
+
 /* Uniform action button for admin tables */
-.btn-action {
-  min-width: 80px;
-  margin-right: 8px;
-  margin-bottom: 4px;
-  text-align: center;
-  padding-left: 0;
-  padding-right: 0;
-}
-.btn-action:last-child {
-  margin-right: 0;
-}
+.btn-action { min-width: 80px; margin-right: 8px; margin-bottom: 4px; text-align: center; padding-left: 0; padding-right: 0; }
+.btn-action:last-child { margin-right: 0; }
+
 /* Spacing for action buttons in transaction table */
-.transaction-table td[data-label="Aksi"] .btn {
-  margin-right: 8px;
-  margin-bottom: 4px;
-}
-.transaction-table td[data-label="Aksi"] .btn:last-child {
-  margin-right: 0;
-}
-/* Responsive transaction list table: stack rows as cards on mobile */
+.transaction-table td[data-label="Aksi"] .btn { margin-right: 8px; margin-bottom: 4px; }
+.transaction-table td[data-label="Aksi"] .btn:last-child { margin-right: 0; }
+
+/* ===== Responsive transaction list table ===== */
 .transaction-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 20px 0 24px;
+  width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; margin: 20px 0 24px;
 }
-.transaction-table th,
-.transaction-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
-  vertical-align: top;
-  word-break: break-word;
+.transaction-table th, .transaction-table td {
+  padding: 14px 16px; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: top; word-break: break-word;
 }
-.transaction-table th {
-  color: #222;
-  font-weight: 700;
-  background: #f9fafb;
-}
-.transaction-table tr:hover td {
-  background: #f9fafb;
-}
+.transaction-table th { color: #222; font-weight: 700; background: #f9fafb; }
+.transaction-table tr:hover td { background: #f9fafb; }
+
 @media (max-width: 800px) {
-  .transaction-table thead {
-    display: none;
-  }
+  .transaction-table thead { display: none; }
   .transaction-table tr {
-    display: block;
-    margin-bottom: 16px;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    background: #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-    padding: 8px 0;
+    display: block; margin-bottom: 16px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03); padding: 8px 0;
   }
   .transaction-table td {
-    display: flex;
-    width: 100%;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: 10px 12px;
-    border: none;
-    border-bottom: 1px solid #f3f4f6;
-    font-size: 15px;
-    position: relative;
-    background: none;
+    display: flex; width: 100%; justify-content: flex-start; align-items: flex-start; padding: 10px 12px;
+    border: none; border-bottom: 1px solid #f3f4f6; font-size: 15px; position: relative; background: none;
   }
-  .transaction-table td:last-child {
-    border-bottom: none;
-  }
+  .transaction-table td:last-child { border-bottom: none; }
   .transaction-table td:before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: #6b7280;
-    flex-basis: 40%;
-    min-width: 110px;
-    text-align: left;
-    padding-right: 10px;
-    white-space: pre-line;
+    content: attr(data-label); font-weight: 600; color: #6b7280; flex-basis: 40%; min-width: 110px;
+    text-align: left; padding-right: 10px; white-space: pre-line;
   }
-  .transaction-table td {
-    text-align: left;
-  }
-}
-/* Detail Transaksi Grid & Cards */
-.detail-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+  .transaction-table td { text-align: left; }
 }
 
-.detail-left {
-  background: #f3f4f6;
-  border-radius: 8px;
-  padding: 12px 18px;
-  min-width: 220px;
-  margin-bottom: 8px;
-}
+/* ===== Detail Transaksi Grid & Cards ===== */
+.detail-grid { display: flex; flex-wrap: wrap; gap: 16px; }
+.detail-left  { background: #f3f4f6; border-radius: 8px; padding: 12px 18px; min-width: 220px; margin-bottom: 8px; }
+.detail-right { background: #e0e7ff; border-radius: 8px; padding: 12px 18px; min-width: 220px; margin-bottom: 8px; }
 
-.detail-right {
-  background: #e0e7ff;
-  border-radius: 8px;
-  padding: 12px 18px;
-  min-width: 220px;
-  margin-bottom: 8px;
-}
-
-/* ===== CARDS & TABLES ===== */
-
-/* Card Component */
+/* ===== Generic Cards & Tables ===== */
 .card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 12px;
-  margin: 20px 0 24px;
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; margin: 20px 0 24px;
 }
-
-/* Table Component */
 .table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 20px 0 24px;
+  width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; margin: 20px 0 24px;
 }
-/* Responsive Discount Table (Admin Diskon) */
-/* Responsive Discount Table (Admin Diskon) */
+.table th, .table td { padding: 14px 16px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+.table th { color: #6b7280; font-weight: 700; }
+.table tr:hover td { background: #f9fafb; }
+.table-responsive { overflow-x: auto; margin: 15px 0; }
+.no-data { text-align: center; padding: 40px 20px; color: #6b7280; font-style: italic; }
+.table td.text-center { text-align: center; }
+.table .btn-sm { padding: 4px 8px; font-size: 14px; margin: 0 2px; }
+.d-inline { display: inline-block; }
+
+/* ===== Discount Table (singled, no duplicates) ===== */
 .discount-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 20px 0 24px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.01);
+  width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden;
+  margin: 20px 0 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.01);
 }
-.discount-table th,
-.discount-table td {
-  padding: 14px 16px;
-  border: 1px solid #e5e7eb;
-  text-align: left;
-  vertical-align: top;
-  word-break: break-word;
+.discount-table th, .discount-table td {
+  padding: 14px 16px; border: 1px solid #e5e7eb; text-align: left; vertical-align: top; word-break: break-word;
 }
 .discount-table th {
-  color: #222;
-  font-weight: 800;
-  background: #f9fafb;
-  border-bottom: 2px solid #e5e7eb;
+  color: #222; font-weight: 800; background: #f9fafb; border-bottom: 2px solid #e5e7eb;
 }
-.discount-table tr {
-  transition: background 0.13s;
-}
-.discount-table tr:hover td {
-  background: #f3f4f6;
-}
+.discount-table tr { transition: background .13s; }
+.discount-table tr:hover td { background: #f3f4f6; }
+
 @media (max-width: 640px) {
-  .discount-table thead {
-    display: none;
-  }
+  .discount-table thead { display: none; }
   .discount-table tr {
-    display: block;
-    margin-bottom: 16px;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    background: #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-    padding: 8px 0;
+    display: block; margin-bottom: 16px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03); padding: 8px 0;
   }
   .discount-table td {
-    display: flex;
-    width: 100%;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: 10px 12px;
-    border: none;
-    border-bottom: 1px solid #f3f4f6;
-    font-size: 15px;
-    position: relative;
-    background: none;
+    display: flex; width: 100%; justify-content: flex-start; align-items: flex-start; padding: 10px 12px;
+    border: none; border-bottom: 1px solid #f3f4f6; font-size: 15px; position: relative; background: none;
   }
-  .discount-table td:last-child {
-    border-bottom: none;
-  }
+  .discount-table td:last-child { border-bottom: none; }
   .discount-table td:before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: #6b7280;
-    flex-basis: 40%;
-    min-width: 110px;
-    text-align: left;
-    padding-right: 10px;
-    white-space: pre-line;
+    content: attr(data-label); font-weight: 600; color: #6b7280; flex-basis: 40%; min-width: 110px;
+    text-align: left; padding-right: 10px; white-space: pre-line;
   }
-  .discount-table td {
-    text-align: left;
-  }
-}
-
-.table th,
-.table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
-}
-
-.table th {
-  color: #6b7280;
-  font-weight: 700;
-}
-
-.table tr:hover td {
-  background: #f9fafb;
-}
-
-/* Table Responsive */
-.table-responsive {
-  overflow-x: auto;
-  margin: 15px 0;
-}
-
-/* No Data Message */
-.no-data {
-  text-align: center;
-  padding: 40px 20px;
-  color: #6b7280;
-  font-style: italic;
-}
-
-/* Table Actions */
-.table td.text-center {
-  text-align: center;
-}
-
-.table .btn-sm {
-  padding: 4px 8px;
-  font-size: 14px;
-  margin: 0 2px;
-}
-
-.d-inline {
-  display: inline-block;
+  .discount-table td { text-align: left; }
 }

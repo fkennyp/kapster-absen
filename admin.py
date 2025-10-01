@@ -163,7 +163,11 @@ def transaction_delete(transaction_id):
 
 @bp.before_request
 def enforce_admin():
+    # Jangan blokir endpoint autocomplete customer untuk kapster
     if request.endpoint and request.endpoint.startswith('admin.'):
+        # Izinkan kapster akses /admin/customers?q=...
+        if request.endpoint == 'admin.customers_list' and request.args.get('q') and current_user.role == 'kapster':
+            return
         require_admin()
 
 
@@ -459,6 +463,9 @@ def export_transactions_xlsx():
 def customers_list():
     # Only return JSON if ?q= is present (for autocomplete)
     if request.args.get('q'):
+        # Izinkan admin dan kapster untuk query autocomplete
+        if not (current_user.role == 'admin' or current_user.role == 'kapster'):
+            return {'error': 'Forbidden'}, 403
         q = request.args.get('q', '').strip()
         query = Customer.query
         if q:
