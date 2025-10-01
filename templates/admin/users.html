@@ -1,37 +1,46 @@
 {% extends 'base.html' %}
-{% block title %}List Pengguna{% endblock %}
+{% block title %}Data Pengguna{% endblock %}
 {% block content %}
-<h1>Data Pengguna</h1>
-<a class="btn" href="/admin/users/new">Tambah User</a>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Active</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for u in users %}
-        <tr>
-            <td>{{ u.name }}</td>
-            <td>{{ u.username }}</td>
-            <td>{{ u.email }}</td>
-            <td>{{ u.role }}</td>
-            <td>{{ 'Yes' if u.is_active_user else 'No' }}</td>
-            <td>
-                <a href="/admin/users/{{ u.id }}/edit">Edit</a>
-                {% if u.role != 'admin' %}
-                <form method="post" action="/admin/users/{{ u.id }}/delete" style="display:inline" onsubmit="return confirm('Yakin hapus user ini?');">
-                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                </form>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container">
+    <div class="page-header">
+        <h1>Data Pengguna</h1>
+        <a class="btn" href="/admin/users/new">Tambah User</a>
+    </div>
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Active</th>
+                        <th class="actions-column">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>{{ u.name }}</td>
+                        <td>{{ u.username }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.role }}</td>
+                        <td>{{ 'Yes' if u.is_active_user else 'No' }}</td>
+                        <td class="actions" style="white-space: nowrap;">
+                            <a href="/admin/users/{{ u.id }}/edit" class="btn btn-sm" style="margin-right: 4px;">Edit</a>
+                            {% if u.role != 'admin' %}
+                            <form method="post" action="/admin/users/{{ u.id }}/delete" style="display:inline-block; margin:0; padding:0;"
+                                onsubmit="return confirm('Yakin hapus user ini?');">
+                                <button type="submit" class="btn btn-sm btn-secondary">Delete</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
