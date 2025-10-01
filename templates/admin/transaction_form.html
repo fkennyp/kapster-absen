@@ -27,71 +27,54 @@
 
     <div class="card">
         {% if edit_mode %}
-        <form method="post" class="form-grid">
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label>No. Invoice</label>
-                    <input type="text" value="{{ transaction.invoice_code }}" class="form-control" readonly>
-                </div>
-                <div class="form-group col-md-6">
-                    <label>Tanggal</label>
-                    <input type="text" value="{{ transaction.created_at.strftime('%d/%m/%Y %H:%M') }}"
-                        class="form-control" readonly>
-                </div>
+
+        <form method="post" class="form-vertical">
+            <div class="form-group">
+                <label>No. Invoice</label>
+                <input type="text" value="{{ transaction.invoice_code }}" class="form-control" readonly>
             </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="customer_name">Nama Pelanggan</label>
-                    <input type="text" id="customer_name" name="customer_name" class="form-control"
-                        value="{{ transaction.customer_name }}" required>
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="barber_name">Nama Kapster</label>
-                    <select id="barber_name" name="barber_name" class="form-control" required>
-                        {% for user in users %}
-                        <option value="{{ user.name }}" {% if user.name==transaction.barber_name %}selected{% endif %}>
-                            {{ user.name }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
+            <div class="form-group">
+                <label>Tanggal</label>
+                <input type="text" value="{{ transaction.created_at.strftime('%d/%m/%Y %H:%M') }}" class="form-control" readonly>
             </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="payment_type">Jenis Pembayaran</label>
-                    <select id="payment_type" name="payment_type" class="form-control" required>
-                        <option value="cash" {% if transaction.payment_type=='cash' %}selected{% endif %}>Cash</option>
-                        <option value="qris" {% if transaction.payment_type=='qris' %}selected{% endif %}>QRIS</option>
-                    </select>
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="subtotal">Subtotal</label>
-                    <input type="text" value="Rp {{ '{:,}'.format((transaction.total or 0) + (transaction.discount or 0)) }}" class="form-control" readonly>
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="discount">Diskon</label>
-                    <input type="text" value="Rp {{ '{:,}'.format(transaction.discount or 0) }}" class="form-control" readonly>
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="total">Total Setelah Diskon</label>
-                    <input type="text" value="Rp {{ '{:,}'.format(transaction.total or 0) }}" class="form-control" readonly>
-                </div>
+            <div class="form-group">
+                <label for="customer_name">Nama Pelanggan</label>
+                <input type="text" id="customer_name" name="customer_name" class="form-control" value="{{ transaction.customer_name }}" required>
             </div>
-
-
-            <div class="form-row" id="cash-row" style="display: {% if transaction.payment_type == 'cash' %}flex{% else %}none{% endif %};">
-                <div class="form-group col-md-6">
-                    <label for="cash_given">Uang Diterima</label>
-                    <input type="number" id="cash_given" name="cash_given" class="form-control"
-                        value="{{ transaction.cash_given }}" min="{{ transaction.total }}">
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="change_amount">Kembalian</label>
-                    <input type="text" value="Rp {{ '{:,}'.format(transaction.change_amount or 0) }}"
-                        class="form-control" readonly>
-                </div>
+            <div class="form-group">
+                <label for="barber_name">Nama Kapster</label>
+                <select id="barber_name" name="barber_name" class="form-control" required>
+                    {% for user in users %}
+                    <option value="{{ user.name }}" {% if user.name==transaction.barber_name %}selected{% endif %}>{{ user.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="payment_type">Jenis Pembayaran</label>
+                <select id="payment_type" name="payment_type" class="form-control" required>
+                    <option value="cash" {% if transaction.payment_type=='cash' %}selected{% endif %}>Cash</option>
+                    <option value="qris" {% if transaction.payment_type=='qris' %}selected{% endif %}>QRIS</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="subtotal">Subtotal</label>
+                <input type="text" value="Rp {{ '{:,'.format((transaction.total or 0) + (transaction.discount or 0)) }}" class="form-control" readonly>
+            </div>
+            <div class="form-group">
+                <label for="discount">Diskon</label>
+                <input type="text" value="Rp {{ '{:,'.format(transaction.discount or 0) }}" class="form-control" readonly>
+            </div>
+            <div class="form-group">
+                <label for="total">Total Setelah Diskon</label>
+                <input type="text" value="Rp {{ '{:,'.format(transaction.total or 0) }}" class="form-control" readonly>
+            </div>
+            <div class="form-group" id="cash-row" style="display: {% if transaction.payment_type == 'cash' %}block{% else %}none{% endif %};">
+                <label for="cash_given">Uang Diterima</label>
+                <input type="number" id="cash_given" name="cash_given" class="form-control" value="{{ transaction.cash_given }}" min="{{ transaction.total }}">
+            </div>
+            <div class="form-group" id="change-row" style="display: {% if transaction.payment_type == 'cash' %}block{% else %}none{% endif %};">
+                <label for="change_amount">Kembalian</label>
+                <input type="text" value="Rp {{ '{:,}'.format(transaction.change_amount or 0) }}" class="form-control" readonly>
             </div>
 
             <script>
@@ -132,8 +115,16 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan="3" class="text-right">Total:</th>
-                        <th>Rp {{ "{:,}".format(transaction.total) }}</th>
+                        <th colspan="3" class="text-right">Subtotal:</th>
+                        <th>Rp {{ '{:,}'.format((transaction.total or 0) + (transaction.discount or 0)) }}</th>
+                    </tr>
+                    <tr>
+                        <th colspan="3" class="text-right">Diskon:</th>
+                        <th>Rp {{ '{:,}'.format(transaction.discount or 0) }}</th>
+                    </tr>
+                    <tr>
+                        <th colspan="3" class="text-right">Total Setelah Diskon:</th>
+                        <th>Rp {{ '{:,}'.format(transaction.total or 0) }}</th>
                     </tr>
                 </tfoot>
             </table>
