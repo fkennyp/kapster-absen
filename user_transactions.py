@@ -83,4 +83,4 @@ def transaction_detail(transaction_id):
     if transaction.user_id != current_user.id:
         abort(403)  # Forbidden if transaction doesn't belong to user
     
-    return render_template('transaction_detail.html', transaction=transaction)
+    return render_template('transaction_detail.html', transaction=transaction, is_admin=False)

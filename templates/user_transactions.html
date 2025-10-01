@@ -24,6 +24,9 @@
         <strong>Total transaksi ditampilkan:</strong> Rp {{ "{:,}".format(total_filtered) }}
     {% endif %}
 </div>
+<div class="table-search-bar" style="display: flex; justify-content: center; margin-bottom: 18px;">
+    <input type="text" id="transaction-search" class="form-control" style="max-width: 340px; text-align: center;" placeholder="Cari invoice atau nama pelanggan..." onkeyup="filterTransactionTable()">
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -34,7 +37,7 @@
             <th>Aksi</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="transaction-table-body">
         {% if not start_date and not end_date %}
             <tr>
                 <td colspan="5" style="text-align:center;">Silakan pilih rentang tanggal untuk menampilkan data transaksi.</td>
@@ -43,9 +46,9 @@
             {% for tx in txs %}
             <tr>
                 <td>{{ tx.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
-                <td>{{ tx.invoice_code }}</td>
-                <td>{{ tx.customer_name }}</td>
-                <td>Rp {{ "{:,}".format(tx.total) }}</td>
+                <td data-label="Invoice">{{ tx.invoice_code }}</td>
+                <td data-label="Nama Pelanggan">{{ tx.customer_name }}</td>
+                <td>Rp {{ '{:,}'.format(tx.total) }}</td>
                 <td>
                     <a href="{{ url_for('user_transactions.transaction_detail', transaction_id=tx.id, start_date=start_date, end_date=end_date, page=pagination.page if pagination else 1) }}" class="btn btn-sm">Lihat Detail</a>
                     <a href="{{ url_for('sales.receipt_pdf', tx_id=tx.id) }}" target="_blank" class="btn btn-sm btn-primary">Download PDF</a>
@@ -58,7 +61,30 @@
             {% endfor %}
         {% endif %}
     </tbody>
-</table>
+    </table>
+<script>
+function filterTransactionTable() {
+    var input = document.getElementById('transaction-search');
+    var filter = input.value.toLowerCase();
+    var tbody = document.getElementById('transaction-table-body');
+    var rows = tbody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var invoiceCell = rows[i].querySelector('td[data-label="Invoice"]');
+        var customerCell = rows[i].querySelector('td[data-label="Nama Pelanggan"]');
+        if (!invoiceCell && !customerCell) continue;
+        var invoice = invoiceCell ? invoiceCell.textContent.toLowerCase() : '';
+        var customer = customerCell ? customerCell.textContent.toLowerCase() : '';
+        if (
+            invoice.indexOf(filter) > -1 ||
+            customer.indexOf(filter) > -1
+        ) {
+            rows[i].style.display = '';
+        } else {
+            rows[i].style.display = 'none';
+        }
+    }
+}
+</script>
 <div>
     {% if pagination and pagination.pages > 0 %}
         {% if pagination.has_prev %}

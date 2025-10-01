@@ -116,7 +116,8 @@ def transaction_view(transaction_id):
     return render_template('admin/transaction_form.html', 
                          transaction=transaction,
                          users=users,
-                         edit_mode=False)
+                         edit_mode=False,
+                         is_admin=True)
 
 @bp.route('/transactions/<int:transaction_id>/edit', methods=['GET', 'POST'])
 @login_required

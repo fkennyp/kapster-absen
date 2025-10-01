@@ -1,203 +1,76 @@
 {% extends 'base.html' %}
 
 {% block title %}{{ 'Edit Transaksi' if transaction else 'Detail Transaksi' }}{% endblock %}
-
-{% block head %}
-{{ super() }}
-<script src="{{ url_for('static', filename='js/transaction-detail.js') }}" defer></script>
-{% endblock %}
-
 {% block content %}
-<div class="container">
-    <div class="page-header">
-        <h1>{{ 'Edit Transaksi' if transaction else 'Detail Transaksi' }}</h1>
-        <div class="page-header-actions">
-            <a href="{{ url_for('admin.transactions_list', start_date=request.args.get('start_date'), end_date=request.args.get('end_date'), user_id=request.args.get('user_id'), page=request.args.get('page', 1)) }}" class="btn">Kembali</a>
-            {% if not edit_mode %}
-            <a href="{{ url_for('admin.transaction_edit', transaction_id=transaction.id) }}"
-                class="btn btn-primary">Edit Transaksi</a>
-            <form action="{{ url_for('admin.transaction_delete', transaction_id=transaction.id) }}"
-                method="post" style="display: inline-block;"
-                onsubmit="return confirm('Anda yakin ingin menghapus transaksi ini? Aksi ini tidak dapat dibatalkan.');">
-                <button type="submit" class="btn btn-danger">Hapus Transaksi</button>
-            </form>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="card">
-        {% if edit_mode %}
-
-        <form method="post" class="form-vertical">
-            <div class="form-group">
-                <label>No. Invoice</label>
-                <input type="text" value="{{ transaction.invoice_code }}" class="form-control" readonly>
-            </div>
-            <div class="form-group">
-                <label>Tanggal</label>
-                <input type="text" value="{{ transaction.created_at.strftime('%d/%m/%Y %H:%M') }}" class="form-control" readonly>
-            </div>
-            <div class="form-group">
-                <label for="customer_name">Nama Pelanggan</label>
-                <input type="text" id="customer_name" name="customer_name" class="form-control" value="{{ transaction.customer_name }}" required>
-            </div>
-            <div class="form-group">
-                <label for="barber_name">Nama Kapster</label>
-                <select id="barber_name" name="barber_name" class="form-control" required>
-                    {% for user in users %}
-                    <option value="{{ user.name }}" {% if user.name==transaction.barber_name %}selected{% endif %}>{{ user.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="payment_type">Jenis Pembayaran</label>
-                <select id="payment_type" name="payment_type" class="form-control" required>
-                    <option value="cash" {% if transaction.payment_type=='cash' %}selected{% endif %}>Cash</option>
-                    <option value="qris" {% if transaction.payment_type=='qris' %}selected{% endif %}>QRIS</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="subtotal">Subtotal</label>
-                <input type="text" value="Rp {{ '{:,}'.format((transaction.total or 0) + (transaction.discount or 0)) }}" class="form-control" readonly>
-            </div>
-            <div class="form-group">
-                <label for="discount">Diskon</label>
-                <input type="text" value="Rp {{ '{:,}'.format(transaction.discount or 0) }}" class="form-control" readonly>
-            </div>
-            <div class="form-group">
-                <label for="total">Total Setelah Diskon</label>
-                <input type="text" value="Rp {{ '{:,}'.format(transaction.total or 0) }}" class="form-control" readonly>
-            </div>
-            <div class="form-group" id="cash-row" style="display: '{{ 'flex' if transaction.payment_type == 'cash' else 'none' }}';">
-                <label for="cash_given">Uang Diterima</label>
-                <input type="number" id="cash_given" name="cash_given" class="form-control" value="{{ transaction.cash_given }}" min="{{ transaction.total }}">
-            </div>
-            <div class="form-group" id="change-row" style="display: {{ 'flex' if transaction.payment_type == 'cash' else 'none' }};">
-                <label for="change_amount">Kembalian</label>
-                <input type="text" value="Rp {{ '{:,}'.format(transaction.change_amount or 0) }}" class="form-control" readonly>
-            </div>
-
-            <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var paymentType = document.getElementById('payment_type');
-                var cashRow = document.getElementById('cash-row');
-                function toggleCashRow() {
-                    if (paymentType.value === 'cash') {
-                        cashRow.style.display = 'flex';
-                    } else {
-                        cashRow.style.display = 'none';
-                    }
+{% if edit_mode %}
+<form method="post">
+    <div class="container">
+        <!-- Form fields for editing transaction (your existing form fields here) -->
+        <!-- ...existing code for form fields... -->
+        <label for="change_amount">Kembalian</label>
+        <input type="text" value="Rp {{ '{:,'.format(transaction.change_amount or 0) }}" class="form-control" readonly>
+        <!-- ...existing code for form fields... -->
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var paymentType = document.getElementById('payment_type');
+            var cashRow = document.getElementById('cash-row');
+            function toggleCashRow() {
+                if (paymentType.value === 'cash') {
+                    cashRow.style.display = 'flex';
+                } else {
+                    cashRow.style.display = 'none';
                 }
-                paymentType.addEventListener('change', toggleCashRow);
-                toggleCashRow();
-            });
-            </script>
-
-            <h3>Detail Layanan</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Layanan</th>
-                        <th>Harga</th>
-                        <th>Jumlah</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in transaction.items %}
-                    <tr>
-                        <td>{{ item.service.name }}</td>
-                        <td>Rp {{ "{:,}".format(item.price_each) }}</td>
-                        <td>{{ item.qty }}</td>
-                        <td>Rp {{ "{:,}".format(item.line_total) }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th colspan="3" class="text-right">Subtotal:</th>
-                        <th>Rp {{ '{:,}'.format((transaction.total or 0) + (transaction.discount or 0)) }}</th>
-                    </tr>
-                    <tr>
-                        <th colspan="3" class="text-right">Diskon:</th>
-                        <th>Rp {{ '{:,}'.format(transaction.discount or 0) }}</th>
-                    </tr>
-                    <tr>
-                        <th colspan="3" class="text-right">Total Setelah Diskon:</th>
-                        <th>Rp {{ '{:,}'.format(transaction.total or 0) }}</th>
-                    </tr>
-                </tfoot>
-            </table>
-
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                <a href="{{ url_for('admin.transactions_list', start_date=request.args.get('start_date'), end_date=request.args.get('end_date'), user_id=request.args.get('user_id'), page=request.args.get('page', 1)) }}" class="btn">Batal</a>
-            </div>
-        </form>
-        {% else %}
-        <!-- View Mode: seragam dengan kapster -->
-        <div class="container">
-            <div class="card" style="max-width:700px;margin:32px auto;">
-                <h2 style="text-align:center;margin-bottom:32px;">Detail Transaksi</h2>
-                <!-- Tombol aksi hanya di page-header, tidak di sini -->
-                <div class="details-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:18px 32px;">
-                    <div><strong>No. Invoice</strong><br>{{ transaction.invoice_code }}</div>
-                    <div><strong>Tanggal</strong><br>{{ transaction.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
-                    <div><strong>Pelanggan</strong><br>{{ transaction.customer_name }}</div>
-                    <div><strong>No. HP</strong><br>{{ transaction.customer.phone or '-' }}</div>
-                    <div><strong>Kapster</strong><br>{{ transaction.barber_name }}</div>
-                    <div><strong>Pembayaran</strong><br>{{ transaction.payment_type|upper }}</div>
-                    {# Subtotal, Diskon, dan Total Setelah Diskon dihapus agar tidak double #}
-                    {% if transaction.payment_type == 'cash' %}
-                    <div><strong>Uang Diterima</strong><br>Rp {{ '{:,}'.format(transaction.cash_given) }}</div>
-                    <div><strong>Kembalian</strong><br>Rp {{ '{:,}'.format(transaction.change_amount) }}</div>
-                    {% endif %}
-                </div>
-
-                <h3 style="margin-top:36px;">Detail Layanan</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Layanan</th>
-                            <th>Harga</th>
-                            <th>Jumlah</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in transaction.items %}
-                        <tr>
-                            <td>{{ item.service.name }}</td>
-                            <td>Rp {{ '{:,}'.format(item.price_each) }}</td>
-                            <td>{{ item.qty }}</td>
-                            <td>Rp {{ '{:,}'.format(item.line_total) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="3" class="text-right">Subtotal:</th>
-                            <th>Rp {{ '{:,}'.format((transaction.total or 0) + (transaction.discount or 0)) }}</th>
-                        </tr>
-                        <tr>
-                            <th colspan="3" class="text-right">Diskon{% if transaction.discount_name %} ({{ transaction.discount_name }}){% endif %}:</th>
-                            <th>Rp {{ '{:,}'.format(transaction.discount or 0) }}</th>
-                        </tr>
-                        <tr>
-                            <th colspan="3" class="text-right">Total Setelah Diskon:</th>
-                            <th>Rp {{ '{:,}'.format(transaction.total or 0) }}</th>
-                        </tr>
-                    </tfoot>
-                </table>
-
-                <div style="text-align: right; margin-top: 20px;">
-                    <a href="{{ url_for('sales.receipt_pdf', tx_id=transaction.id) }}" target="_blank" class="btn btn-primary">
-                        Download Nota PDF
-                    </a>
-                </div>
+            }
+            paymentType.addEventListener('change', toggleCashRow);
+            toggleCashRow();
+        });
+        </script>
+        <h3>Detail Layanan</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Layanan</th>
+                    <th>Harga</th>
+                    <th>Jumlah</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in transaction.items %}
+                <tr>
+                    <td>{{ item.service.name }}</td>
+                    <td>Rp {{ "{:,".format(item.price_each) }}</td>
+                    <td>{{ item.qty }}</td>
+                    <td>Rp {{ "{:,".format(item.line_total) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="3" class="text-right">Subtotal:</th>
+                    <th>Rp {{ '{:,'.format((transaction.total or 0) + (transaction.discount or 0)) }}</th>
+                </tr>
+                <tr>
+                    <th colspan="3" class="text-right">Diskon:</th>
+                    <th>Rp {{ '{:,'.format(transaction.discount or 0) }}</th>
+                </tr>
+                <tr>
+                    <th colspan="3" class="text-right">Total Setelah Diskon:</th>
+                    <th>Rp {{ '{:,'.format(transaction.total or 0) }}</th>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+            <a href="{{ url_for('admin.transactions_list', start_date=request.args.get('start_date'), end_date=request.args.get('end_date'), user_id=request.args.get('user_id'), page=request.args.get('page', 1)) }}" class="btn">Batal</a>
+        </div>
+    </div>
+</form>
+{% else %}
+<div class="container">
+    {% include '_transaction_detail_fragment.html' %}
+</div>
+{% endif %}
+{% endblock %}
             </div>
         </div>
-        {% endif %}
-    </div>
-</div>
-{% endblock %}
