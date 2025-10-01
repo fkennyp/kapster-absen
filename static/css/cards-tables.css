@@ -1,3 +1,253 @@
+/* ===== DASHBOARD CARDS (Absen Hari Ini) ===== */
+.dashboard-cards {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 32px;
+  margin: 0 auto 32px auto;
+  max-width: 600px;
+}
+.dashboard-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 28px 36px 22px 36px;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.18s;
+}
+.dashboard-card.absen-yes {
+  border-left: 6px solid #22c55e;
+}
+.dashboard-card.absen-no {
+  border-left: 6px solid #ef4444;
+}
+.dashboard-card .card-label {
+  font-size: 1.08rem;
+  color: #374151;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: 0.01em;
+}
+.dashboard-card .card-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 0;
+  line-height: 1.1;
+}
+@media (max-width: 700px) {
+  .dashboard-cards {
+    flex-direction: column;
+    gap: 18px;
+    max-width: 95vw;
+    align-items: center;
+  }
+  .dashboard-card {
+    min-width: 0;
+    width: 100%;
+    padding: 22px 10vw 18px 10vw;
+  }
+}
+/* Responsive Customer Table (Admin Pelanggan) */
+.customer-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 20px 0 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.01);
+}
+.customer-table th,
+.customer-table td {
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: top;
+  word-break: break-word;
+}
+.customer-table th {
+  color: #222;
+  font-weight: 800;
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+.customer-table tr {
+  transition: background 0.13s;
+}
+.customer-table tr:hover td {
+  background: #f3f4f6;
+}
+@media (max-width: 640px) {
+  .customer-table thead {
+    display: none;
+  }
+  .customer-table tr {
+    display: block;
+    margin-bottom: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    padding: 8px 0;
+  }
+  .customer-table td {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 10px 12px;
+    border: none;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 15px;
+    position: relative;
+    background: none;
+  }
+  .customer-table td:last-child {
+    border-bottom: none;
+  }
+  .customer-table td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #6b7280;
+    flex-basis: 40%;
+    min-width: 110px;
+    text-align: left;
+    padding-right: 10px;
+    white-space: pre-line;
+  }
+  .customer-table td {
+    text-align: left;
+  }
+  .customer-table td.actions {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .customer-table td.actions .actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    margin-top: 4px;
+  }
+  .customer-table td.actions .btn-edit,
+  .customer-table td.actions .btn-delete {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    margin: 0;
+  }
+}
+@media (max-width: 360px) {
+  .customer-table td.actions .actions-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+@media (max-width: 360px) {
+  .customer-table td.actions .actions-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+/* Search bar spacing */
+.table-search-bar {
+  margin-bottom: 12px;
+}
+/* === DISKON: Mobile override untuk sel Aksi === */
+@media (max-width: 640px) {
+  /* Putuskan layout flex label:value di sel Aksi */
+  .discount-table td.actions {
+    display: block;
+    padding: 10px 12px;
+    border-bottom: none;
+  }
+
+  /* Tampilkan label "Aksi" di atas tombol */
+  .discount-table td.actions::before {
+    content: "Aksi";
+    display: block;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 8px;
+  }
+
+  /* Baris tombol: dua kolom sama rata, rapi */
+  .discount-table td.actions .actions-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* Samakan perilaku form agar tidak beda baseline */
+  .discount-table td.actions form {
+    display: contents;
+  }
+
+  /* Ukuran tombol seragam */
+  .discount-table td.actions .btn-edit,
+  .discount-table td.actions .btn-delete {
+    height: 40px;
+    min-width: 0;
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: .5rem;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  /* Sangat sempit? fallback 1 kolom */
+  @media (max-width: 360px) {
+    .discount-table td.actions .actions-row {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+@media (max-width: 640px) {
+  .discount-table td[data-label="Aksi"] {
+    flex-direction: row !important;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .discount-table td[data-label="Aksi"] .btn-edit,
+  .discount-table td[data-label="Aksi"] .btn-delete {
+    min-width: 80px;
+    height: 36px;
+    font-size: 15px;
+    margin-bottom: 0;
+    margin-right: 8px;
+  }
+  .discount-table td[data-label="Aksi"] .btn-delete {
+    margin-right: 0;
+  }
+}
+/* Uniform action button for admin tables */
+.btn-action {
+  min-width: 80px;
+  margin-right: 8px;
+  margin-bottom: 4px;
+  text-align: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+.btn-action:last-child {
+  margin-right: 0;
+}
 /* Spacing for action buttons in transaction table */
 .transaction-table td[data-label="Aksi"] .btn {
   margin-right: 8px;
@@ -115,6 +365,79 @@
   border-radius: 10px;
   overflow: hidden;
   margin: 20px 0 24px;
+}
+/* Responsive Discount Table (Admin Diskon) */
+/* Responsive Discount Table (Admin Diskon) */
+.discount-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 20px 0 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.01);
+}
+.discount-table th,
+.discount-table td {
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: top;
+  word-break: break-word;
+}
+.discount-table th {
+  color: #222;
+  font-weight: 800;
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+.discount-table tr {
+  transition: background 0.13s;
+}
+.discount-table tr:hover td {
+  background: #f3f4f6;
+}
+@media (max-width: 640px) {
+  .discount-table thead {
+    display: none;
+  }
+  .discount-table tr {
+    display: block;
+    margin-bottom: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    padding: 8px 0;
+  }
+  .discount-table td {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 10px 12px;
+    border: none;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 15px;
+    position: relative;
+    background: none;
+  }
+  .discount-table td:last-child {
+    border-bottom: none;
+  }
+  .discount-table td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #6b7280;
+    flex-basis: 40%;
+    min-width: 110px;
+    text-align: left;
+    padding-right: 10px;
+    white-space: pre-line;
+  }
+  .discount-table td {
+    text-align: left;
+  }
 }
 
 .table th,

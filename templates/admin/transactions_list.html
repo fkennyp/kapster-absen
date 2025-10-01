@@ -7,8 +7,6 @@
 
 {% block content %}
 <h1>List Transaksi</h1>
-
-<!-- Filter Form -->
 <div class="card">
     <h3>Filter Transaksi</h3>
     <form method="get" class="filter-form">
@@ -34,22 +32,17 @@
         <div>
             <button type="submit" class="btn">Filter</button>
             <a href="{{ url_for('admin.transactions_list') }}" class="btn">Reset</a>
-
             <a href="{{ url_for('admin.export_transactions_xlsx') }}?{{ request.query_string.decode() }}"
                 class="btn btn-success" title="Export ke Excel">
                 Export Excel
             </a>
         </div>
     </form>
-
-    <!-- Penjelasan total transaksi sesuai filter -->
     <div style="margin: 18px 0 10px 0;">
-        {% if request.args.get('start_date') or request.args.get('end_date') or request.args.get('user_id') %}
-        <strong>Total transaksi ditampilkan:</strong> Rp {{ "{:,}".format(total_amount) }}
-        {% endif %}
+    {% if request.args.get('start_date') or request.args.get('end_date') or request.args.get('user_id') %}
+    <strong>Total transaksi ditampilkan:</strong> Rp {{ '{:,}'.format(total_amount or 0) }}
+    {% endif %}
     </div>
-
-    <!-- Transaction List -->
     <div class="card">
         {% if not request.args.get('start_date') and not request.args.get('end_date') %}
             <h3>Data Transaksi</h3>
@@ -57,32 +50,31 @@
         {% else %}
             <h3>Data Transaksi ({{ pagination.total }})</h3>
             {% if transactions %}
+            <div class="table-search-bar" style="display: flex; justify-content: center; margin-bottom: 18px;">
+                <input type="text" id="transaction-search" class="form-control" style="max-width: 340px; text-align: center;" placeholder="Cari invoice atau nomor HP pelanggan..." onkeyup="filterTransactionTable()">
+            </div>
             <div class="table-responsive">
                 <table class="transaction-table">
                     <thead>
                         <tr>
                             <th>Invoice</th>
                             <th>Tanggal</th>
-                            <th>Pelanggan</th>
                             <th>Kapster</th>
+                            <th>No. HP</th>
                             <th class="text-right">Subtotal</th>
-                            <th class="text-right">Diskon</th>
                             <th class="text-right">Total Akhir</th>
-                            <th>Pembayaran</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="transaction-table-body">
                         {% for tx in transactions %}
                         <tr>
                             <td data-label="Invoice">{{ tx.invoice_code or ("INV-" ~ tx.created_at.strftime("%d/%m/%Y") ~ "-" ~ (tx.invoice_seq or "XXX")) }}</td>
-                            <td data-label="Tanggal">{{ tx.created_at.strftime("%d-%m-%Y %H:%M") }}</td>
-                            <td data-label="Pelanggan">{{ tx.customer_name }}</td>
+                            <td data-label="Tanggal">{{ tx.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
                             <td data-label="Kapster">{{ tx.user.name }}</td>
+                            <td data-label="No. HP">{{ tx.customer_phone or '' }}</td>
                             <td data-label="Subtotal" class="text-right">Rp {{ "{:,}".format((tx.total or 0) + (tx.discount or 0)) }}</td>
-                            <td data-label="Diskon" class="text-right">Rp {{ "{:,}".format(tx.discount or 0) }}</td>
                             <td data-label="Total Akhir" class="text-right">Rp {{ "{:,}".format(tx.total or 0) }}</td>
-                            <td data-label="Pembayaran">{{ tx.payment_type|upper }}</td>
                             <td data-label="Aksi">
                                 <a href="{{ url_for('admin.transaction_view', transaction_id=tx.id, start_date=request.args.get('start_date'), end_date=request.args.get('end_date'), user_id=request.args.get('user_id'), page=request.args.get('page', 1)) }}" class="btn btn-small">
                                     Lihat
@@ -96,8 +88,29 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- Pagination -->
+            <script>
+            function filterTransactionTable() {
+                var input = document.getElementById('transaction-search');
+                var filter = input.value.toLowerCase();
+                var tbody = document.getElementById('transaction-table-body');
+                var rows = tbody.getElementsByTagName('tr');
+                for (var i = 0; i < rows.length; i++) {
+                    var invoiceCell = rows[i].querySelector('td[data-label="Invoice"]');
+                    var phoneCell = rows[i].querySelector('td[data-label="No. HP"]');
+                    if (!invoiceCell && !phoneCell) continue;
+                    var invoice = invoiceCell ? invoiceCell.textContent.toLowerCase() : '';
+                    var phone = phoneCell ? phoneCell.textContent.toLowerCase() : '';
+                    if (
+                        invoice.indexOf(filter) > -1 ||
+                        phone.indexOf(filter) > -1
+                    ) {
+                        rows[i].style.display = '';
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+            </script>
             {% if pagination.pages > 1 %}
             <div class="pagination">
                 {% if pagination.has_prev %}
@@ -106,9 +119,7 @@
                     &laquo; Prev
                 </a>
                 {% endif %}
-
                 <span class="pagination-info">Page {{ pagination.page }} of {{ pagination.pages }}</span>
-
                 {% if pagination.has_next %}
                 <a href="?page={{ pagination.next_num }}{% if request.args.get('start_date') %}&start_date={{ request.args.get('start_date') }}{% endif %}{% if request.args.get('end_date') %}&end_date={{ request.args.get('end_date') }}{% endif %}{% if request.args.get('user_id') %}&user_id={{ request.args.get('user_id') }}{% endif %}"
                     class="btn">
