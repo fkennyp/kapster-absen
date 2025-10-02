@@ -1,13 +1,19 @@
 {% extends 'auth_base.html' %}
 {% block title %}Masuk - Kapster Absen{% endblock %}
 {% block content %}
-<h1>Masuk</h1>
-<form method="post" class="form">
-    <label>Username<input type="text" name="username" required></label>
-    <label>Password<input type="password" name="password" required></label>
-    <button type="submit">Masuk</button>
+<h1 class="h3 text-center mb-4">Masuk</h1>
+<form method="post" class="needs-validation" novalidate>
+    <div class="mb-3">
+        <label class="form-label" for="username">Username</label>
+        <input type="text" class="form-control" id="username" name="username" required autofocus autocomplete="username">
+    </div>
+    <div class="mb-4">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password">
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Masuk</button>
 </form>
-<div style="margin-top:1em;">
-    <a href="{{ url_for('auth.forgot_password') }}">Lupa password?</a>
+<div class="text-center mt-3">
+    <a class="link-secondary" href="{{ url_for('auth.forgot_password') }}">Lupa password?</a>
 </div>
 {% endblock %}
