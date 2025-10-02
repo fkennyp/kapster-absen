@@ -4,50 +4,63 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <title>Putera Barbershop</title>
+    <title>{% block title %}Putera Barbershop{% endblock %}</title>
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    {% block extra_head %}{% endblock %}
 </head>
 
-<body>
-    <header class="auth-header">
+<body class="auth-body bg-light">
+    <header class="auth-header mb-4">
         <span class="logo-icon">💈</span>
         <span class="logo-text">Putera Barbershop</span>
     </header>
 
     <main class="auth-content">
-        <!-- Container utama yang memusatkan semua konten -->
-        <div class="auth-container">
-            <!-- Flash messages - ditempatkan di dalam container yang sama -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            <div class="auth-flash">
-                {% for cat,msg in messages %}
-                <div class="flash-item {{ cat }}">{{ msg }}</div>
-                {% endfor %}
-            </div>
-            {% endif %}
-            {% endwith %}
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-5 col-xl-4">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% set bootstrap_mapping = {
+                        'error': 'danger',
+                        'message': 'info',
+                        'danger': 'danger',
+                        'warning': 'warning',
+                        'success': 'success'
+                    } %}
+                    <div class="mb-4">
+                        {% for cat, msg in messages %}
+                        {% set bootstrap_cat = bootstrap_mapping.get(cat, cat) %}
+                        <div class="alert alert-{{ bootstrap_cat }} alert-dismissible fade show" role="alert">
+                            {{ msg }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% endwith %}
 
-            <div class="login-box">
-                <h2>Login</h2>
-                <form method="post">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required>
-
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-
-                    <button type="submit" class="btn">Login</button>
-                </form>
-                <div style="margin-top:1em;">
-                    <a href="{{ url_for('auth.forgot_password') }}">Lupa password?</a>
+                    <div class="card shadow-sm border-0 auth-card">
+                        <div class="card-body">
+                            {% block content %}{% endblock %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    {% block extra_scripts %}{% endblock %}
 </body>
 
 </html>
