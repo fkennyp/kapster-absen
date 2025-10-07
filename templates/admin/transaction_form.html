@@ -43,11 +43,11 @@
             </div>
             <div class="form-group">
                 <label for="customer_name">Nama Pelanggan</label>
-                <input type="text" id="customer_name" name="customer_name" class="form-control" value="{{ transaction.customer_name }}" required>
+                <input type="text" id="customer_name" name="customer_name" class="form-control" value="{{ transaction.customer_name }}" required disabled>
             </div>
             <div class="form-group">
                 <label for="barber_name">Nama Kapster</label>
-                <select id="barber_name" name="barber_name" class="form-control" required>
+                <select id="barber_name" name="barber_name" class="form-control" required disabled>
                     {% for user in users %}
                     <option value="{{ user.name }}" {% if user.name==transaction.barber_name %}selected{% endif %}>{{ user.name }}</option>
                     {% endfor %}
@@ -135,7 +135,6 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                <a href="{{ url_for('admin.transactions_list', start_date=request.args.get('start_date'), end_date=request.args.get('end_date'), user_id=request.args.get('user_id'), page=request.args.get('page', 1)) }}" class="btn">Batal</a>
             </div>
         </form>
         {% else %}
