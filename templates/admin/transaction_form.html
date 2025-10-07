@@ -12,7 +12,11 @@
     <div class="page-header">
         <h1>{{ 'Edit Transaksi' if transaction else 'Detail Transaksi' }}</h1>
         <div class="page-header-actions">
+            {% if edit_mode %}
+            <a href="{{ url_for('admin.transaction_view', transaction_id=transaction.id) }}" class="btn">Kembali</a>
+            {% else %}
             <a href="{{ url_for('admin.transactions_list', start_date=request.args.get('start_date'), end_date=request.args.get('end_date'), user_id=request.args.get('user_id'), page=request.args.get('page', 1)) }}" class="btn">Kembali</a>
+            {% endif %}
             {% if not edit_mode %}
             <a href="{{ url_for('admin.transaction_edit', transaction_id=transaction.id) }}"
                 class="btn btn-primary">Edit Transaksi</a>

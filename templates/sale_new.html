@@ -24,6 +24,25 @@
             <div class="card">
                 <h3>Data Pelanggan</h3>
 
+                <div class="form-group phone-group-rel">
+                    <label for="customer_phone">
+                        Nomor Telepon (Opsional, untuk menjadi member)
+                        <button type="button" tabindex="-1" class="help-btn" onclick="togglePhoneHelp()" onmouseenter="showPhoneHelp()">
+                            <span class="help-btn-circle">?</span>
+                        </button>
+                    </label>
+                    <input id="customer_phone" name="customer_phone" type="tel" placeholder="08xxxxxxxxxx"
+                        autocomplete="off">
+                    <div id="phoneDropdown" class="autocomplete-dropdown"></div>
+                    <div id="phoneHelpTooltip" class="phone-help-tooltip">
+                        <strong>Fungsi Nomor Telepon:</strong><br>
+                        - Jika diisi dengan nomor pelanggan yang sudah pernah terdaftar, nama pelanggan akan otomatis terisi.<br>
+                        - Jika nomor baru, isi nama pelanggan secara manual.<br>
+                        - Nomor telepon digunakan untuk keanggotaan/member.<br>
+                        <em>Kolom ini opsional, tapi sangat disarankan diisi jika pelanggan ingin menjadi member atau sudah pernah bertransaksi sebelumnya.</em>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label for="customer_name">Nama Pelanggan *</label>
                     <input type="text" name="customer_name" id="customer_name" required
@@ -35,15 +54,6 @@
                     <label for="customer_email">Alamat Email (Opsional, untuk mengirimkan nota)</label>
                     <input id="customer_email" name="customer_email" type="email" placeholder="contoh@email.com">
                     <span id="emailError" class="error-message">Format alamat email tidak valid</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="customer_phone">Nomor Telepon (Opsional, untuk menjadi member)</label>
-                    <input id="customer_phone" name="customer_phone" type="tel" placeholder="08xxxxxxxxxx"
-                        autocomplete="off">
-                    <div id="phoneDropdown" class="autocomplete-dropdown"
-                        style="display:none; position:absolute; background:#fff; border:1px solid #d1d5db; z-index:1000; width:100%; max-height:180px; overflow-y:auto; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-                    </div>
                 </div>
             </div>
 
@@ -208,10 +218,9 @@
                         });
                         dropdown.appendChild(opt);
                     });
-                    // Position dropdown below input
-                    const rect = phoneInput.getBoundingClientRect();
-                    dropdown.style.left = rect.left + window.scrollX + 'px';
-                    dropdown.style.top = rect.bottom + window.scrollY + 'px';
+                    // Position dropdown below input (relative to parent)
+                    dropdown.style.left = '0';
+                    dropdown.style.top = (phoneInput.offsetTop + phoneInput.offsetHeight) + 'px';
                     dropdown.style.width = phoneInput.offsetWidth + 'px';
                     dropdown.style.display = 'block';
                 });
@@ -417,5 +426,30 @@
             alert('Harap perbaiki error sebelum melanjutkan.');
         }
     });
+</script>
+<script type="text/javascript">
+    // Tooltip logic for phone help
+    const helpBtn = document.querySelector('.help-btn');
+    const helpTooltip = document.getElementById('phoneHelpTooltip');
+    let helpTooltipManual = false;
+    if (helpBtn && helpTooltip) {
+        helpBtn.addEventListener('mouseenter', function () {
+            if (!helpTooltipManual) helpTooltip.style.display = 'block';
+        });
+        helpBtn.addEventListener('mouseleave', function () {
+            if (!helpTooltipManual) helpTooltip.style.display = 'none';
+        });
+        helpBtn.addEventListener('click', function () {
+            helpTooltipManual = !helpTooltipManual;
+            helpTooltip.style.display = helpTooltipManual ? 'block' : 'none';
+        });
+        // Hide tooltip if clicked outside
+        document.addEventListener('click', function (e) {
+            if (helpTooltipManual && !helpBtn.contains(e.target) && !helpTooltip.contains(e.target)) {
+                helpTooltipManual = false;
+                helpTooltip.style.display = 'none';
+            }
+        });
+    }
 </script>
 {% endblock %}

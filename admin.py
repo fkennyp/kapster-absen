@@ -377,7 +377,6 @@ def export_transactions_xlsx():
     if start_date:
         query = query.filter(Transaction.created_at >= start_date)
     if end_date:
-        from datetime import datetime, timedelta
         try:
             end_date_obj = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
             query = query.filter(Transaction.created_at < end_date_obj)

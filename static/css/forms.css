@@ -1,3 +1,61 @@
+/* Phone input group relative positioning */
+.phone-group-rel {
+  position: relative;
+}
+
+/* Autocomplete dropdown for phone */
+.autocomplete-dropdown {
+  display: none;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  z-index: 1000;
+  max-height: 180px;
+  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Help button next to label */
+.help-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.help-btn-circle {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #374151;
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+/* Tooltip for phone help */
+.phone-help-tooltip {
+  display: none;
+  position: absolute;
+  left: 180px;
+  top: 0;
+  background: #f9fafb;
+  color: #222;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  width: 320px;
+  z-index: 2000;
+  pointer-events: none;
+}
 /* ================================
    FORMS.CSS — CLEAN REFACTOR
    ================================ */
