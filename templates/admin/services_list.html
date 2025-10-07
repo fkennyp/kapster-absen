@@ -10,6 +10,9 @@
     </div>
 
     <div class="card">
+        <div class="table-search-bar">
+            <input type="text" id="service-search" class="form-control" placeholder="Cari nama layanan..." onkeyup="filterServiceTable()">
+        </div>
         <div class="table-responsive">
             <table class="table">
                 <thead>
@@ -19,7 +22,7 @@
                         <th class="actions-column">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="service-table-body">
                     {% for service in services %}
                     <tr>
                         <td>{{ service.name }}</td>
@@ -43,5 +46,23 @@
             </table>
         </div>
     </div>
+    <script>
+    function filterServiceTable() {
+        var input = document.getElementById('service-search');
+        var filter = input.value.toLowerCase();
+        var tbody = document.getElementById('service-table-body');
+        var rows = tbody.getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            var nameCell = rows[i].querySelector('td');
+            if (!nameCell) continue;
+            var name = nameCell.textContent.toLowerCase();
+            if (name.indexOf(filter) > -1) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    }
+    </script>
 </div>
 {% endblock %}

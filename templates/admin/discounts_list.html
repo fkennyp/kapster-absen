@@ -7,6 +7,9 @@
         <a href="{{ url_for('admin.discount_create') }}" class="btn">Tambah Diskon Baru</a>
     </div>
     <div class="card">
+        <div class="table-search-bar">
+            <input type="text" id="discount-search" class="form-control" placeholder="Cari nama diskon..." onkeyup="filterDiscountTable()">
+        </div>
         <div class="table-responsive">
             <table class="discount-table">
                 <thead>
@@ -19,7 +22,7 @@
                         <th class="actions-column">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="discount-table-body">
                     {% if rules %}
                         {% for d in rules %}
                         <tr>
@@ -34,14 +37,14 @@
                                 {% endif %}
                             </td>
                             <td data-label="Status">{{ 'Aktif' if d.is_active else 'Nonaktif' }}</td>
-                                                        <td data-label="Aksi" class="actions">
-                                                            <div class="actions-row">
-                                                                <a href="{{ url_for('admin.discount_edit', rule_id=d.id) }}" class="btn-edit">Edit</a>
-                                                                <form action="{{ url_for('admin.discount_delete', rule_id=d.id) }}" method="post" class="d-inline" onsubmit="return confirm('Hapus diskon ini?');">
-                                                                    <button type="submit" class="btn-delete">Hapus</button>
-                                                                </form>
-                                                            </div>
-                                                        </td>
+                            <td data-label="Aksi" class="actions">
+                                <div class="actions-row">
+                                    <a href="{{ url_for('admin.discount_edit', rule_id=d.id) }}" class="btn-edit">Edit</a>
+                                    <form action="{{ url_for('admin.discount_delete', rule_id=d.id) }}" method="post" class="d-inline" onsubmit="return confirm('Hapus diskon ini?');">
+                                        <button type="submit" class="btn-delete">Hapus</button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     {% else %}
@@ -53,5 +56,23 @@
             </table>
         </div>
     </div>
+    <script>
+    function filterDiscountTable() {
+        var input = document.getElementById('discount-search');
+        var filter = input.value.toLowerCase();
+        var tbody = document.getElementById('discount-table-body');
+        var rows = tbody.getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            var nameCell = rows[i].querySelector('td[data-label="Nama"]');
+            if (!nameCell) continue;
+            var name = nameCell.textContent.toLowerCase();
+            if (name.indexOf(filter) > -1) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    }
+    </script>
 </div>
 {% endblock %}
