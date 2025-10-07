@@ -43,11 +43,11 @@
             </div>
             <div class="form-group">
                 <label for="customer_name">Nama Pelanggan</label>
-                <input type="text" id="customer_name" name="customer_name" class="form-control" value="{{ transaction.customer_name }}" required disabled>
+                <input type="text" id="customer_name" name="customer_name" class="form-control" value="{{ transaction.customer_name }}" required readonly>
             </div>
             <div class="form-group">
                 <label for="barber_name">Nama Kapster</label>
-                <select id="barber_name" name="barber_name" class="form-control" required disabled>
+                <select id="barber_name" name="barber_name" class="form-control" required readonly>
                     {% for user in users %}
                     <option value="{{ user.name }}" {% if user.name==transaction.barber_name %}selected{% endif %}>{{ user.name }}</option>
                     {% endfor %}
@@ -140,10 +140,10 @@
         {% else %}
         <!-- View Mode: seragam dengan kapster -->
         <div class="container">
-            <div class="card" style="max-width:700px;margin:32px auto;">
-                <h2 style="text-align:center;margin-bottom:32px;">Detail Transaksi</h2>
+            <div class="card card--transaction-detail">
+                <h2 class="transaction-detail-title">Detail Transaksi</h2>
                 <!-- Tombol aksi hanya di page-header, tidak di sini -->
-                <div class="details-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:18px 32px;">
+                <div class="details-grid details-grid--transaction">
                     <div><strong>No. Invoice</strong><br>{{ transaction.invoice_code }}</div>
                     <div><strong>Tanggal</strong><br>{{ transaction.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
                     <div><strong>Pelanggan</strong><br>{{ transaction.customer_name }}</div>
@@ -193,7 +193,7 @@
                     </tfoot>
                 </table>
 
-                <div style="text-align: right; margin-top: 20px;">
+                <div class="transaction-detail-actions">
                     <a href="{{ url_for('sales.receipt_pdf', tx_id=transaction.id) }}" target="_blank" class="btn btn-primary">
                         Download Nota PDF
                     </a>

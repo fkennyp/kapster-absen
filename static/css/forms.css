@@ -1,3 +1,22 @@
+/* ---- Transaction Detail: merged with existing ---- */
+.card.card--transaction-detail {
+  max-width: 700px;
+  margin: 32px auto;
+}
+.card--transaction-detail h2,
+.transaction-detail-title {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.details-grid.details-grid--transaction {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 32px;
+}
+.transaction-detail-actions {
+  text-align: right;
+  margin-top: 20px;
+}
 /* Phone input group relative positioning */
 .phone-group-rel {
   position: relative;
