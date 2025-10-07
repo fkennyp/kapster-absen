@@ -165,8 +165,8 @@ def transaction_delete(transaction_id):
 def enforce_admin():
     # Jangan blokir endpoint autocomplete customer untuk kapster
     if request.endpoint and request.endpoint.startswith('admin.'):
-        # Izinkan kapster akses /admin/customers?q=...
-        if request.endpoint == 'admin.customers_list' and request.args.get('q') and current_user.role == 'kapster':
+        # Izinkan kapster akses /admin/customers (list & ?q=...)
+        if request.endpoint == 'admin.customers_list' and current_user.role == 'kapster':
             return
         require_admin()
 
@@ -472,7 +472,9 @@ def customers_list():
         customers = query.order_by(Customer.name).limit(15).all()
         return {'customers': [ {'name': c.name, 'phone': c.phone} for c in customers if c.phone ]}
     # Otherwise, always render the normal HTML page
-    require_admin()
+    # Allow admin and kapster to view customer list
+    if not (current_user.role == 'admin' or current_user.role == 'kapster'):
+        abort(403)
     customers = Customer.query.order_by(Customer.name).all()
     return render_template('admin/customers_list.html', customers=customers)
 

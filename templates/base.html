@@ -46,12 +46,13 @@
         <a class="sb-link" href="{{ url_for('admin.services_list') }}">Master Layanan</a>
         <a class="sb-link" href="{{ url_for('admin.customers_list') }}">Master Pelanggan</a>
         <a class="sb-link" href="{{ url_for('admin.discounts_list') }}">Master Diskon</a>
-        {% elif current_user.is_authenticated and current_user.role == 'kapster' %}
-        <a class="sb-link" href="/attendance">Kehadiran</a>
-        {% if is_working_now %}
-        <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Buat Transaksi Baru</a>
-        {% endif %}
-        <a class="sb-link" href="{{ url_for('user_transactions.my_transactions') }}">Riwayat Transaksi</a>
+  {% elif current_user.is_authenticated and current_user.role == 'kapster' %}
+  <a class="sb-link" href="/attendance">Kehadiran</a>
+  {% if is_working_now %}
+  <a class="sb-link" href="{{ url_for('sales.new_sale') }}">Buat Transaksi Baru</a>
+  {% endif %}
+  <a class="sb-link" href="{{ url_for('user_transactions.my_transactions') }}">Riwayat Transaksi</a>
+  <a class="sb-link" href="{{ url_for('admin.customers_list') }}">Master Pelanggan</a>
         {% endif %}
       </nav>
 

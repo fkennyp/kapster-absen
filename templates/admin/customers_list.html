@@ -6,7 +6,9 @@
 <div class="container">
     <div class="page-header">
         <h1>Data Pelanggan</h1>
-        <a href="{{ url_for('admin.customer_create') }}" class="btn">Tambah Pelanggan Baru</a>
+    {% if current_user.role == 'admin' %}
+    <a href="{{ url_for('admin.customer_create') }}" class="btn">Tambah Pelanggan Baru</a>
+    {% endif %}
     </div>
 
     <div class="card">
@@ -20,8 +22,8 @@
                         <th>Nama</th>
                         <th>No. Telepon</th>
                         <th class="text-center">Jumlah Kunjungan</th>
-                        <th>Terakhir Diubah</th>
-                        <th class="actions-column">Aksi</th>
+                        {% if current_user.role == 'admin' %}<th>Terakhir Diubah</th>{% endif %}
+                        {% if current_user.role == 'admin' %}<th class="actions-column">Aksi</th>{% endif %}
                     </tr>
                 </thead>
                 <tbody id="customer-table-body">
@@ -32,7 +34,10 @@
                         <td class="text-center" data-label="Jumlah Kunjungan">
                             <span class="badge bg-info">{{ customer.get_visit_count() }}</span>
                         </td>
+                        {% if current_user.role == 'admin' %}
                         <td data-label="Terakhir Diubah">{{ customer.updated_at.strftime('%d-%m-%Y %H:%M') }}</td>
+                        {% endif %}
+                        {% if current_user.role == 'admin' %}
                         <td class="actions" data-label="Aksi">
                             <div class="actions-row">
                                 <a href="{{ url_for('admin.customer_edit', customer_id=customer.id) }}" class="btn btn-edit btn-sm">Ubah Data</a>
@@ -41,6 +46,7 @@
                                 </form>
                             </div>
                         </td>
+                        {% endif %}
                     </tr>
                     {% else %}
                     <tr>
