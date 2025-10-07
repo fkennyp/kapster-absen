@@ -165,8 +165,8 @@ def transaction_delete(transaction_id):
 def enforce_admin():
     # Jangan blokir endpoint autocomplete customer untuk kapster
     if request.endpoint and request.endpoint.startswith('admin.'):
-        # Izinkan kapster akses /admin/customers (list & ?q=...)
-        if request.endpoint == 'admin.customers_list' and current_user.role == 'kapster':
+        # Allow kapster access to /admin/customers and /admin/discounts (list & ?q=...)
+        if request.endpoint in ['admin.customers_list', 'admin.discounts_list'] and current_user.role == 'kapster':
             return
         require_admin()
 
@@ -554,7 +554,9 @@ def customer_delete(customer_id):
 @bp.route('/discounts')
 @login_required
 def discounts_list():
-    require_admin()
+    # Allow admin and kapster to view discount list
+    if not (current_user.role == 'admin' or current_user.role == 'kapster'):
+        abort(403)
     rules = DiscountRule.query.order_by(DiscountRule.start_date.desc()).all()
     return render_template('admin/discounts_list.html', rules=rules)
 

@@ -4,7 +4,9 @@
 <div class="container">
     <div class="page-header">
         <h1>Atur Diskon</h1>
-        <a href="{{ url_for('admin.discount_create') }}" class="btn">Tambah Diskon Baru</a>
+    {% if current_user.role == 'admin' %}
+    <a href="{{ url_for('admin.discount_create') }}" class="btn">Tambah Diskon Baru</a>
+    {% endif %}
     </div>
     <div class="card">
         <div class="table-search-bar">
@@ -19,7 +21,7 @@
                         <th>Tipe</th>
                         <th>Nilai</th>
                         <th>Status</th>
-                        <th class="actions-column">Aksi</th>
+                        {% if current_user.role == 'admin' %}<th class="actions-column">Aksi</th>{% endif %}
                     </tr>
                 </thead>
                 <tbody id="discount-table-body">
@@ -37,6 +39,7 @@
                                 {% endif %}
                             </td>
                             <td data-label="Status">{{ 'Aktif' if d.is_active else 'Nonaktif' }}</td>
+                            {% if current_user.role == 'admin' %}
                             <td data-label="Aksi" class="actions">
                                 <div class="actions-row">
                                     <a href="{{ url_for('admin.discount_edit', rule_id=d.id) }}" class="btn-edit">Edit</a>
@@ -45,6 +48,7 @@
                                     </form>
                                 </div>
                             </td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
                     {% else %}
